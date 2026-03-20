@@ -1,7 +1,11 @@
-// Модуль пополнения баланса RURC через российские карты
+// Модуль пополнения баланса RURC через ЮKassa
 // Поддерживаемые банки: Сбербанк, Тинькофф, Альфа-Банк, Газпромбанк, ВТБ, Россельхозбанк
 
 const PAYMENT_CONFIG = {
+    // Настройки ЮKassa (нужно заменить на реальные)
+    shopId: 'YOUR_SHOP_ID',
+    secretKey: 'YOUR_SECRET_KEY',
+
     // Минимальная и максимальная сумма пополнения (в рублях)
     minAmount: 100,
     maxAmount: 50000,
@@ -9,29 +13,29 @@ const PAYMENT_CONFIG = {
     commission: 0,
     // Валюта
     currency: 'RUB',
-    // Курс RURC к рублю (для примера)
-    rate: 1 // 1 RURC = 1 RUB (можно изменить)
+    // Курс RURC к рублю
+    rate: 1
 };
 
-// Поддерживаемые банки
-const SUPPORTED_BANKS = [
-    { id: 'sber', name: 'Сбербанк', icon: '🏦', color: '#004930' },
-    { id: 'tinkoff', name: 'Тинькофф', icon: '🏦', color: '#FFDD2D' },
-    { id: 'alfa', name: 'Альфа-Банк', icon: '🏦', color: '#EF3124' },
-    { id: 'gazprom', name: 'Газпромбанк', icon: '🏦', color: '#0C4A8D' },
-    { id: 'vtb', name: 'ВТБ', icon: '🏦', color: '#0099CC' },
-    { id: 'rosselhoz', name: 'Россельхозбанк', icon: '🏦', color: '#009639' },
-    { id: 'qiwi', name: 'QIWI', icon: '💳', color: '#FF4800' },
-    { id: 'yoo', name: 'ЮMoney', icon: '💳', color: '#7B2D8E' },
-    { id: 'card', name: 'Любая карта', icon: '💳', color: '#333333' }
+// Поддерживаемые банки и методы оплаты
+const SUPPORTED_PAYMENTS = [
+    { id: 'sberbank', name: 'Сбербанк', icon: '🏦', group: 'bank' },
+    { id: 'tinkoff_bank', name: 'Тинькофф', icon: '🏦', group: 'bank' },
+    { id: 'alfabank', name: 'Альфа-Банк', icon: '🏦', group: 'bank' },
+    { id: 'gazprom_bank', name: 'Газпромбанк', icon: '🏦', group: 'bank' },
+    { id: 'vtb', name: 'ВТБ', icon: '🏦', group: 'bank' },
+    { id: 'rosselhozbank', name: 'Россельхозбанк', icon: '🏦', group: 'bank' },
+    { id: 'qiwi_wallet', name: 'QIWI Кошелёк', icon: '💳', group: 'wallet' },
+    { id: 'yoomoney_wallet', name: 'ЮMoney', icon: '💳', group: 'wallet' },
+    { id: 'bank_card', name: 'Любая карта', icon: '💳', group: 'card' }
 ];
 
 // Состояние платежа
 let paymentState = {
     amount: 0,
-    cardNumber: '',
-    bank: null,
-    status: 'idle' // idle, processing, success, error
+    paymentMethod: null,
+    status: 'idle',
+    paymentId: null
 };
 
 // Показать форму пополнения
@@ -43,18 +47,18 @@ function showTopUpModal() {
     modal.innerHTML = `
         <div class="modal-content">
             <div class="modal-header">
-                <h2>💰 Пополнение баланса</h2>
+                <h2>💰 Пополнение через ЮKassa</h2>
                 <button class="close-btn" onclick="closeTopUpModal()">×</button>
             </div>
 
             <div class="modal-body">
-                <div class="bank-selection">
-                    <p class="label">Выберите банк или способ оплаты:</p>
-                    <div class="banks-grid">
-                        ${SUPPORTED_BANKS.map(bank => `
-                            <div class="bank-item" data-bank="${bank.id}" onclick="selectBank('${bank.id}')">
-                                <span class="bank-icon">${bank.icon}</span>
-                                <span class="bank-name">${bank.name}</span>
+                <div class="payment-methods">
+                    <p class="label">Выберите способ оплаты:</p>
+                    <div class="methods-grid">
+                        ${SUPPORTED_PAYMENTS.map(method => `
+                            <div class="method-item" data-method="${method.id}" onclick="selectPaymentMethod('${method.id}')">
+                                <span class="method-icon">${method.icon}</span>
+                                <span class="method-name">${method.name}</span>
                             </div>
                         `).join('')}
                     </div>
@@ -79,23 +83,12 @@ function showTopUpModal() {
                     </div>
                 </div>
 
-                <div class="card-section" id="cardSection" style="display: none;">
-                    <p class="label">Данные карты:</p>
-                    <input type="text" id="cardNumber" 
-                        placeholder="Номер карты (1234 5678 9012 3456)"
-                        maxlength="19"
-                        oninput="formatCardNumber(this)">
-                    <div class="card-row">
-                        <input type="text" id="cardExpiry" 
-                            placeholder="ММ/ГГ"
-                            maxlength="5"
-                            oninput="formatExpiry(this)">
-                        <input type="text" id="cardCVC" 
-                            placeholder="CVC"
-                            maxlength="3">
+                <div class="yookassa-info">
+                    <div class="yookassa-logo">
+                        <span>🔒 Безопасная оплата через</span>
+                        <strong>ЮKassa</strong>
                     </div>
-                    <input type="text" id="cardName" 
-                        placeholder="Имя владельца (как на карте)">
+                    <p class="security-note">🔐 Ваши платежи защищены по стандарту PCI DSS</p>
                 </div>
 
                 <div class="summary-section">
@@ -116,15 +109,15 @@ function showTopUpModal() {
                 <div class="payment-status" id="paymentStatus" style="display: none;">
                     <div class="status-content">
                         <span class="status-icon">⏳</span>
-                        <span class="status-text">Обработка платежа...</span>
+                        <span class="status-text">Создание платежа...</span>
                     </div>
                 </div>
             </div>
 
             <div class="modal-footer">
                 <button class="btn-cancel" onclick="closeTopUpModal()">Отмена</button>
-                <button class="btn-pay" id="payBtn" onclick="processPayment()" disabled>
-                    Оплатить
+                <button class="btn-pay" id="payBtn" onclick="processYookassaPayment()" disabled>
+                    Оплатить через ЮKassa
                 </button>
             </div>
         </div>
@@ -132,11 +125,7 @@ function showTopUpModal() {
 
     document.body.appendChild(modal);
 
-    // Добавляем обработчики
     document.getElementById('topUpAmount').addEventListener('input', calculateRURC);
-    document.getElementById('cardNumber').addEventListener('input', validateForm);
-    document.getElementById('cardExpiry').addEventListener('input', validateForm);
-    document.getElementById('cardCVC').addEventListener('input', validateForm);
 }
 
 // Закрыть модальное окно
@@ -147,42 +136,19 @@ function closeTopUpModal() {
     }
 }
 
-// Выбрать банк
-function selectBank(bankId) {
-    // Убираем активный класс у всех
-    document.querySelectorAll('.bank-item').forEach(item => {
+// Выбрать способ оплаты
+function selectPaymentMethod(methodId) {
+    document.querySelectorAll('.method-item').forEach(item => {
         item.classList.remove('active');
     });
 
-    // Добавляем активный класс выбранному
-    const selected = document.querySelector(`[data-bank="${bankId}"]`);
+    const selected = document.querySelector(`[data-method="${methodId}"]`);
     if (selected) {
         selected.classList.add('active');
     }
 
-    paymentState.bank = bankId;
-
-    // Показываем секцию с картой
-    document.getElementById('cardSection').style.display = 'block';
-
+    paymentState.paymentMethod = methodId;
     validateForm();
-}
-
-// Форматировать номер карты
-function formatCardNumber(input) {
-    let value = input.value.replace(/\D/g, '');
-    value = value.replace(/(\d{4})/g, '$1 ').trim();
-    input.value = value.substring(0, 19);
-    paymentState.cardNumber = input.value;
-}
-
-// Форматировать срок действия
-function formatExpiry(input) {
-    let value = input.value.replace(/\D/g, '');
-    if (value.length >= 2) {
-        value = value.substring(0, 2) + '/' + value.substring(2);
-    }
-    input.value = value.substring(0, 5);
 }
 
 // Настроить сумму
@@ -219,24 +185,73 @@ function calculateRURC() {
 // Валидация формы
 function validateForm() {
     const amount = parseInt(document.getElementById('topUpAmount').value) || 0;
-    const cardNumber = document.getElementById('cardNumber').value.replace(/\s/g, '');
-    const expiry = document.getElementById('cardExpiry').value;
-    const cvc = document.getElementById('cardCVC').value;
-
     const isValidAmount = amount >= PAYMENT_CONFIG.minAmount && amount <= PAYMENT_CONFIG.maxAmount;
-    const isValidCard = cardNumber.length >= 15 && expiry.length === 5 && cvc.length >= 2;
-    const hasBank = paymentState.bank !== null;
+    const hasMethod = paymentState.paymentMethod !== null;
 
     const payBtn = document.getElementById('payBtn');
-    payBtn.disabled = !(isValidAmount && isValidCard && hasBank);
+    payBtn.disabled = !(isValidAmount && hasMethod);
 }
 
-// Обработать платеж
-async function processPayment() {
-    const amount = parseInt(document.getElementById('topUpAmount').value);
-    const cardNumber = document.getElementById('cardNumber').value;
+// Создать платёж в ЮKassa
+async function createYookassaPayment() {
+    const amount = paymentState.amount;
+    const paymentMethod = paymentState.paymentMethod;
 
-    // Показать статус
+    // Создаём уникальный ID платежа
+    const paymentId = 'rurc_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+
+    // Подготовка данных платежа
+    const paymentData = {
+        amount: {
+            value: amount.toFixed(2),
+            currency: 'RUB'
+        },
+        payment_method_data: {
+            type: paymentMethod
+        },
+        confirmation: {
+            type: 'redirect',
+            return_url: window.location.href
+        },
+        description: `Пополнение баланса RURC на ${amount} ₽`,
+        metadata: {
+            payment_id: paymentId,
+            rurc_amount: Math.floor(amount * PAYMENT_CONFIG.rate)
+        }
+    };
+
+    // Для демо режима - симуляция
+    if (PAYMENT_CONFIG.shopId === 'YOUR_SHOP_ID') {
+        return {
+            id: paymentId,
+            confirmation: {
+                confirmation_url: '#demo'
+            },
+            status: 'succeeded'
+        };
+    }
+
+    // Реальный запрос к ЮKassa API
+    const response = await fetch('https://payment.yookassa.ru/v3/payments', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Idempotence-Key': paymentId
+        },
+        body: JSON.stringify({
+            ...paymentData,
+            shop_id: PAYMENT_CONFIG.shopId
+        })
+    });
+
+    return await response.json();
+}
+
+// Обработать платёж
+async function processYookassaPayment() {
+    const amount = paymentState.amount;
+    const rurcAmount = Math.floor(amount * PAYMENT_CONFIG.rate);
+
     const statusEl = document.getElementById('paymentStatus');
     statusEl.style.display = 'block';
     statusEl.className = 'payment-status processing';
@@ -244,36 +259,29 @@ async function processPayment() {
     const payBtn = document.getElementById('payBtn');
     payBtn.disabled = true;
 
-    // Симуляция платежа (в реальном проекте здесь будет API платёжного шлюза)
     try {
-        // Имитация задержки
-        await new Promise(resolve => setTimeout(resolve, 2000));
-
-        // Успешный платёж (для демо - всегда успех)
-        // В реальности здесь будет запрос к платёжному шлюзу
-
-        const rurcAmount = Math.floor(amount * PAYMENT_CONFIG.rate);
-
-        // Показать успех
-        statusEl.className = 'payment-status success';
+        // Создаём платёж
         statusEl.innerHTML = `
             <div class="status-content">
-                <span class="status-icon">✅</span>
-                <span class="status-text">Платёж успешен!</span>
-                <span class="status-amount">+${rurcAmount} RURC</span>
+                <span class="status-icon">🔄</span>
+                <span class="status-text">Создание платежа в ЮKassa...</span>
             </div>
         `;
 
-        // Начислить токены (через mint)
-        if (window.mintWithUI) {
-            await window.mintWithUI(rurcAmount);
-        }
+        const payment = await createYookassaPayment();
 
-        // Закрыть через 3 секунды
-        setTimeout(() => {
-            closeTopUpModal();
-            showNotification(`Баланс пополнен на ${rurcAmount} RURC`, 'success');
-        }, 3000);
+        if (payment.confirmation && payment.confirmation.confirmation_url) {
+            // Перенаправляем на оплату
+            if (payment.confirmation.confirmation_url !== '#demo') {
+                window.location.href = payment.confirmation.confirmation_url;
+            } else {
+                // Демо режим - симуляция успеха
+                await simulatePayment();
+            }
+        } else if (payment.status === 'succeeded') {
+            // Платёж уже успешен
+            await handlePaymentSuccess(rurcAmount);
+        }
 
     } catch (error) {
         statusEl.className = 'payment-status error';
@@ -288,19 +296,85 @@ async function processPayment() {
     }
 }
 
-// Открыть пополнение (экспорт)
+// Симуляция платежа (для демо)
+async function simulatePayment() {
+    const statusEl = document.getElementById('paymentStatus');
+    const rurcAmount = Math.floor(paymentState.amount * PAYMENT_CONFIG.rate);
+
+    // Имитация обработки
+    await new Promise(resolve => setTimeout(resolve, 1500));
+
+    statusEl.className = 'payment-status success';
+    statusEl.innerHTML = `
+        <div class="status-content">
+            <span class="status-icon">✅</span>
+            <span class="status-text">Платёж успешен!</span>
+            <span class="status-amount">+${rurcAmount} RURC</span>
+        </div>
+    `;
+
+    // Начисляем токены
+    await handlePaymentSuccess(rurcAmount);
+}
+
+// Обработка успешного платежа
+async function handlePaymentSuccess(rurcAmount) {
+    // Начисляем RURC через mint
+    if (window.mintWithUI) {
+        await window.mintWithUI(rurcAmount);
+    }
+
+    // Закрываем через 3 секунды
+    setTimeout(() => {
+        closeTopUpModal();
+        showNotification(`Баланс пополнен на ${rurcAmount} RURC`, 'success');
+    }, 3000);
+}
+
+// Проверка статуса платежа (webhook handler)
+async function checkPaymentStatus(paymentId) {
+    if (PAYMENT_CONFIG.shopId === 'YOUR_SHOP_ID') {
+        return { status: 'succeeded' };
+    }
+
+    const response = await fetch(`https://payment.yookassa.ru/v3/payments/${paymentId}`, {
+        headers: {
+            'Idempotence-Key': paymentId
+        }
+    });
+
+    return await response.json();
+}
+
+// Обработка webhook от ЮKassa
+function handleYookassaWebhook(event) {
+    const { object, event: eventType } = event;
+
+    if (eventType === 'payment.succeeded') {
+        const rurcAmount = object.metadata?.rurc_amount || 0;
+        if (rurcAmount > 0 && window.mintWithUI) {
+            window.mintWithUI(rurcAmount);
+        }
+    }
+}
+
+// Экспорт функций
 window.showTopUpModal = showTopUpModal;
 window.closeTopUpModal = closeTopUpModal;
-window.selectBank = selectBank;
-window.formatCardNumber = formatCardNumber;
-window.formatExpiry = formatExpiry;
+window.selectPaymentMethod = selectPaymentMethod;
 window.adjustAmount = adjustAmount;
 window.setQuickAmount = setQuickAmount;
 window.calculateRURC = calculateRURC;
 window.validateForm = validateForm;
-window.processPayment = processPayment;
+window.processYookassaPayment = processYookassaPayment;
+window.createYookassaPayment = createYookassaPayment;
+window.handleYookassaWebhook = handleYookassaWebhook;
 
-// Добавить стили для модального окна
+// Конфигурация
+window.PAYMENT_CONFIG = PAYMENT_CONFIG;
+window.SUPPORTED_PAYMENTS = SUPPORTED_PAYMENTS;
+
+// Стили
 const topUpStyles = `
     .modal {
         position: fixed;
@@ -356,14 +430,14 @@ const topUpStyles = `
         font-size: 14px;
     }
 
-    .banks-grid {
+    .methods-grid {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         gap: 10px;
         margin-bottom: 20px;
     }
 
-    .bank-item {
+    .method-item {
         background: #252540;
         border: 2px solid transparent;
         border-radius: 10px;
@@ -373,22 +447,22 @@ const topUpStyles = `
         transition: all 0.2s;
     }
 
-    .bank-item:hover {
+    .method-item:hover {
         background: #2d2d4a;
     }
 
-    .bank-item.active {
+    .method-item.active {
         border-color: #6c5ce7;
         background: #2d2d4a;
     }
 
-    .bank-icon {
+    .method-icon {
         font-size: 24px;
         display: block;
         margin-bottom: 4px;
     }
 
-    .bank-name {
+    .method-name {
         color: #fff;
         font-size: 11px;
     }
@@ -439,29 +513,30 @@ const topUpStyles = `
         font-size: 13px;
     }
 
-    .card-section {
-        margin-bottom: 20px;
-    }
-
-    .card-section input {
-        width: 100%;
-        padding: 12px;
-        border: 1px solid #333;
-        border-radius: 8px;
+    .yookassa-info {
         background: #252540;
-        color: #fff;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    .yookassa-logo {
+        color: #aaa;
         font-size: 14px;
-        margin-bottom: 10px;
-        box-sizing: border-box;
     }
 
-    .card-row {
-        display: flex;
-        gap: 10px;
+    .yookassa-logo strong {
+        color: #FF4800;
+        font-size: 18px;
+        display: block;
+        margin-top: 5px;
     }
 
-    .card-row input {
-        flex: 1;
+    .security-note {
+        color: #666;
+        font-size: 12px;
+        margin-top: 10px;
     }
 
     .summary-section {
@@ -547,7 +622,7 @@ const topUpStyles = `
     }
 
     .btn-pay {
-        background: #6c5ce7;
+        background: #FF4800;
         color: #fff;
     }
 
@@ -557,11 +632,6 @@ const topUpStyles = `
     }
 `;
 
-// Добавить стили
 const styleEl = document.createElement('style');
 styleEl.textContent = topUpStyles;
 document.head.appendChild(styleEl);
-
-// Экспорт
-window.PAYMENT_CONFIG = PAYMENT_CONFIG;
-window.SUPPORTED_BANKS = SUPPORTED_BANKS;
