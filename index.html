@@ -1131,9 +1131,20 @@ button:active {
 
             <!-- SVG Качалка-балансир (Pump Jack) -->
             <div class="rig-visual-wrap">
-                <video autoplay loop muted playsinline style="width:100%;max-width:320px;display:block;margin:0 auto;border-radius:12px;">
-  <source src="oil.gif.mp4" type="video/mp4">
-</video>
+                <div style="display:flex;gap:10px;justify-content:center;align-items:flex-end;flex-wrap:wrap;">
+  <div style="flex:1;min-width:140px;max-width:200px;text-align:center;">
+    <video autoplay loop muted playsinline style="width:100%;display:block;border-radius:12px;">
+      <source src="oil.gif.mp4" type="video/mp4">
+    </video>
+    <div style="font-size:11px;color:#aaa;margin-top:4px;">⛽ Качалка</div>
+  </div>
+  <div style="flex:1;min-width:140px;max-width:200px;text-align:center;">
+    <video autoplay loop muted playsinline style="width:100%;display:block;border-radius:12px;">
+      <source src="barrel_oil.gif.mp4" type="video/mp4">
+    </video>
+    <div style="font-size:11px;color:#aaa;margin-top:4px;">🛢️ Цистерна</div>
+  </div>
+</div>
                 <div class="rig-status-badge" id="oilRigStatus">Добыча остановлена</div>
             </div>
 
@@ -1222,9 +1233,20 @@ button:active {
 
             <!-- SVG Морская газовая платформа -->
             <div class="rig-visual-wrap gas-rig-wrap">
-                <video autoplay loop muted playsinline style="width:100%;max-width:320px;display:block;margin:0 auto;border-radius:12px;">
-  <source src="gas.gif.mp4" type="video/mp4">
-</video>
+                <div style="display:flex;gap:10px;justify-content:center;align-items:flex-end;flex-wrap:wrap;">
+  <div style="flex:1;min-width:140px;max-width:200px;text-align:center;">
+    <video autoplay loop muted playsinline style="width:100%;display:block;border-radius:12px;">
+      <source src="gas.gif.mp4" type="video/mp4">
+    </video>
+    <div style="font-size:11px;color:#aaa;margin-top:4px;">🔥 Платформа</div>
+  </div>
+  <div style="flex:1;min-width:140px;max-width:200px;text-align:center;">
+    <video autoplay loop muted playsinline style="width:100%;display:block;border-radius:12px;">
+      <source src="barrel_gas.gif.mp4" type="video/mp4">
+    </video>
+    <div style="font-size:11px;color:#aaa;margin-top:4px;">🏭 Резервуар</div>
+  </div>
+</div>
                 <div class="rig-status-badge gas-badge" id="gasRigStatus">Добыча остановлена</div>
             </div>
 
