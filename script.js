@@ -499,6 +499,15 @@ class RURCoinMiner {
         if (el('gasTanksCount')) el('gasTanksCount').textContent = this.gasTanks;
         if (el('oilBar')) el('oilBar').style.width = Math.min(100, (this.oilStored / this.oilCapacity) * 100) + '%';
         if (el('gasBar')) el('gasBar').style.width = Math.min(100, (this.gasStored / this.gasCapacity) * 100) + '%';
+        // SVG цистерны
+        if (window.updateTankSVG) {
+            updateTankSVG('oil', this.oilStored, this.oilCapacity);
+            updateTankSVG('gas', this.gasStored, this.gasCapacity);
+        }
+        // Визуал качалки / морской платформы
+        if (window.updateRigVisuals) {
+            updateRigVisuals(this.isMining, this.getOilPerSec() * 3600, this.getGasPerSec() * 3600);
+        }
     }
 
     renderMiningData() {
@@ -682,6 +691,7 @@ class RURCoinMiner {
             if (this.currentTab === 'storage') this.renderStorageData();
             if (this.currentTab === 'upgrades') this.renderUpgradesTab();
             if (this.currentTab === 'mining' && window.renderGlobalStats) renderGlobalStats();
+            if (window.updateCompareStats) updateCompareStats(this.oilStored, this.gasStored, this.totalOilMined || this.oilStored, this.totalGasMined || this.gasStored);
         }, 1000);
     }
 
@@ -745,3 +755,161 @@ window.addEventListener('priceUpdate', () => {
         if (window.renderPriceTicker) renderPriceTicker();
     }
 });
+
+
+// ============================================================
+//  СЛАЙДЕР РЕСУРСОВ (Нефть / Газ)
+// ============================================================
+function switchResourceSlide(type) {
+    const oilSlide = document.getElementById('slideOil');
+    const gasSlide = document.getElementById('slideGas');
+    const oilBtn   = document.getElementById('slideOilBtn');
+    const gasBtn   = document.getElementById('slideGasBtn');
+    if (!oilSlide || !gasSlide) return;
+    if (type === 'oil') {
+        oilSlide.style.display = 'block';
+        gasSlide.style.display = 'none';
+        oilBtn.classList.add('active');
+        gasBtn.classList.remove('active');
+    } else {
+        oilSlide.style.display = 'none';
+        gasSlide.style.display = 'block';
+        gasBtn.classList.add('active');
+        oilBtn.classList.remove('active');
+    }
+}
+window.switchResourceSlide = switchResourceSlide;
+
+// ============================================================
+//  АНИМАЦИЯ SVG ЦИСТЕРН
+// ============================================================
+function updateTankSVG(type, stored, capacity) {
+    const pct = Math.min(100, capacity > 0 ? (stored / capacity) * 100 : 0);
+    const pctRounded = Math.round(pct);
+    if (type === 'oil') {
+        const rect    = document.getElementById('oilLiquidRect');
+        const wave    = document.getElementById('oilWavePath');
+        const pctEl   = document.getElementById('oilTankPct');
+        const storedEl= document.getElementById('oilStoredLabel');
+        const capEl   = document.getElementById('oilCapLabel');
+        if (!rect) return;
+        const maxH = 118, y0 = 140;
+        const h = (pct / 100) * maxH;
+        const y = y0 - h;
+        rect.setAttribute('y', h > 0 ? y : y0);
+        rect.setAttribute('height', h);
+        if (wave) wave.setAttribute('d', `M12,${y} Q36,${y-4} 60,${y} Q84,${y+4} 108,${y} L108,${y} L12,${y} Z`);
+        if (pctEl)    pctEl.textContent    = pctRounded + '%';
+        if (storedEl) storedEl.textContent = stored.toFixed(1) + ' барр.';
+        if (capEl)    capEl.textContent    = '/ ' + capacity.toFixed(0) + ' барр.';
+        if (rect) rect.setAttribute('fill', pct > 80 ? '#cc2200' : pct > 50 ? '#3d1a00' : '#2a1000');
+    } else {
+        const rect    = document.getElementById('gasLiquidRect');
+        const wave    = document.getElementById('gasWavePath');
+        const pctEl   = document.getElementById('gasTankPct');
+        const storedEl= document.getElementById('gasStoredLabel');
+        const capEl   = document.getElementById('gasCapLabel');
+        if (!rect) return;
+        const maxH = 64, y0 = 92;
+        const h = (pct / 100) * maxH;
+        const y = y0 - h;
+        rect.setAttribute('y', h > 0 ? y : y0);
+        rect.setAttribute('height', h);
+        if (wave) wave.setAttribute('d', `M14,${y} Q47,${y-4} 80,${y} Q113,${y+4} 146,${y} L146,${y} L14,${y} Z`);
+        if (pctEl)    { pctEl.textContent = pctRounded + '%'; pctEl.style.color = '#4ade80'; }
+        if (storedEl) storedEl.textContent = stored.toFixed(0) + ' м³';
+        if (capEl)    capEl.textContent    = '/ ' + capacity.toFixed(0) + ' м³';
+    }
+}
+window.updateTankSVG = updateTankSVG;
+
+// ============================================================
+//  СРАВНЕНИЕ С ПРОШЛЫМ
+// ============================================================
+const _compareHistory = { oil: [], gas: [] };
+
+function updateCompareStats(oilStored, gasStored, oilTotal, gasTotal) {
+    const now = Date.now();
+    _compareHistory.oil.push({ t: now, v: oilTotal });
+    _compareHistory.gas.push({ t: now, v: gasTotal });
+    const cut = now - 25 * 3600 * 1000;
+    _compareHistory.oil = _compareHistory.oil.filter(x => x.t > cut);
+    _compareHistory.gas = _compareHistory.gas.filter(x => x.t > cut);
+
+    function getDelta(arr, ms) {
+        const cutoff = now - ms;
+        const old = arr.filter(x => x.t <= cutoff);
+        if (!old.length) return null;
+        return arr[arr.length-1].v - old[old.length-1].v;
+    }
+    function renderDelta(valId, deltaId, current, delta, unit) {
+        const v = document.getElementById(valId);
+        const d = document.getElementById(deltaId);
+        if (v) v.textContent = current.toFixed(unit === 'м³' ? 0 : 1) + ' ' + unit;
+        if (d) {
+            if (delta === null) { d.textContent = 'нет данных'; d.className = 'compare-delta'; return; }
+            const sign = delta >= 0 ? '+' : '';
+            d.textContent = sign + delta.toFixed(unit === 'м³' ? 0 : 1) + ' ' + unit;
+            d.className = 'compare-delta' + (delta < 0 ? ' neg' : '');
+        }
+    }
+    renderDelta('oilHourCompare','oilHourDelta', oilStored, getDelta(_compareHistory.oil, 3600000),     'барр.');
+    renderDelta('oilDayCompare', 'oilDayDelta',  oilStored, getDelta(_compareHistory.oil, 86400000),    'барр.');
+    renderDelta('gasHourCompare','gasHourDelta', gasStored, getDelta(_compareHistory.gas, 3600000),     'м³');
+    renderDelta('gasDayCompare', 'gasDayDelta',  gasStored, getDelta(_compareHistory.gas, 86400000),    'м³');
+    const oT = document.getElementById('oilTotalCompare');
+    const gT = document.getElementById('gasTotalCompare');
+    if (oT) oT.textContent = oilTotal.toFixed(1);
+    if (gT) gT.textContent = gasTotal.toFixed(0);
+}
+window.updateCompareStats = updateCompareStats;
+
+// ============================================================
+//  ОБНОВЛЕНИЕ СТАТУСА КАЧАЛКИ / МОРСКОЙ ПЛАТФОРМЫ
+// ============================================================
+function updateRigVisuals(isMining, oilPerHour, gasPerHour) {
+    const oilBadge = document.getElementById('oilRigStatus');
+    const gasBadge = document.getElementById('gasRigStatus');
+    const oilText  = document.getElementById('oilRigStatusText');
+    const gasText  = document.getElementById('gasRigStatusText');
+    const oilRate  = document.getElementById('oilRateText');
+    const gasRate  = document.getElementById('gasRateText');
+    const beam     = document.getElementById('pumpBeam');
+    const flame    = document.getElementById('gasFlameTip');
+
+    if (isMining) {
+        if (oilBadge) { oilBadge.textContent = '▶ Добыча идёт'; oilBadge.style.background = 'rgba(255,100,0,0.25)'; }
+        if (gasBadge) { gasBadge.textContent = '▶ Добыча идёт'; gasBadge.style.background = 'rgba(74,222,128,0.2)'; }
+        if (oilText)  oilText.textContent = '⚙ Работает';
+        if (gasText)  gasText.textContent = '⚙ Работает';
+        if (beam)  beam.style.animationPlayState  = 'running';
+        if (flame) flame.style.animationPlayState = 'running';
+    } else {
+        if (oilBadge) { oilBadge.textContent = '⏸ Остановлено'; oilBadge.style.background = 'rgba(255,100,0,0.1)'; }
+        if (gasBadge) { gasBadge.textContent = '⏸ Остановлено'; gasBadge.style.background = 'rgba(74,222,128,0.08)'; }
+        if (oilText)  oilText.textContent = '⏸ Остановлено';
+        if (gasText)  gasText.textContent = '⏸ Остановлено';
+        if (beam)  beam.style.animationPlayState  = 'paused';
+        if (flame) flame.style.animationPlayState = 'paused';
+    }
+    if (oilRate) oilRate.textContent = oilPerHour.toFixed(1) + ' барр/ч';
+    if (gasRate) gasRate.textContent = gasPerHour.toFixed(0) + ' м³/ч';
+
+    // Кнопки
+    const oilBtnText = document.getElementById('mineBtnOilText');
+    const gasBtnText = document.getElementById('mineBtnGasText');
+    const oilBtnIcon = document.getElementById('mineBtnOilIcon');
+    const gasBtnIcon = document.getElementById('mineBtnGasIcon');
+    if (isMining) {
+        if (oilBtnText) oilBtnText.textContent = 'Остановить добычу нефти';
+        if (gasBtnText) gasBtnText.textContent = 'Остановить добычу газа';
+        if (oilBtnIcon) oilBtnIcon.textContent = '⏹';
+        if (gasBtnIcon) gasBtnIcon.textContent = '⏹';
+    } else {
+        if (oilBtnText) oilBtnText.textContent = 'Начать добычу нефти';
+        if (gasBtnText) gasBtnText.textContent = 'Начать добычу газа';
+        if (oilBtnIcon) oilBtnIcon.textContent = '⛽';
+        if (gasBtnIcon) gasBtnIcon.textContent = '🔥';
+    }
+}
+window.updateRigVisuals = updateRigVisuals;
