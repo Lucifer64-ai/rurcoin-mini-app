@@ -845,6 +845,139 @@ button {
 .mono        { font-family: var(--font-main); }
 .orbitron    { font-family: var(--font-head); }
 
+
+/* ══════════════════════════════════════
+   BUTTON ANIMATIONS (cyberpunk)
+══════════════════════════════════════ */
+
+/* Ripple эффект */
+@keyframes ripple-anim {
+  0%   { transform: scale(0); opacity: 1; }
+  100% { transform: scale(4); opacity: 0; }
+}
+
+/* Glitch эффект на mine-btn */
+@keyframes glitch-shift {
+  0%,100% { clip-path: none; transform: none; }
+  20%     { clip-path: polygon(0 20%, 100% 20%, 100% 40%, 0 40%); transform: translateX(-3px); }
+  40%     { clip-path: polygon(0 60%, 100% 60%, 100% 80%, 0 80%); transform: translateX(3px); }
+  60%     { clip-path: none; transform: none; }
+}
+
+/* Neon flicker */
+@keyframes neon-flicker {
+  0%,19%,21%,23%,25%,54%,56%,100% {
+    text-shadow: 0 0 6px var(--orange), 0 0 12px var(--orange);
+    opacity: 1;
+  }
+  20%,24%,55% { text-shadow: none; opacity: 0.7; }
+}
+
+/* Кнопки вкладок — hover подсветка снизу */
+.tab-btn {
+  position: relative;
+  overflow: hidden;
+}
+.tab-btn::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 50%;
+  width: 0; height: 2px;
+  background: var(--orange);
+  box-shadow: 0 0 8px var(--orange);
+  transition: width 0.3s ease, left 0.3s ease;
+}
+.tab-btn:hover::after,
+.tab-btn.active::after {
+  width: 100%;
+  left: 0;
+}
+
+/* Mine btn — пульс + shimmer */
+.mine-btn {
+  background-size: 200% auto;
+  animation: shimmer-o 3s linear infinite;
+}
+.mine-btn:hover {
+  animation: shimmer-o 1.5s linear infinite, neon-pulse-o 1s infinite;
+}
+.mine-btn:active {
+  transform: scale(0.97) translateY(1px);
+  box-shadow: none !important;
+}
+
+/* Все кнопки — press эффект */
+button:active {
+  transform: scale(0.96);
+  transition: transform 0.08s;
+}
+
+/* Scan line на кнопках при hover */
+.mine-btn::after {
+  content: '';
+  position: absolute;
+  top: -100%; left: 0; right: 0;
+  height: 40%;
+  background: linear-gradient(180deg, transparent, rgba(255,255,255,0.08), transparent);
+  transition: top 0.4s ease;
+  pointer-events: none;
+}
+.mine-btn:hover::after {
+  top: 120%;
+}
+
+/* Кнопки stake/unstake — cyan glow pulse */
+.btn-stake:hover {
+  animation: neon-pulse-c 1s infinite;
+}
+
+/* res-slide-btn — активная подсветка */
+.res-slide-btn.active {
+  animation: neon-pulse-o 2s infinite;
+}
+
+/* topup-fab — bounce */
+@keyframes fab-bounce {
+  0%,100% { transform: translateY(0) scale(1); }
+  50%      { transform: translateY(-4px) scale(1.03); }
+}
+.topup-fab {
+  animation: fab-bounce 2.5s ease-in-out infinite, neon-pulse-o 3s infinite;
+}
+.topup-fab:hover {
+  animation: none;
+  transform: translateY(-3px) scale(1.05);
+}
+
+/* Кнопки оборудования */
+.eq-buy-btn {
+  background: rgba(255,107,0,0.1);
+  border: 1px solid var(--orange);
+  border-radius: var(--radius);
+  color: var(--orange);
+  font-family: var(--font-head);
+  font-size: 11px;
+  letter-spacing: 1px;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  position: relative;
+  overflow: hidden;
+}
+.eq-buy-btn:hover {
+  background: rgba(255,107,0,0.2);
+  box-shadow: var(--glow-o);
+  transform: translateY(-1px);
+}
+.eq-buy-btn:active {
+  transform: scale(0.95);
+}
+
+/* Neon flicker на заголовке логотипа */
+.app-logo-text h1 {
+  animation: shimmer-o 3s linear infinite, neon-flicker 8s infinite;
+}
 </style>
 </head>
 <body>
@@ -1366,7 +1499,7 @@ button {
     </div>
 
     <!-- УЛУЧШЕНИЯ -->
-    <div class="tab-content" id="upgrades" style="display:none;">
+    <div class="tab-content" id="upgrades">
         <div style="font-size:13px;color:#666;margin-bottom:12px;">
             💡 Улучшай оборудование за
             <span style="display:inline-flex;align-items:center;gap:3px;vertical-align:middle;">
