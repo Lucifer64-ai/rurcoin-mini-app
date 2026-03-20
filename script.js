@@ -95,52 +95,48 @@ class RURCoinMiner {
         const el = document.getElementById('upgradesList');
         if (!el) return;
         const cfg = this.getUpgradeConfig();
-        const TC = {
-            F: {color:'#e0e0e0',bg:'#161616',glow:'0 0 8px #fff5'},
-            E: {color:'#4ade80',bg:'#0a1a0a',glow:'0 0 8px #22c55e6'},
-            D: {color:'#60a5fa',bg:'#0a0f1f',glow:'0 0 8px #3b82f66'},
-            C: {color:'#c084fc',bg:'#130a1f',glow:'0 0 8px #a855f76'},
-            B: {color:'#fb923c',bg:'#1f0f0a',glow:'0 0 8px #f973166'},
-            A: {color:'#f87171',bg:'#1f0a0a',glow:'0 0 10px #ef44446'},
-            S: {color:'#fbbf24',bg:'#1a1400',glow:'0 0 12px #f59e0b9'},
-            SS:{color:'#fff',   bg:'#0d0d1a',glow:'0 0 16px #f0fa'},
-        };
-        const cats={oil:'🛢️ Нефтяной насос',gas:'🏗️ Газовая вышка',common:'⚙️ Общие улучшения'};
-        let h='';
-        for(const[catId,catLabel]of Object.entries(cats)){
-            const items=Object.entries(cfg).filter(([,v])=>v.cat===catId);
-            h+=`<div style="margin-bottom:22px"><div style="font-size:11px;font-weight:700;color:#555;letter-spacing:2px;padding:4px 0 10px">${catLabel}</div>`;
-            for(const[id,u]of items){
-                const lvl=this.upgrades[id]||0,maxed=lvl>=u.max,tc=TC[u.tier],isRainbow=u.tier==='SS';
-                const pct=Math.round(lvl/u.max*100),cost=maxed?0:u.cost(lvl),canAfford=!maxed&&this.tonBalance>=cost;
-                const badge=isRainbow
-                    ?`<span style="font-size:9px;font-weight:900;padding:2px 6px;border-radius:5px;background:linear-gradient(90deg,#f00,#ff0,#0f0,#0ff,#00f,#f0f);color:#fff">SS</span>`
-                    :`<span style="font-size:9px;font-weight:900;padding:2px 6px;border-radius:5px;color:${tc.color};border:1px solid ${tc.color};background:${tc.color}18">${u.tier}</span>`;
-                const bdr=isRainbow
-                    ?`border:2px solid transparent;background:linear-gradient(${tc.bg},${tc.bg}) padding-box,linear-gradient(90deg,#f00,#ff0,#0f0,#0ff,#00f,#f0f,#f00) border-box`
-                    :`border:1px solid ${maxed?tc.color:'#1e1e1e'};box-shadow:${maxed?tc.glow:'none'}`;
-                const btnBg=canAfford?(isRainbow?'linear-gradient(90deg,#f00,#ff0,#0f0,#0ff,#00f,#f0f)':`linear-gradient(135deg,${tc.color}bb,${tc.color})`):'#181818';
-                h+=`<div style="background:${tc.bg};${bdr};border-radius:14px;padding:14px;margin-bottom:8px">
-                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
-                        <span style="font-size:26px;filter:drop-shadow(0 0 6px ${isRainbow?'#f0f':tc.color})">${u.icon}</span>
-                        <div style="flex:1">
-                            <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">${badge}<span style="font-size:13px;font-weight:700;color:#eee">${u.name}</span></div>
-                            <div style="font-size:11px;color:#555">${u.desc(lvl)}</div>
+        const cats = {oil:'🛢️ Нефтяной насос', gas:'🏗️ Газовая вышка', common:'⚙️ Общие улучшения'};
+        let h = '';
+        for (const [catId, catLabel] of Object.entries(cats)) {
+            const items = Object.entries(cfg).filter(([,v]) => v.cat === catId);
+            h += `<div style="margin-bottom:22px">
+                <div style="font-size:11px;font-weight:700;color:#555;letter-spacing:2px;padding:4px 0 10px">${catLabel}</div>`;
+            for (const [id, u] of items) {
+                const lvl   = this.upgrades[id] || 0;
+                const maxed = lvl >= u.max;
+                const tier  = u.tier.toLowerCase();
+                const pct   = Math.round(lvl / u.max * 100);
+                const cost  = maxed ? 0 : u.cost(lvl);
+                const canAfford = !maxed && this.tonBalance >= cost;
+                h += `<div class="tier-${tier} ${maxed ? 'maxed' : ''}">
+                    <div class="upgrade-card">
+                        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+                            <span class="upgrade-icon">${u.icon}</span>
+                            <div style="flex:1">
+                                <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+                                    <span class="tier-badge">${u.tier}</span>
+                                    <span style="font-size:13px;font-weight:700;color:#eee">${u.name}</span>
+                                </div>
+                                <div class="upgrade-desc">${u.desc(lvl)}</div>
+                            </div>
+                            <div class="upgrade-level">${maxed ? 'MAX' : `${lvl}/${u.max}`}</div>
                         </div>
-                        <div style="font-size:11px;font-weight:700;color:${maxed?tc.color:'#444'}">${maxed?'MAX':`${lvl}/${u.max}`}</div>
+                        <div class="upgrade-bar-wrap">
+                            <div class="upgrade-bar" style="width:${pct}%"></div>
+                        </div>
+                        ${maxed
+                            ? `<div class="upgrade-maxed">✅ Максимальный уровень</div>`
+                            : `<button class="upgrade-btn" ${canAfford ? '' : 'disabled'}
+                                onclick="window.rurcoinApp.buyUpgrade('${id}')">
+                                ${u.icon} Улучшить → Ур.${lvl+1} | 💎 ${cost.toFixed(1)} TON
+                               </button>`
+                        }
                     </div>
-                    <div style="background:#111;border-radius:3px;height:4px;margin-bottom:10px;overflow:hidden">
-                        <div style="height:4px;border-radius:3px;width:${pct}%;transition:width .4s;background:${isRainbow?'linear-gradient(90deg,#f00,#ff0,#0f0,#0ff,#00f,#f0f)':tc.color};box-shadow:${maxed?tc.glow:'none'}"></div>
-                    </div>
-                    ${maxed
-                        ?`<div style="text-align:center;font-size:12px;color:${tc.color}">✅ Максимальный уровень</div>`
-                        :`<button onclick="window.rurcoinApp.buyUpgrade('${id}')" style="width:100%;padding:10px;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;background:${btnBg};color:${canAfford?'#fff':'#444'};box-shadow:${canAfford?tc.glow:'none'};border:1px solid ${canAfford?tc.color:'#2a2a2a'};transition:transform .15s" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">${u.icon} Улучшить → Ур.${lvl+1} | 💎 ${cost.toFixed(1)} TON</button>`
-                    }
                 </div>`;
             }
-            h+='</div>';
+            h += '</div>';
         }
-        el.innerHTML=h;
+        el.innerHTML = h;
     }
     renderStorageData() {
         const container = document.getElementById('storageInfo');
