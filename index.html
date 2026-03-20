@@ -20,44 +20,25 @@
         .app-header {
             background: linear-gradient(135deg, #1a0a00, #2d1500);
             border-bottom: 2px solid #FF6000;
-            padding: 16px 20px;
+            padding: 12px 16px;
             display: flex;
             align-items: center;
             justify-content: space-between;
         }
 
-        .app-logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+        .app-logo { display: flex; align-items: center; gap: 10px; }
+        .app-logo-icon { font-size: 28px; }
+        .app-logo-text h1 { font-size: 16px; font-weight: 700; color: #FF8C00; }
+        .app-logo-text p { font-size: 10px; color: #888; }
 
-        .app-logo-icon { font-size: 32px; }
-
-        .app-logo-text h1 {
-            font-size: 18px;
-            font-weight: 700;
-            color: #FF8C00;
-        }
-
-        .app-logo-text p {
-            font-size: 11px;
-            color: #888;
-        }
-
-        .header-balance {
-            text-align: right;
-        }
-
-        .header-balance .rurc {
-            font-size: 16px;
-            font-weight: 700;
-            color: #FF8C00;
-        }
-
-        .header-balance .ton {
-            font-size: 12px;
-            color: #888;
+        .header-right { text-align: right; }
+        .header-balance .rurc { font-size: 14px; font-weight: 700; color: #FF8C00; }
+        .header-balance .ton { font-size: 11px; color: #888; }
+        .header-wallet-badge {
+            font-size: 10px;
+            color: #f44336;
+            margin-top: 2px;
+            cursor: pointer;
         }
 
         /* ===== STATS BAR ===== */
@@ -69,15 +50,10 @@
             border-bottom: 1px solid #222;
         }
 
-        .stat-item {
-            background: #111122;
-            padding: 10px 8px;
-            text-align: center;
-        }
-
-        .stat-item .stat-icon { font-size: 18px; }
-        .stat-item .stat-val { font-size: 13px; font-weight: 700; color: #FF8C00; }
-        .stat-item .stat-lbl { font-size: 9px; color: #555; margin-top: 2px; }
+        .stat-item { background: #111122; padding: 8px 4px; text-align: center; }
+        .stat-item .stat-icon { font-size: 16px; }
+        .stat-item .stat-val { font-size: 12px; font-weight: 700; color: #FF8C00; }
+        .stat-item .stat-lbl { font-size: 9px; color: #555; margin-top: 1px; }
 
         /* ===== TABS ===== */
         .tabs-wrap {
@@ -87,37 +63,24 @@
             white-space: nowrap;
             scrollbar-width: none;
         }
-
         .tabs-wrap::-webkit-scrollbar { display: none; }
-
-        .tabs {
-            display: inline-flex;
-            padding: 0 10px;
-        }
+        .tabs { display: inline-flex; padding: 0 8px; }
 
         .tab-btn {
             background: none;
             border: none;
             color: #555;
-            padding: 12px 14px;
+            padding: 10px 12px;
             font-size: 12px;
             cursor: pointer;
             border-bottom: 2px solid transparent;
             transition: all 0.2s;
             white-space: nowrap;
         }
-
-        .tab-btn.active {
-            color: #FF8C00;
-            border-bottom-color: #FF8C00;
-        }
+        .tab-btn.active { color: #FF8C00; border-bottom-color: #FF8C00; }
 
         /* ===== CONTENT ===== */
-        .content {
-            padding: 16px;
-            padding-bottom: 80px;
-        }
-
+        .content { padding: 14px; padding-bottom: 80px; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
@@ -126,70 +89,50 @@
             background: linear-gradient(180deg, #0a1628 0%, #1a0a00 100%);
             border: 1px solid #333;
             border-radius: 16px;
-            padding: 24px;
+            padding: 20px;
             text-align: center;
-            margin-bottom: 16px;
-            position: relative;
-            overflow: hidden;
+            margin-bottom: 14px;
         }
 
-        .oil-rig-visual::before {
-            content: '';
-            position: absolute;
-            bottom: 0; left: 0; right: 0;
-            height: 40px;
-            background: linear-gradient(0deg, #3d1a00 0%, transparent 100%);
-        }
-
-        .rig-emoji { font-size: 64px; display: block; margin-bottom: 8px; }
-
-        .rig-status {
-            font-size: 13px;
-            color: #888;
-            margin-bottom: 16px;
-        }
-
+        .rig-emoji { font-size: 56px; display: block; margin-bottom: 8px; }
+        .rig-status { font-size: 13px; color: #888; margin-bottom: 14px; }
         .rig-status.active { color: #4ade80; }
 
         .production-rates {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 10px;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
 
         .rate-card {
             background: rgba(255,140,0,0.1);
             border: 1px solid rgba(255,140,0,0.3);
             border-radius: 10px;
-            padding: 12px;
+            padding: 10px;
             text-align: center;
         }
-
-        .rate-card .rate-icon { font-size: 24px; }
-        .rate-card .rate-val { font-size: 16px; font-weight: 700; color: #FF8C00; }
+        .rate-card .rate-icon { font-size: 22px; }
+        .rate-card .rate-val { font-size: 15px; font-weight: 700; color: #FF8C00; }
         .rate-card .rate-lbl { font-size: 10px; color: #888; }
 
         .mine-btn {
             width: 100%;
-            padding: 16px;
+            padding: 14px;
             background: linear-gradient(135deg, #FF8C00, #FF6000);
             border: none;
             border-radius: 12px;
             color: #fff;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 700;
             cursor: pointer;
-            transition: all 0.2s;
         }
 
-        .mine-btn:active { transform: scale(0.98); }
-
-        /* ===== EQUIPMENT TAB ===== */
+        /* ===== EQUIPMENT ===== */
         .section-title {
-            font-size: 14px;
+            font-size: 12px;
             color: #888;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
@@ -198,145 +141,195 @@
             background: #111122;
             border: 1px solid #222;
             border-radius: 12px;
-            padding: 14px;
+            padding: 12px;
             display: flex;
             align-items: center;
-            gap: 12px;
-            margin-bottom: 10px;
+            gap: 10px;
+            margin-bottom: 8px;
         }
 
-        .eq-icon { font-size: 32px; }
-
+        .eq-icon { font-size: 28px; }
         .eq-info { flex: 1; }
-        .eq-name { font-size: 14px; font-weight: 600; }
-        .eq-desc { font-size: 12px; color: #FF8C00; margin-top: 2px; }
-        .eq-count { font-size: 11px; color: #555; margin-top: 2px; }
+        .eq-name { font-size: 13px; font-weight: 600; }
+        .eq-desc { font-size: 11px; color: #FF8C00; margin-top: 2px; }
+        .eq-count { font-size: 10px; color: #555; margin-top: 2px; }
 
         .eq-buy-btn {
             background: linear-gradient(135deg, #FF8C00, #FF6000);
             border: none;
             border-radius: 8px;
             color: #fff;
-            padding: 8px 14px;
-            font-size: 13px;
+            padding: 8px 12px;
+            font-size: 12px;
             font-weight: 600;
             cursor: pointer;
         }
 
-        /* ===== STORAGE TAB ===== */
+        /* ===== STORAGE ===== */
         .storage-card {
             background: #111122;
             border: 1px solid #222;
             border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 12px;
+            padding: 14px;
+            margin-bottom: 10px;
         }
-
-        .storage-header {
-            font-size: 16px;
-            font-weight: 700;
-            margin-bottom: 12px;
-        }
-
-        .storage-bar-wrap {
-            background: #222;
-            border-radius: 6px;
-            height: 12px;
-            margin-bottom: 8px;
-            overflow: hidden;
-        }
-
-        .storage-bar {
-            height: 100%;
-            border-radius: 6px;
-            transition: width 0.5s;
-        }
-
+        .storage-header { font-size: 15px; font-weight: 700; margin-bottom: 10px; }
+        .storage-bar-wrap { background: #222; border-radius: 6px; height: 10px; margin-bottom: 6px; overflow: hidden; }
+        .storage-bar { height: 100%; border-radius: 6px; transition: width 0.5s; }
         .oil-bar { background: linear-gradient(90deg, #8B4513, #FF8C00); }
         .gas-bar { background: linear-gradient(90deg, #0066CC, #00CCFF); }
-
-        .storage-nums {
-            font-size: 12px;
-            color: #888;
-            margin-bottom: 12px;
-        }
-
+        .storage-nums { font-size: 11px; color: #888; margin-bottom: 10px; }
         .sell-btn {
             width: 100%;
-            padding: 12px;
+            padding: 10px;
             background: linear-gradient(135deg, #4ade80, #22c55e);
             border: none;
-            border-radius: 10px;
+            border-radius: 8px;
             color: #000;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 700;
             cursor: pointer;
         }
 
-        /* ===== STAKING TAB ===== */
-        .staking-card {
+        /* ===== STAKING ===== */
+        .staking-card { background: #111122; border: 1px solid #222; border-radius: 12px; padding: 14px; margin-bottom: 10px; }
+        .staking-info { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+        .staking-stat { background: #0d0d1a; border-radius: 8px; padding: 10px; text-align: center; }
+        .staking-stat .s-val { font-size: 14px; font-weight: 700; color: #FF8C00; }
+        .staking-stat .s-lbl { font-size: 10px; color: #555; margin-top: 3px; }
+        .input-group { display: flex; gap: 8px; margin-bottom: 8px; }
+        .input-group input {
+            flex: 1; padding: 10px; background: #0d0d1a;
+            border: 1px solid #333; border-radius: 8px; color: #fff; font-size: 13px;
+        }
+        .btn-stake { background: #FF8C00; color: #fff; border: none; border-radius: 8px; padding: 10px 16px; font-size: 13px; font-weight: 600; cursor: pointer; }
+        .btn-unstake { background: #333; color: #fff; border: none; border-radius: 8px; padding: 10px; font-size: 13px; font-weight: 600; cursor: pointer; width: 100%; }
+
+        /* ===== WALLET TAB ===== */
+        .wallet-connected {
+            background: linear-gradient(135deg, #0a1a0a, #0d2d0d);
+            border: 1px solid #4ade80;
+            border-radius: 14px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .wallet-avatar { font-size: 36px; }
+        .wallet-info { flex: 1; }
+        .wallet-name { font-size: 14px; font-weight: 700; color: #4ade80; }
+        .wallet-address {
+            font-size: 12px;
+            color: #aaa;
+            font-family: monospace;
+            cursor: pointer;
+            margin-top: 4px;
+        }
+        .wallet-id-label {
+            font-size: 10px;
+            color: #555;
+            margin-top: 4px;
+        }
+
+        .wallet-disconnect-btn {
+            background: #333;
+            border: none;
+            border-radius: 8px;
+            color: #f44;
+            padding: 8px 12px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .wallet-balances {
             background: #111122;
             border: 1px solid #222;
             border-radius: 12px;
-            padding: 16px;
+            padding: 14px;
             margin-bottom: 12px;
         }
 
-        .staking-info {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
+        .wb-item {
+            display: flex;
+            align-items: center;
             gap: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid #1a1a2e;
+        }
+        .wb-item:last-child { border-bottom: none; }
+        .wb-icon { font-size: 20px; }
+        .wb-val { font-size: 14px; font-weight: 600; color: #FF8C00; }
+
+        .wallet-connect-prompt { text-align: center; padding: 10px 0; }
+
+        .wallet-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
             margin-bottom: 16px;
         }
 
-        .staking-stat {
-            background: #0d0d1a;
-            border-radius: 8px;
-            padding: 12px;
-            text-align: center;
-        }
-
-        .staking-stat .s-val { font-size: 16px; font-weight: 700; color: #FF8C00; }
-        .staking-stat .s-lbl { font-size: 11px; color: #555; margin-top: 4px; }
-
-        .input-group {
+        .wallet-btn {
             display: flex;
+            align-items: center;
             gap: 10px;
-            margin-bottom: 10px;
-        }
-
-        .input-group input {
-            flex: 1;
-            padding: 12px;
-            background: #0d0d1a;
+            padding: 12px 16px;
+            background: #111122;
             border: 1px solid #333;
-            border-radius: 8px;
+            border-radius: 10px;
             color: #fff;
-            font-size: 14px;
-        }
-
-        .btn-stake, .btn-unstake {
-            padding: 12px 20px;
-            border: none;
-            border-radius: 8px;
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
+            width: 100%;
         }
 
-        .btn-stake { background: #FF8C00; color: #fff; }
-        .btn-unstake { background: #333; color: #fff; }
+        .wallet-btn:active { background: #1a1a33; }
+
+        .wallet-divider {
+            color: #555;
+            font-size: 12px;
+            margin: 14px 0;
+            position: relative;
+            text-align: center;
+        }
+
+        .wallet-divider::before, .wallet-divider::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 35%;
+            height: 1px;
+            background: #333;
+        }
+        .wallet-divider::before { left: 0; }
+        .wallet-divider::after { right: 0; }
+
+        .wallet-btn-primary {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #FF8C00, #FF6000);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        #walletMsg { margin-top: 10px; font-size: 13px; text-align: center; min-height: 20px; }
 
         /* ===== TRANSACTIONS ===== */
         .transaction-item {
             background: #111122;
             border: 1px solid #222;
             border-radius: 10px;
-            padding: 12px;
+            padding: 10px;
             margin-bottom: 8px;
-            font-size: 13px;
+            font-size: 12px;
         }
-
         .transaction-item strong { color: #FF8C00; }
 
         /* ===== HALVING ===== */
@@ -347,13 +340,7 @@
             padding: 24px;
             text-align: center;
         }
-
-        .halving-timer {
-            font-size: 36px;
-            font-weight: 700;
-            color: #FF8C00;
-            margin: 16px 0;
-        }
+        .halving-timer { font-size: 32px; font-weight: 700; color: #FF8C00; margin: 14px 0; }
 
         /* ===== BOTTOM NAV ===== */
         .bottom-nav {
@@ -362,7 +349,7 @@
             background: #0d0d1a;
             border-top: 1px solid #222;
             display: flex;
-            padding: 8px 0;
+            padding: 6px 0;
             z-index: 100;
         }
 
@@ -371,42 +358,35 @@
             background: none;
             border: none;
             color: #555;
-            font-size: 10px;
-            padding: 6px 4px;
+            font-size: 9px;
+            padding: 4px 2px;
             cursor: pointer;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 4px;
-            transition: color 0.2s;
+            gap: 3px;
         }
-
-        .nav-btn .nav-icon { font-size: 20px; }
+        .nav-btn .nav-icon { font-size: 18px; }
         .nav-btn.active { color: #FF8C00; }
 
-        /* ===== TOP UP BTN ===== */
+        /* ===== FAB ===== */
         .topup-fab {
             position: fixed;
-            bottom: 80px;
-            right: 16px;
+            bottom: 72px;
+            right: 14px;
             background: linear-gradient(135deg, #FF8C00, #FF6000);
             border: none;
             border-radius: 50px;
             color: #fff;
-            padding: 12px 20px;
-            font-size: 14px;
+            padding: 10px 16px;
+            font-size: 13px;
             font-weight: 700;
             cursor: pointer;
             box-shadow: 0 4px 20px rgba(255,140,0,0.4);
             z-index: 99;
         }
 
-        /* ===== ANIMATIONS ===== */
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.6; }
-        }
-
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
         .mining-active .rig-emoji { animation: pulse 1.5s infinite; }
     </style>
 </head>
@@ -421,9 +401,14 @@
             <p>Нефть & Газ</p>
         </div>
     </div>
-    <div class="header-balance">
-        <div class="rurc"><span id="balance">0.00</span> RURC</div>
-        <div class="ton">TON: <span id="tonBalance">5.00</span></div>
+    <div class="header-right">
+        <div class="header-balance">
+            <div class="rurc"><span id="balance">0.00</span> RURC</div>
+            <div class="ton">TON: <span id="tonBalance">5.00</span></div>
+        </div>
+        <div class="header-wallet-badge" id="headerWallet" onclick="switchToWalletTab()">
+            Не подключён
+        </div>
     </div>
 </div>
 
@@ -457,6 +442,7 @@
         <button class="tab-btn active" data-tab="mining">⛽ Добыча</button>
         <button class="tab-btn" data-tab="equipment">🔧 Оборудование</button>
         <button class="tab-btn" data-tab="storage">🏭 Хранилище</button>
+        <button class="tab-btn" data-tab="wallet">🔑 Кошелёк</button>
         <button class="tab-btn" data-tab="staking">💎 Стейкинг</button>
         <button class="tab-btn" data-tab="transactions">📋 Транзакции</button>
         <button class="tab-btn" data-tab="halving">⏳ Халвинг</button>
@@ -485,7 +471,7 @@
             </div>
             <button class="mine-btn" id="mineBtn">⛽ Начать добычу</button>
         </div>
-        <div style="text-align:center; color:#555; font-size:12px; margin-top:8px;">
+        <div style="text-align:center; color:#555; font-size:12px;">
             💡 Купите насосы и вышки во вкладке «Оборудование»
         </div>
     </div>
@@ -493,17 +479,22 @@
     <!-- ОБОРУДОВАНИЕ -->
     <div class="tab-content" id="equipment">
         <div class="section-title">Купить оборудование</div>
-        <div id="equipmentList">
-            <!-- Рендерится через JS -->
-        </div>
+        <div id="equipmentList"></div>
     </div>
 
     <!-- ХРАНИЛИЩЕ -->
     <div class="tab-content" id="storage">
         <div class="section-title">Хранилища ресурсов</div>
-        <div id="storageInfo">
-            <!-- Рендерится через JS -->
+        <div id="storageInfo"></div>
+    </div>
+
+    <!-- КОШЕЛЁК -->
+    <div class="tab-content" id="wallet">
+        <div class="section-title">Крипто-кошелёк = ID игрока</div>
+        <div id="walletSection">
+            <div style="text-align:center; color:#555; padding:40px 0;">Загрузка...</div>
         </div>
+        <div id="walletMsg"></div>
     </div>
 
     <!-- СТЕЙКИНГ -->
@@ -524,12 +515,7 @@
                 <input type="number" id="stakeAmount" placeholder="Сумма RURC">
                 <button class="btn-stake" id="stakeBtn">Стейк</button>
             </div>
-            <button class="btn-unstake" id="unstakeBtn" style="width:100%; padding:12px;">
-                Вывести всё
-            </button>
-        </div>
-        <div style="color:#555; font-size:12px; text-align:center; margin-top:8px;">
-            💡 Доход начисляется каждую секунду
+            <button class="btn-unstake" id="unstakeBtn">Вывести всё</button>
         </div>
     </div>
 
@@ -542,26 +528,27 @@
     <!-- ХАЛВИНГ -->
     <div class="tab-content" id="halving">
         <div class="halving-card">
-            <div style="font-size:40px;">⏳</div>
+            <div style="font-size:36px;">⏳</div>
             <div style="color:#888; margin-top:8px;">До следующего халвинга</div>
             <div class="halving-timer" id="halvingTimer">--д --ч --м</div>
             <div style="color:#555; font-size:12px;">Текущая награда: <span style="color:#FF8C00;">100 RURC/блок</span></div>
-        </div>
-        <div style="margin-top:16px; color:#555; font-size:12px; text-align:center;">
-            Блоков до халвинга: <span style="color:#FF8C00;" id="blocksLeft">52416</span>
         </div>
     </div>
 
 </div>
 
-<!-- FAB: Пополнить -->
-<button class="topup-fab" onclick="window.showTopUpModal && showTopUpModal()">
-    💰 Пополнить
-</button>
+<!-- FAB -->
+<button class="topup-fab" onclick="window.showTopUpModal && showTopUpModal()">💰 Пополнить</button>
 
-<!-- SCRIPTS -->
+<script>
+function switchToWalletTab() {
+    if (window.rurcoinApp) window.rurcoinApp.switchTab('wallet');
+}
+</script>
+
 <script src="contracts.js"></script>
 <script src="payment.js"></script>
+<script src="wallet.js"></script>
 <script src="script.js"></script>
 
 </body>
