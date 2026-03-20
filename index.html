@@ -2,280 +2,567 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RURCoin - Русская криптовалюта</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>RURCoin — Нефть & Газ</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-    <!-- Meta Tags -->
-    <meta name="description" content="Майнинг и управление национальной криптовалютой России RURCoin">
-    <meta name="keywords" content="RURCoin, криптовалюта, Россия, майнинг, TON, блокчейн">
-    <meta name="author" content="RURCoin Team">
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0d0d1a;
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
 
-    <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="assets/icons/favicon.ico">
-    <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/manifest/icon-32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="assets/icons/manifest/icon-16.png">
+        /* ===== HEADER ===== */
+        .app-header {
+            background: linear-gradient(135deg, #1a0a00, #2d1500);
+            border-bottom: 2px solid #FF6000;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
 
-    <!-- Apple Touch Icon -->
-    <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+        .app-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-    <!-- Web App Manifest -->
-    <link rel="manifest" href="manifest.json">
+        .app-logo-icon { font-size: 32px; }
 
-    <!-- Styles -->
-    <link rel="stylesheet" href="style.css">
+        .app-logo-text h1 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #FF8C00;
+        }
 
-    <!-- Preload critical resources -->
-    <link rel="preload" href="script.js" as="script">
-    <link rel="preload" href="contracts.js" as="script">
+        .app-logo-text p {
+            font-size: 11px;
+            color: #888;
+        }
+
+        .header-balance {
+            text-align: right;
+        }
+
+        .header-balance .rurc {
+            font-size: 16px;
+            font-weight: 700;
+            color: #FF8C00;
+        }
+
+        .header-balance .ton {
+            font-size: 12px;
+            color: #888;
+        }
+
+        /* ===== STATS BAR ===== */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1px;
+            background: #1a1a2e;
+            border-bottom: 1px solid #222;
+        }
+
+        .stat-item {
+            background: #111122;
+            padding: 10px 8px;
+            text-align: center;
+        }
+
+        .stat-item .stat-icon { font-size: 18px; }
+        .stat-item .stat-val { font-size: 13px; font-weight: 700; color: #FF8C00; }
+        .stat-item .stat-lbl { font-size: 9px; color: #555; margin-top: 2px; }
+
+        /* ===== TABS ===== */
+        .tabs-wrap {
+            background: #0d0d1a;
+            border-bottom: 1px solid #222;
+            overflow-x: auto;
+            white-space: nowrap;
+            scrollbar-width: none;
+        }
+
+        .tabs-wrap::-webkit-scrollbar { display: none; }
+
+        .tabs {
+            display: inline-flex;
+            padding: 0 10px;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            color: #555;
+            padding: 12px 14px;
+            font-size: 12px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .tab-btn.active {
+            color: #FF8C00;
+            border-bottom-color: #FF8C00;
+        }
+
+        /* ===== CONTENT ===== */
+        .content {
+            padding: 16px;
+            padding-bottom: 80px;
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* ===== MINING TAB ===== */
+        .oil-rig-visual {
+            background: linear-gradient(180deg, #0a1628 0%, #1a0a00 100%);
+            border: 1px solid #333;
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            margin-bottom: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .oil-rig-visual::before {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 40px;
+            background: linear-gradient(0deg, #3d1a00 0%, transparent 100%);
+        }
+
+        .rig-emoji { font-size: 64px; display: block; margin-bottom: 8px; }
+
+        .rig-status {
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 16px;
+        }
+
+        .rig-status.active { color: #4ade80; }
+
+        .production-rates {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .rate-card {
+            background: rgba(255,140,0,0.1);
+            border: 1px solid rgba(255,140,0,0.3);
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .rate-card .rate-icon { font-size: 24px; }
+        .rate-card .rate-val { font-size: 16px; font-weight: 700; color: #FF8C00; }
+        .rate-card .rate-lbl { font-size: 10px; color: #888; }
+
+        .mine-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #FF8C00, #FF6000);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .mine-btn:active { transform: scale(0.98); }
+
+        /* ===== EQUIPMENT TAB ===== */
+        .section-title {
+            font-size: 14px;
+            color: #888;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .equipment-card {
+            background: #111122;
+            border: 1px solid #222;
+            border-radius: 12px;
+            padding: 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .eq-icon { font-size: 32px; }
+
+        .eq-info { flex: 1; }
+        .eq-name { font-size: 14px; font-weight: 600; }
+        .eq-desc { font-size: 12px; color: #FF8C00; margin-top: 2px; }
+        .eq-count { font-size: 11px; color: #555; margin-top: 2px; }
+
+        .eq-buy-btn {
+            background: linear-gradient(135deg, #FF8C00, #FF6000);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            padding: 8px 14px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* ===== STORAGE TAB ===== */
+        .storage-card {
+            background: #111122;
+            border: 1px solid #222;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .storage-header {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .storage-bar-wrap {
+            background: #222;
+            border-radius: 6px;
+            height: 12px;
+            margin-bottom: 8px;
+            overflow: hidden;
+        }
+
+        .storage-bar {
+            height: 100%;
+            border-radius: 6px;
+            transition: width 0.5s;
+        }
+
+        .oil-bar { background: linear-gradient(90deg, #8B4513, #FF8C00); }
+        .gas-bar { background: linear-gradient(90deg, #0066CC, #00CCFF); }
+
+        .storage-nums {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 12px;
+        }
+
+        .sell-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #4ade80, #22c55e);
+            border: none;
+            border-radius: 10px;
+            color: #000;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        /* ===== STAKING TAB ===== */
+        .staking-card {
+            background: #111122;
+            border: 1px solid #222;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .staking-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .staking-stat {
+            background: #0d0d1a;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .staking-stat .s-val { font-size: 16px; font-weight: 700; color: #FF8C00; }
+        .staking-stat .s-lbl { font-size: 11px; color: #555; margin-top: 4px; }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .input-group input {
+            flex: 1;
+            padding: 12px;
+            background: #0d0d1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .btn-stake, .btn-unstake {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-stake { background: #FF8C00; color: #fff; }
+        .btn-unstake { background: #333; color: #fff; }
+
+        /* ===== TRANSACTIONS ===== */
+        .transaction-item {
+            background: #111122;
+            border: 1px solid #222;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        .transaction-item strong { color: #FF8C00; }
+
+        /* ===== HALVING ===== */
+        .halving-card {
+            background: linear-gradient(135deg, #1a0a00, #2d1500);
+            border: 1px solid #FF6000;
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .halving-timer {
+            font-size: 36px;
+            font-weight: 700;
+            color: #FF8C00;
+            margin: 16px 0;
+        }
+
+        /* ===== BOTTOM NAV ===== */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            background: #0d0d1a;
+            border-top: 1px solid #222;
+            display: flex;
+            padding: 8px 0;
+            z-index: 100;
+        }
+
+        .nav-btn {
+            flex: 1;
+            background: none;
+            border: none;
+            color: #555;
+            font-size: 10px;
+            padding: 6px 4px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            transition: color 0.2s;
+        }
+
+        .nav-btn .nav-icon { font-size: 20px; }
+        .nav-btn.active { color: #FF8C00; }
+
+        /* ===== TOP UP BTN ===== */
+        .topup-fab {
+            position: fixed;
+            bottom: 80px;
+            right: 16px;
+            background: linear-gradient(135deg, #FF8C00, #FF6000);
+            border: none;
+            border-radius: 50px;
+            color: #fff;
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(255,140,0,0.4);
+            z-index: 99;
+        }
+
+        /* ===== ANIMATIONS ===== */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .mining-active .rig-emoji { animation: pulse 1.5s infinite; }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Патриотичный хедер -->
-        <header class="patriotic-header">
-            <div class="header-content">
-                <div class="logo-container">
-                    <div class="logo-placeholder">🇷🇺</div>
-                    <div class="header-text">
-                        <h1>RURCoin</h1>
-                        <p>Российская криптовалюта</p>
-                    </div>
+
+<!-- HEADER -->
+<div class="app-header">
+    <div class="app-logo">
+        <span class="app-logo-icon">🛢️</span>
+        <div class="app-logo-text">
+            <h1>RURCoin</h1>
+            <p>Нефть & Газ</p>
+        </div>
+    </div>
+    <div class="header-balance">
+        <div class="rurc"><span id="balance">0.00</span> RURC</div>
+        <div class="ton">TON: <span id="tonBalance">5.00</span></div>
+    </div>
+</div>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+    <div class="stat-item">
+        <div class="stat-icon">🛢️</div>
+        <div class="stat-val"><span id="oilPumpsCount">0</span></div>
+        <div class="stat-lbl">Насосы</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-icon">🏗️</div>
+        <div class="stat-val"><span id="gasTowersCount">0</span></div>
+        <div class="stat-lbl">Вышки</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-icon">⚗️</div>
+        <div class="stat-val"><span id="oilTanksCount">0</span></div>
+        <div class="stat-lbl">Цистерны</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-icon">📈</div>
+        <div class="stat-val"><span id="hashrate">0</span></div>
+        <div class="stat-lbl">ед/ч</div>
+    </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs-wrap">
+    <div class="tabs">
+        <button class="tab-btn active" data-tab="mining">⛽ Добыча</button>
+        <button class="tab-btn" data-tab="equipment">🔧 Оборудование</button>
+        <button class="tab-btn" data-tab="storage">🏭 Хранилище</button>
+        <button class="tab-btn" data-tab="staking">💎 Стейкинг</button>
+        <button class="tab-btn" data-tab="transactions">📋 Транзакции</button>
+        <button class="tab-btn" data-tab="halving">⏳ Халвинг</button>
+    </div>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+    <!-- ДОБЫЧА -->
+    <div class="tab-content active" id="mining">
+        <div class="oil-rig-visual" id="rigVisual">
+            <span class="rig-emoji">🛢️</span>
+            <div class="rig-status" id="rigStatus">Добыча остановлена</div>
+            <div class="production-rates">
+                <div class="rate-card">
+                    <div class="rate-icon">🛢️</div>
+                    <div class="rate-val"><span id="oilStored">0.0</span></div>
+                    <div class="rate-lbl">Нефть (барр.)</div>
                 </div>
-                <div class="header-stats">
-                    <div class="stat-badge">
-                        <span class="badge-icon">⛏️</span>
-                        <span id="headerHashrate">0 H/s</span>
-                    </div>
+                <div class="rate-card">
+                    <div class="rate-icon">⛽</div>
+                    <div class="rate-val"><span id="gasStored">0</span></div>
+                    <div class="rate-lbl">Газ (м³)</div>
                 </div>
             </div>
-        </header>
-
-        <!-- Навигация по вкладкам -->
-        <nav class="tab-navigation">
-            <button class="tab-btn active" data-tab="mining">
-                <span class="tab-icon">⛏️</span>
-                <span>Майнинг</span>
-            </button>
-            <button class="tab-btn" data-tab="staking">
-                <span class="tab-icon">💰</span>
-                <span>Стейкинг</span>
-            </button>
-            <button class="tab-btn" data-tab="contracts">
-                <span class="tab-icon">📜</span>
-                <span>Контракты</span>
-            </button>
-            <button class="tab-btn" data-tab="transactions">
-                <span class="tab-icon">💸</span>
-                <span>Транзакции</span>
-            </button>
-            <button class="tab-btn" data-tab="halving">
-                <span class="tab-icon">✂️</span>
-                <span>Халвинг</span>
-            </button>
-            <button class="tab-btn" data-tab="history">
-                <span class="tab-icon">📊</span>
-                <span>История</span>
-            </button>
-        </nav>
-
-        <!-- Основной контент -->
-        <main class="main-content">
-            <!-- Вкладка майнинга -->
-            <section id="mining" class="tab-content active">
-                <div class="mining-interface">
-                    <div class="balance-card russian-card">
-                        <h2>Ваш баланс RURCoin</h2>
-                        <div class="balance-amount">
-                            <div class="balance" id="balance">0.00</div>
-                            <div class="currency">RURC</div>
-                        </div>
-                        <div class="balance-details">
-                            <div class="usd-value" id="usdValue">≈ $0.00</div>
-                            <div class="ton-balance">
-                                <span class="ton-icon">💎</span>
-                                <span id="tonBalance">0.00 TON</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mining-controls russian-card">
-                        <div class="mining-stats">
-                            <div class="stat-item">
-                                <span class="stat-label">Хешрейт:</span>
-                                <span class="stat-value" id="hashrate">0 H/s</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-label">Добыто за сессию:</span>
-                                <span class="stat-value" id="minedThisSession">0 RURC</span>
-                            </div>
-                        </div>
-                        <button class="russian-button mining-btn" id="mineBtn">
-                            <span class="btn-icon">⚒️</span>
-                            Начать майнинг
-                        </button>
-                    </div>
-
-                    <div class="farms-section russian-card">
-                        <h3>🏭 Фермы для майнинга</h3>
-                        <div class="farms-list" id="farmItems">
-                            <!-- Фермы будут добавлены через JS -->
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Вкладка стейкинга -->
-            <section id="staking" class="tab-content">
-                <div class="staking-interface">
-                    <div class="staking-card russian-card">
-                        <h2 class="section-title">
-                            <span class="title-icon">💰</span>
-                            Стейкинг RURCoin
-                        </h2>
-
-                        <div class="staking-info">
-                            <div class="info-grid">
-                                <div class="info-card">
-                                    <div class="info-value apy">15%</div>
-                                    <div class="info-label">Годовая доходность</div>
-                                </div>
-                                <div class="info-card">
-                                    <div class="info-value" id="stakedBalance">0</div>
-                                    <div class="info-label">Застейкано RURC</div>
-                                </div>
-                                <div class="info-card">
-                                    <div class="info-value" id="stakingRewards">0</div>
-                                    <div class="info-label">Награды RURC</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="staking-actions">
-                            <div class="input-group">
-                                <input type="number" id="stakeAmount" placeholder="Сумма RURC" min="1">
-                                <button class="russian-button" id="stakeBtn">
-                                    <span class="btn-icon">🔒</span>
-                                    Застейкать
-                                </button>
-                            </div>
-                            <button class="russian-button secondary" id="unstakeBtn">
-                                <span class="btn-icon">💰</span>
-                                Забрать + награды
-                            </button>
-                        </div>
-
-                        <div class="staking-stats">
-                            <h4>Статистика стейкинга</h4>
-                            <div class="stats-list">
-                                <div class="stat-item">
-                                    <span>Общая прибыль:</span>
-                                    <span id="totalStakingProfit">0 RURC</span>
-                                </div>
-                                <div class="stat-item">
-                                    <span>Дней в стейкинге:</span>
-                                    <span id="stakingDays">0</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Вкладка контрактов -->
-            <section id="contracts" class="tab-content">
-                <div class="contracts-interface">
-                    <div class="contracts-card russian-card">
-                        <h2 class="section-title">
-                            <span class="title-icon">📜</span>
-                            Смарт-контракты
-                        </h2>
-                        <div class="contracts-list" id="contractsList">
-                            <!-- Контракты будут добавлены через JS -->
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Вкладка транзакций -->
-            <section id="transactions" class="tab-content">
-                <div class="transactions-interface">
-                    <div class="transactions-card russian-card">
-                        <h2 class="section-title">
-                            <span class="title-icon">💸</span>
-                            Транзакции
-                        </h2>
-                        <div class="transactions-feed" id="transactionsFeed">
-                            <!-- Транзакции будут добавлены через JS -->
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Вкладка халвинга -->
-            <section id="halving" class="tab-content">
-                <div class="halving-interface">
-                    <div class="halving-card russian-card">
-                        <h2 class="section-title">
-                            <span class="title-icon">✂️</span>
-                            Халвинг RURCoin
-                        </h2>
-
-                        <div class="halving-timer">
-                            <div class="timer-label">Следующий халвинг через:</div>
-                            <div class="timer-value" id="halvingTimer">91д 0ч 0м</div>
-                        </div>
-
-                        <div class="halving-info">
-                            <div class="info-grid">
-                                <div class="info-card">
-                                    <div class="info-value">100</div>
-                                    <div class="info-label">Текущая награда</div>
-                                </div>
-                                <div class="info-card">
-                                    <div class="info-value">52,416</div>
-                                    <div class="info-label">Блоков до халвинга</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="halving-history">
-                            <h4>История халвингов</h4>
-                            <div class="history-list">
-                                <div class="history-item">
-                                    <span class="halving-number">Халвинг #1</span>
-                                    <span class="halving-date">2024-01-15</span>
-                                    <span class="halving-reward">50 RURC</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Вкладка истории -->
-            <section id="history" class="tab-content">
-                <div class="history-interface">
-                    <div class="history-card russian-card">
-                        <h2 class="section-title">
-                            <span class="title-icon">📊</span>
-                            История операций
-                        </h2>
-                        <div class="history-list" id="historyList">
-                            <!-- История будет добавлена через JS -->
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </main>
-
-        <!-- Футер -->
-        <footer class="patriotic-footer">
-            <p>🇷🇺 RURCoin - Российская криптовалюта</p>
-            <p class="footer-version">Версия 1.0.0</p>
-        </footer>
+            <button class="mine-btn" id="mineBtn">⛽ Начать добычу</button>
+        </div>
+        <div style="text-align:center; color:#555; font-size:12px; margin-top:8px;">
+            💡 Купите насосы и вышки во вкладке «Оборудование»
+        </div>
     </div>
 
-    <!-- Подключение скриптов -->
-    <script src="contracts.js"></script>
-    <script src="script.js"></script>
+    <!-- ОБОРУДОВАНИЕ -->
+    <div class="tab-content" id="equipment">
+        <div class="section-title">Купить оборудование</div>
+        <div id="equipmentList">
+            <!-- Рендерится через JS -->
+        </div>
+    </div>
+
+    <!-- ХРАНИЛИЩЕ -->
+    <div class="tab-content" id="storage">
+        <div class="section-title">Хранилища ресурсов</div>
+        <div id="storageInfo">
+            <!-- Рендерится через JS -->
+        </div>
+    </div>
+
+    <!-- СТЕЙКИНГ -->
+    <div class="tab-content" id="staking">
+        <div class="staking-card">
+            <div class="section-title">Стейкинг RURC (15% годовых)</div>
+            <div class="staking-info">
+                <div class="staking-stat">
+                    <div class="s-val"><span id="stakedBalance">0.00</span></div>
+                    <div class="s-lbl">Застейкано RURC</div>
+                </div>
+                <div class="staking-stat">
+                    <div class="s-val"><span id="stakingRewards">0.0000</span></div>
+                    <div class="s-lbl">Награды RURC</div>
+                </div>
+            </div>
+            <div class="input-group">
+                <input type="number" id="stakeAmount" placeholder="Сумма RURC">
+                <button class="btn-stake" id="stakeBtn">Стейк</button>
+            </div>
+            <button class="btn-unstake" id="unstakeBtn" style="width:100%; padding:12px;">
+                Вывести всё
+            </button>
+        </div>
+        <div style="color:#555; font-size:12px; text-align:center; margin-top:8px;">
+            💡 Доход начисляется каждую секунду
+        </div>
+    </div>
+
+    <!-- ТРАНЗАКЦИИ -->
+    <div class="tab-content" id="transactions">
+        <div class="section-title">История транзакций</div>
+        <div id="transactionsFeed"></div>
+    </div>
+
+    <!-- ХАЛВИНГ -->
+    <div class="tab-content" id="halving">
+        <div class="halving-card">
+            <div style="font-size:40px;">⏳</div>
+            <div style="color:#888; margin-top:8px;">До следующего халвинга</div>
+            <div class="halving-timer" id="halvingTimer">--д --ч --м</div>
+            <div style="color:#555; font-size:12px;">Текущая награда: <span style="color:#FF8C00;">100 RURC/блок</span></div>
+        </div>
+        <div style="margin-top:16px; color:#555; font-size:12px; text-align:center;">
+            Блоков до халвинга: <span style="color:#FF8C00;" id="blocksLeft">52416</span>
+        </div>
+    </div>
+
+</div>
+
+<!-- FAB: Пополнить -->
+<button class="topup-fab" onclick="window.showTopUpModal && showTopUpModal()">
+    💰 Пополнить
+</button>
+
+<!-- SCRIPTS -->
+<script src="contracts.js"></script>
+<script src="payment.js"></script>
+<script src="script.js"></script>
+
 </body>
 </html>
