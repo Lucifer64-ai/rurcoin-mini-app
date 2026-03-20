@@ -1,6 +1,5 @@
 // Смарт-контракты RURCoin
 const CONTRACTS = {
-    // Основной токен RURC
     rurc: {
         name: "RURCoin",
         address: "EQDPnYSAV-H8ADoaYGAuNhJL4HwfSB9IBj9ABi465D9ABj9ABgBaY",
@@ -8,16 +7,12 @@ const CONTRACTS = {
         symbol: "RURC",
         description: "Российская криптовалюта на блокчейне TON"
     },
-
-    // Стейкинг контракт
     staking: {
         name: "RURCoin Staking",
         address: "EQDPnYSAV-H8ADoaYGAuNhJL4HwfSB9IBj9ABi465D9ABj9ABgBaY",
         apy: 15,
         description: "Контракт для стейкинга RURC с начислением 15% годовых"
     },
-
-    // Фабрика ферм
     farmFactory: {
         name: "Farm Factory",
         address: "EQDPnYSAV-H8ADoaYGAuNhJL4HwfSB9IBj9ABi465D9ABj9ABgBaY",
@@ -25,7 +20,6 @@ const CONTRACTS = {
     }
 };
 
-// ABI контракта
 const RURC_ABI = {
     balanceOf: "balanceOf(address):uint256",
     transfer: "transfer(address,uint256)",
@@ -33,10 +27,15 @@ const RURC_ABI = {
     allowance: "allowance(address,address):uint256",
     totalSupply: "totalSupply():uint256",
     mint: "mint(address,uint256)",
-    burn: "burn(uint256)"
+    burn: "burn(uint256)",
+    freeze: "freeze(address,uint256)",
+    unfreeze: "unfreeze(address,uint256)",
+    frozenBalanceOf: "frozenBalanceOf(address):uint256"
 };
 
-// Инициализация контрактов
+// Хранилище замороженных средств (локально для демо)
+const frozenBalances = {};
+
 async function initContracts() {
     if (typeof window.ton === 'undefined') {
         console.log('TON Wallet не подключён');
@@ -61,7 +60,6 @@ async function initContracts() {
     }
 }
 
-// Получить баланс RURC
 async function getRURCBalance(address) {
     try {
         const result = await window.ton.provider.call(
@@ -76,7 +74,6 @@ async function getRURCBalance(address) {
     }
 }
 
-// Перевод RURC
 async function transferRURC(to, amount) {
     try {
         const sender = await window.ton.sender;
@@ -95,11 +92,10 @@ async function transferRURC(to, amount) {
     }
 }
 
-// ============ MINT ФУНКЦИЯ ============
+// ============ MINT ============
 async function mintRURC(toAddress, amount) {
     try {
         const sender = await window.ton.sender;
-
         const mintPayload = {
             method: 'mint',
             params: {
@@ -135,7 +131,6 @@ async function mintToSelf(amount) {
 async function mintWithUI(amount, onSuccess, onError) {
     try {
         const walletAddress = await window.ton.getWalletAddress();
-
         showNotification('⛽ Майнинг...', 'pending');
 
         const result = await mintRURC(walletAddress, amount);
@@ -147,24 +142,18 @@ async function mintWithUI(amount, onSuccess, onError) {
             showNotification('❌ Ошибка майнинга', 'error');
             if (onError) onError();
         }
-
         return result;
     } catch (error) {
-        console.error('Mint error:', error);
         showNotification('❌ Ошибка: ' + error.message, 'error');
         if (onError) onError(error);
         return false;
     }
 }
 
-// ============ BURN ФУНКЦИЯ ============
-// Сжигание токенов (уменьшает totalSupply)
-
+// ============ BURN ============
 async function burnRURC(amount) {
     try {
         const sender = await window.ton.sender;
-
-        // Сначала approve контракту на сжигание
         const burnPayload = {
             method: 'burn',
             params: {
@@ -186,25 +175,18 @@ async function burnRURC(amount) {
     }
 }
 
-// Сжигание со своего кошелька через transfer на burn адрес
 async function burnToAddress(amount, burnAddress = "0x0000000000000000000000000000000000000000") {
     try {
-        // Стандартный способ burn - отправить на нулевой адрес
         const sender = await window.ton.sender;
-
         await sender.send({
             to: CONTRACTS.rurc.address,
             amount: amount * Math.pow(10, CONTRACTS.rurc.decimals),
             payload: {
                 method: 'transfer',
-                params: { 
-                    to: burnAddress, 
-                    amount: amount * Math.pow(10, CONTRACTS.rurc.decimals) 
-                }
+                params: { to: burnAddress, amount: amount * Math.pow(10, CONTRACTS.rurc.decimals) }
             }
         });
-
-        console.log(`Burned ${amount} RURC (sent to burn address)`);
+        console.log(`Burned ${amount} RURC`);
         return true;
     } catch (error) {
         console.error('Ошибка burn:', error);
@@ -212,11 +194,9 @@ async function burnToAddress(amount, burnAddress = "0x00000000000000000000000000
     }
 }
 
-// Burn с UI уведомлением
 async function burnWithUI(amount, onSuccess, onError) {
     try {
         showNotification('🔥 Сжигание токенов...', 'pending');
-
         const result = await burnRURC(amount);
 
         if (result) {
@@ -226,17 +206,165 @@ async function burnWithUI(amount, onSuccess, onError) {
             showNotification('❌ Ошибка сжигания', 'error');
             if (onError) onError();
         }
-
         return result;
     } catch (error) {
-        console.error('Burn error:', error);
         showNotification('❌ Ошибка: ' + error.message, 'error');
         if (onError) onError(error);
         return false;
     }
 }
 
-// ============ ОБЩИЕ ФУНКЦИИ ============
+// ============ FREEZE ============
+// Заморозка токенов (доступны только после разморозки)
+
+async function freezeRURC(address, amount) {
+    try {
+        const sender = await window.ton.sender;
+
+        const freezePayload = {
+            method: 'freeze',
+            params: {
+                account: address,
+                amount: amount * Math.pow(10, CONTRACTS.rurc.decimals)
+            }
+        };
+
+        await sender.send({
+            to: CONTRACTS.rurc.address,
+            amount: 0,
+            payload: freezePayload
+        });
+
+        // Локальное хранилище для демо
+        if (!frozenBalances[address]) frozenBalances[address] = 0;
+        frozenBalances[address] += amount;
+
+        console.log(`Frozen ${amount} RURC for ${address}`);
+        return true;
+    } catch (error) {
+        console.error('Ошибка freeze:', error);
+        return false;
+    }
+}
+
+// Заморозка своих токенов
+async function freezeSelf(amount) {
+    try {
+        const walletAddress = await window.ton.getWalletAddress();
+        return await freezeRURC(walletAddress, amount);
+    } catch (error) {
+        console.error('Ошибка freeze self:', error);
+        return false;
+    }
+}
+
+// Разморозка токенов
+async function unfreezeRURC(address, amount) {
+    try {
+        const sender = await window.ton.sender;
+
+        const unfreezePayload = {
+            method: 'unfreeze',
+            params: {
+                account: address,
+                amount: amount * Math.pow(10, CONTRACTS.rurc.decimals)
+            }
+        };
+
+        await sender.send({
+            to: CONTRACTS.rurc.address,
+            amount: 0,
+            payload: unfreezePayload
+        });
+
+        // Локальное хранилище
+        if (frozenBalances[address]) {
+            frozenBalances[address] = Math.max(0, frozenBalances[address] - amount);
+        }
+
+        console.log(`Unfrozen ${amount} RURC for ${address}`);
+        return true;
+    } catch (error) {
+        console.error('Ошибка unfreeze:', error);
+        return false;
+    }
+}
+
+// Получить замороженный баланс
+async function getFrozenBalance(address) {
+    try {
+        // Пробуем получить с контракта
+        const result = await window.ton.provider.call(
+            CONTRACTS.rurc.address,
+            'frozenBalanceOf',
+            { address: address }
+        );
+        return parseInt(result || 0) / Math.pow(10, CONTRACTS.rurc.decimals);
+    } catch (error) {
+        // Локальное хранилище для демо
+        return frozenBalances[address] || 0;
+    }
+}
+
+// Freeze с UI
+async function freezeWithUI(amount, onSuccess, onError) {
+    try {
+        const walletAddress = await window.ton.getWalletAddress();
+
+        // Проверка баланса
+        const balance = await getRURCBalance(walletAddress);
+        const frozen = await getFrozenBalance(walletAddress);
+        const available = balance - frozen;
+
+        if (amount > available) {
+            showNotification('❌ Недостаточно доступных токенов', 'error');
+            return false;
+        }
+
+        showNotification('❄️ Заморозка токенов...', 'pending');
+
+        const result = await freezeRURC(walletAddress, amount);
+
+        if (result) {
+            showNotification(`❄️ Заморожено ${amount} RURC`, 'success');
+            if (onSuccess) onSuccess();
+        } else {
+            showNotification('❌ Ошибка заморозки', 'error');
+            if (onError) onError();
+        }
+        return result;
+    } catch (error) {
+        showNotification('❌ Ошибка: ' + error.message, 'error');
+        if (onError) onError(error);
+        return false;
+    }
+}
+
+// Unfreeze с UI
+async function unfreezeWithUI(amount, onSuccess, onError) {
+    try {
+        const walletAddress = await window.ton.getWalletAddress();
+
+        showNotification('🔥 Разморозка токенов...', 'pending');
+
+        const result = await unfreezeRURC(walletAddress, amount);
+
+        if (result) {
+            showNotification(`✅ Разморожено ${amount} RURC`, 'success');
+            if (onSuccess) onSuccess();
+        } else {
+            showNotification('❌ Ошибка разморозки', 'error');
+            if (onError) onError();
+        }
+        return result;
+    } catch (error) {
+        showNotification('❌ Ошибка: ' + error.message, 'error');
+        if (onError) onError(error);
+        return false;
+    }
+}
+
+// ============ ОБЩИЕ ============
 async function getTotalSupply() {
     try {
         const result = await window.ton.provider.call(
@@ -245,12 +373,10 @@ async function getTotalSupply() {
         );
         return parseInt(result || 0) / Math.pow(10, CONTRACTS.rurc.decimals);
     } catch (error) {
-        console.error('Ошибка получения totalSupply:', error);
         return 0;
     }
 }
 
-// Отобразить контракты в UI
 function renderContracts() {
     const container = document.getElementById('contractsList');
     if (!container) return;
@@ -264,7 +390,6 @@ function renderContracts() {
     `).join('');
 }
 
-// UI для майнинга и сжигания
 function renderMintUI() {
     const container = document.getElementById('mintSection');
     if (!container) return;
@@ -284,8 +409,21 @@ function renderMintUI() {
                 <input type="number" id="burnAmount" placeholder="Количество RURC" min="1" max="1000000">
                 <button onclick="handleBurn()" class="burn-btn">Сжечь</button>
             </div>
-            <div class="burn-info">
-                <p>⚠️ Внимание: сожжённые токены нельзя восстановить</p>
+        </div>
+
+        <div class="freeze-panel">
+            <h3>❄️ Заморозка RURC</h3>
+            <div class="freeze-form">
+                <input type="number" id="freezeAmount" placeholder="Количество RURC" min="1" max="1000000">
+                <button onclick="handleFreeze()" class="freeze-btn">Заморозить</button>
+            </div>
+            <div class="freeze-form">
+                <input type="number" id="unfreezeAmount" placeholder="Количество RURC" min="1" max="1000000">
+                <button onclick="handleUnfreeze()" class="unfreeze-btn">Разморозить</button>
+            </div>
+            <div class="freeze-info">
+                <p>💡 Замороженные токены недоступны для переводов</p>
+                <p>🔒 Заморожено: <span id="frozenBalance">...</span> RURC</p>
             </div>
         </div>
 
@@ -298,6 +436,18 @@ function renderMintUI() {
         const el = document.getElementById('totalSupply');
         if (el) el.textContent = supply.toLocaleString();
     });
+
+    // Загружаем замороженный баланс
+    loadFrozenBalance();
+}
+
+async function loadFrozenBalance() {
+    try {
+        const walletAddress = await window.ton.getWalletAddress();
+        const frozen = await getFrozenBalance(walletAddress);
+        const el = document.getElementById('frozenBalance');
+        if (el) el.textContent = frozen.toLocaleString();
+    } catch (e) {}
 }
 
 async function handleMint() {
@@ -309,9 +459,7 @@ async function handleMint() {
         return;
     }
 
-    await mintWithUI(amount, () => {
-        updateBalance();
-    });
+    await mintWithUI(amount, () => updateBalance());
 }
 
 async function handleBurn() {
@@ -323,13 +471,40 @@ async function handleBurn() {
         return;
     }
 
-    // Подтверждение
     if (!confirm(`Вы уверены, что хотите сжечь ${amount} RURC?`)) {
         return;
     }
 
-    await burnWithUI(amount, () => {
+    await burnWithUI(amount, () => updateBalance());
+}
+
+async function handleFreeze() {
+    const input = document.getElementById('freezeAmount');
+    const amount = parseFloat(input.value);
+
+    if (!amount || amount <= 0) {
+        showNotification('Введите корректное количество', 'error');
+        return;
+    }
+
+    await freezeWithUI(amount, () => {
         updateBalance();
+        loadFrozenBalance();
+    });
+}
+
+async function handleUnfreeze() {
+    const input = document.getElementById('unfreezeAmount');
+    const amount = parseFloat(input.value);
+
+    if (!amount || amount <= 0) {
+        showNotification('Введите корректное количество', 'error');
+        return;
+    }
+
+    await unfreezeWithUI(amount, () => {
+        updateBalance();
+        loadFrozenBalance();
     });
 }
 
@@ -342,10 +517,7 @@ function showNotification(message, type) {
     notification.textContent = message;
 
     container.appendChild(notification);
-
-    setTimeout(() => {
-        notification.remove();
-    }, 5000);
+    setTimeout(() => notification.remove(), 5000);
 }
 
 // Экспорт
@@ -360,6 +532,12 @@ window.mintWithUI = mintWithUI;
 window.burnRURC = burnRURC;
 window.burnToAddress = burnToAddress;
 window.burnWithUI = burnWithUI;
+window.freezeRURC = freezeRURC;
+window.freezeSelf = freezeSelf;
+window.unfreezeRURC = unfreezeRURC;
+window.getFrozenBalance = getFrozenBalance;
+window.freezeWithUI = freezeWithUI;
+window.unfreezeWithUI = unfreezeWithUI;
 window.getTotalSupply = getTotalSupply;
 window.renderContracts = renderContracts;
 window.renderMintUI = renderMintUI;
