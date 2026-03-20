@@ -706,7 +706,7 @@
                     <div class="price-unit">USD / барр.</div>
                 </div>
                 <div class="price-item">
-                    <div class="p-icon">⛽</div>
+                    <div class="p-icon">🔥</div>
                     <div style="font-size:10px;color:#666;margin-top:4px;">Природный газ</div>
                     <div class="price-val" style="color:#4ade80;" id="liveGasPrice">$0.1300</div>
                     <div class="price-change" id="liveGasChange">+0.00%</div>
@@ -737,7 +737,7 @@
                     <div class="g-lbl">Нефть (барр.)</div>
                 </div>
                 <div class="global-item">
-                    <div class="g-icon">⛽</div>
+                    <div class="g-icon">🔥</div>
                     <div class="g-val" style="color:#4ade80;" id="globalTotalGas">—</div>
                     <div class="g-lbl">Газ (м³)</div>
                 </div>
@@ -752,50 +752,380 @@
             </div>
         </div>
 
-        <!-- Rig Visual -->
-        <div class="oil-rig-visual" id="rigVisual">
-            <span class="rig-emoji">🛢️</span>
-            <div class="rig-status" id="rigStatus">Добыча остановлена</div>
-            <div class="production-rates">
-                <div class="rate-card">
-                    <div class="rate-icon">🛢️</div>
-                    <div class="rate-val"><span id="oilStored">0.0</span></div>
-                    <div class="rate-lbl">Нефть (барр.)</div>
-                </div>
-                <div class="rate-card">
-                    <div class="rate-icon">⛽</div>
-                    <div class="rate-val"><span id="gasStored">0</span></div>
-                    <div class="rate-lbl">Газ (м³)</div>
-                </div>
-            </div>
-
-            <div class="tank-section">
-                <div class="tank-header">
-                    <span class="tank-icon">🛢️</span>
-                    <span class="tank-label">Нефть</span>
-                    <span class="tank-value" id="oilBarPct">0%</span>
-                </div>
-                <div class="tank-bar-wrap">
-                    <div class="tank-bar oil" id="oilBar" style="width:0%"></div>
-                </div>
-            </div>
-            <div class="tank-section" style="margin-bottom:0;">
-                <div class="tank-header">
-                    <span class="tank-icon">⛽</span>
-                    <span class="tank-label" style="color:#4ade80;">Газ</span>
-                    <span class="tank-value" id="gasBarPct">0%</span>
-                </div>
-                <div class="tank-bar-wrap">
-                    <div class="tank-bar gas" id="gasBar" style="width:0%"></div>
-                </div>
-            </div>
-
-            <button class="mine-btn" id="mineBtn">⛽ Начать добычу</button>
+        <!-- СЛАЙДЕР: Нефть / Газ -->
+        <div class="resource-slider-nav">
+            <button class="res-slide-btn active" id="slideOilBtn" onclick="switchResourceSlide('oil')">
+                🛢️ Нефть
+            </button>
+            <button class="res-slide-btn" id="slideGasBtn" onclick="switchResourceSlide('gas')">
+                🔥 Газ
+            </button>
         </div>
 
-        <div style="text-align:center;color:#444;font-size:12px;margin-top:8px;">
-            💡 Купите насосы и вышки во вкладке «Оборудование»
+        <!-- ══════════ СЛАЙД: НЕФТЬ ══════════ -->
+        <div class="resource-slide" id="slideOil">
+
+            <!-- SVG Качалка-балансир (Pump Jack) -->
+            <div class="rig-visual-wrap">
+                <svg viewBox="0 0 240 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:260px;display:block;margin:0 auto;">
+                    <!-- Небо / фон -->
+                    <defs>
+                        <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#0a0a1a"/>
+                            <stop offset="100%" stop-color="#1a0f05"/>
+                        </linearGradient>
+                        <radialGradient id="groundGrad" cx="50%" cy="100%" r="50%">
+                            <stop offset="0%" stop-color="#3d1a00" stop-opacity="0.6"/>
+                            <stop offset="100%" stop-color="#0a0a0a" stop-opacity="0"/>
+                        </radialGradient>
+                    </defs>
+                    <rect width="240" height="180" fill="url(#skyGrad)" rx="12"/>
+                    <!-- Земля -->
+                    <ellipse cx="120" cy="168" rx="110" ry="14" fill="url(#groundGrad)"/>
+                    <rect x="10" y="162" width="220" height="18" rx="9" fill="#1a0a00" opacity="0.7"/>
+
+                    <!-- Основание насоса -->
+                    <rect x="100" y="140" width="40" height="24" rx="4" fill="#2a1a0a"/>
+                    <rect x="94" y="158" width="52" height="8" rx="4" fill="#1a0f05"/>
+
+                    <!-- Стойка (центральная) -->
+                    <rect x="116" y="80" width="8" height="62" rx="3" fill="#444"/>
+
+                    <!-- Шатун (вертикальная тяга к скважине) -->
+                    <line x1="178" y1="95" x2="178" y2="148" stroke="#666" stroke-width="4" stroke-linecap="round" id="pumpRodLine"/>
+
+                    <!-- Балансир (beam) — вращается -->
+                    <g id="pumpBeam" style="transform-origin:120px 82px;">
+                        <!-- Балка -->
+                        <rect x="50" y="78" width="150" height="10" rx="5" fill="#FF8C00"/>
+                        <!-- Противовес (левый конец) -->
+                        <ellipse cx="62" cy="83" rx="18" ry="13" fill="#cc5500"/>
+                        <ellipse cx="62" cy="83" rx="12" ry="8" fill="#aa4400"/>
+                        <!-- Шарнир на скважинном конце -->
+                        <circle cx="192" cy="83" r="6" fill="#FFD700"/>
+                        <!-- Тяга вниз -->
+                        <line x1="192" y1="89" x2="192" y2="148" stroke="#888" stroke-width="3" stroke-linecap="round"/>
+                    </g>
+
+                    <!-- Скважина -->
+                    <rect x="186" y="145" width="12" height="20" rx="3" fill="#222"/>
+                    <ellipse cx="192" cy="145" rx="6" ry="3.5" fill="#111"/>
+                    <!-- Нефть вытекает -->
+                    <ellipse cx="192" cy="163" rx="8" ry="3" fill="#1a0800" opacity="0.8"/>
+                    <circle class="oil-drop" cx="192" cy="152" r="3.5" fill="#2a0f00" opacity="0.9"/>
+                    <circle class="oil-drop2" cx="190" cy="158" r="2.5" fill="#1a0800" opacity="0.7"/>
+
+                    <!-- Трубопровод по земле -->
+                    <path d="M186 162 Q160 165 140 163 Q120 161 100 163" stroke="#555" stroke-width="3" fill="none" stroke-linecap="round"/>
+
+                    <!-- Статус текст -->
+                    <text x="120" y="22" text-anchor="middle" fill="#FF8C00" font-size="12" font-family="monospace" font-weight="bold" id="oilRigStatusText">⏸ Остановлено</text>
+                    <text x="120" y="40" text-anchor="middle" fill="#666" font-size="10" font-family="monospace" id="oilRateText">0.0 барр/ч</text>
+
+                    <!-- Звёзды -->
+                    <circle cx="30" cy="20" r="1" fill="white" opacity="0.5"/>
+                    <circle cx="80" cy="12" r="1.5" fill="white" opacity="0.4"/>
+                    <circle cx="200" cy="18" r="1" fill="white" opacity="0.6"/>
+                    <circle cx="160" cy="8" r="1" fill="white" opacity="0.3"/>
+                </svg>
+                <div class="rig-status-badge" id="oilRigStatus">Добыча остановлена</div>
+            </div>
+
+            <!-- Сравнение с прошлым — НЕФТЬ -->
+            <div class="compare-card">
+                <div class="compare-title">📊 Сравнение добычи нефти</div>
+                <div class="compare-grid">
+                    <div class="compare-item">
+                        <div class="compare-label">За час</div>
+                        <div class="compare-val" id="oilHourCompare">—</div>
+                        <div class="compare-delta" id="oilHourDelta">нет данных</div>
+                    </div>
+                    <div class="compare-item">
+                        <div class="compare-label">За день</div>
+                        <div class="compare-val" id="oilDayCompare">—</div>
+                        <div class="compare-delta" id="oilDayDelta">нет данных</div>
+                    </div>
+                    <div class="compare-item">
+                        <div class="compare-label">Всего</div>
+                        <div class="compare-val" id="oilTotalCompare">—</div>
+                        <div class="compare-delta" id="oilTotalDelta" style="color:#60a5fa;">барр.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SVG Цистерна нефти -->
+            <div class="svg-tank-wrap">
+                <div class="svg-tank-label">🛢️ Нефтяная цистерна</div>
+                <div class="svg-tank-container">
+                    <svg class="svg-tank" viewBox="0 0 120 170" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <clipPath id="oilTankClip">
+                                <rect x="12" y="22" width="96" height="118" rx="10"/>
+                            </clipPath>
+                        </defs>
+                        <!-- Корпус -->
+                        <rect x="10" y="20" width="100" height="120" rx="12" fill="#1a0f05" stroke="#FF8C00" stroke-width="2"/>
+                        <!-- Крышка -->
+                        <ellipse cx="60" cy="20" rx="50" ry="10" fill="#2a1a08" stroke="#FF8C00" stroke-width="2"/>
+                        <!-- Дно -->
+                        <ellipse cx="60" cy="140" rx="50" ry="10" fill="#1a0f05" stroke="#FF8C00" stroke-width="1.5"/>
+                        <!-- Жидкость -->
+                        <g clip-path="url(#oilTankClip)">
+                            <rect id="oilLiquidRect" x="12" y="140" width="96" height="0" fill="#3d1a00"/>
+                            <path id="oilWavePath" d="M12,140 Q36,136 60,140 Q84,144 108,140 L108,140 L12,140 Z" fill="#FF6600" opacity="0.7"/>
+                            <rect x="20" y="30" width="8" height="80" rx="4" fill="white" opacity="0.04"/>
+                        </g>
+                        <!-- Риски уровня -->
+                        <line x1="108" y1="50" x2="113" y2="50" stroke="#FF8C00" stroke-width="1" opacity="0.5"/>
+                        <line x1="108" y1="80" x2="113" y2="80" stroke="#FF8C00" stroke-width="1" opacity="0.5"/>
+                        <line x1="108" y1="110" x2="113" y2="110" stroke="#FF8C00" stroke-width="1" opacity="0.5"/>
+                        <text x="115" y="53" fill="#FF8C00" font-size="7" opacity="0.6">75%</text>
+                        <text x="115" y="83" fill="#FF8C00" font-size="7" opacity="0.6">50%</text>
+                        <text x="115" y="113" fill="#FF8C00" font-size="7" opacity="0.6">25%</text>
+                        <!-- Кран -->
+                        <rect x="48" y="148" width="24" height="6" rx="3" fill="#555"/>
+                        <rect x="70" y="146" width="4" height="10" rx="2" fill="#444"/>
+                        <!-- Лестница -->
+                        <line x1="104" y1="30" x2="104" y2="140" stroke="#333" stroke-width="1.5"/>
+                        <line x1="108" y1="30" x2="108" y2="140" stroke="#333" stroke-width="1.5"/>
+                        <line x1="104" y1="45" x2="108" y2="45" stroke="#333" stroke-width="1"/>
+                        <line x1="104" y1="60" x2="108" y2="60" stroke="#333" stroke-width="1"/>
+                        <line x1="104" y1="75" x2="108" y2="75" stroke="#333" stroke-width="1"/>
+                        <line x1="104" y1="90" x2="108" y2="90" stroke="#333" stroke-width="1"/>
+                        <line x1="104" y1="105" x2="108" y2="105" stroke="#333" stroke-width="1"/>
+                        <line x1="104" y1="120" x2="108" y2="120" stroke="#333" stroke-width="1"/>
+                    </svg>
+                    <div class="svg-tank-info">
+                        <div class="svg-tank-pct" id="oilTankPct">0%</div>
+                        <div class="svg-tank-stored" id="oilStoredLabel">0.0 барр.</div>
+                        <div class="svg-tank-cap" id="oilCapLabel">/ 100 барр.</div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="mine-btn mine-btn-oil" id="mineBtnOil" onclick="if(window.game)game.toggleMining()">
+                <span id="mineBtnOilIcon">⛽</span> <span id="mineBtnOilText">Начать добычу нефти</span>
+            </button>
+            <div style="text-align:center;color:#444;font-size:12px;margin-top:8px;">
+                💡 Купите насосы во вкладке «Оборудование»
+            </div>
         </div>
+
+        <!-- ══════════ СЛАЙД: ГАЗ ══════════ -->
+        <div class="resource-slide" id="slideGas" style="display:none;">
+
+            <!-- SVG Морская газовая платформа -->
+            <div class="rig-visual-wrap gas-rig-wrap">
+                <svg viewBox="0 0 260 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;display:block;margin:0 auto;">
+                    <defs>
+                        <linearGradient id="skyGasGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#050f1a"/>
+                            <stop offset="60%" stop-color="#0a1f2a"/>
+                            <stop offset="100%" stop-color="#0d2a1a"/>
+                        </linearGradient>
+                        <linearGradient id="seaGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#0a2a3a"/>
+                            <stop offset="100%" stop-color="#051520"/>
+                        </linearGradient>
+                        <linearGradient id="deepSeaGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#051520"/>
+                            <stop offset="100%" stop-color="#020a10"/>
+                        </linearGradient>
+                        <clipPath id="seaClip">
+                            <rect x="0" y="118" width="260" height="82" rx="0"/>
+                        </clipPath>
+                    </defs>
+
+                    <!-- Фон небо -->
+                    <rect width="260" height="200" fill="url(#skyGasGrad)" rx="12"/>
+
+                    <!-- Звёзды -->
+                    <circle cx="20" cy="15" r="1" fill="white" opacity="0.6"/>
+                    <circle cx="60" cy="8" r="1.5" fill="white" opacity="0.5"/>
+                    <circle cx="110" cy="20" r="1" fill="white" opacity="0.4"/>
+                    <circle cx="200" cy="10" r="1" fill="white" opacity="0.7"/>
+                    <circle cx="240" cy="25" r="1" fill="white" opacity="0.4"/>
+                    <circle cx="170" cy="5" r="1.5" fill="white" opacity="0.5"/>
+
+                    <!-- Луна -->
+                    <circle cx="220" cy="22" r="10" fill="#c8d8e8" opacity="0.7"/>
+                    <circle cx="224" cy="19" r="8" fill="url(#skyGasGrad)" opacity="0.9"/>
+
+                    <!-- МОРЕ -->
+                    <rect x="0" y="118" width="260" height="82" fill="url(#seaGrad)" rx="0 0 12 12"/>
+                    <!-- Волны на поверхности -->
+                    <path d="M0,118 Q20,114 40,118 Q60,122 80,118 Q100,114 120,118 Q140,122 160,118 Q180,114 200,118 Q220,122 240,118 Q250,116 260,118" stroke="#1a4a5a" stroke-width="2" fill="none" opacity="0.8" id="seaWave1"/>
+                    <path d="M0,122 Q30,119 60,122 Q90,125 120,122 Q150,119 180,122 Q210,125 240,122 Q250,121 260,122" stroke="#0d3a4a" stroke-width="1.5" fill="none" opacity="0.5"/>
+
+                    <!-- Подводная часть (трубы, сваи) -->
+                    <g clip-path="url(#seaClip)">
+                        <!-- Сваи платформы уходят в глубину -->
+                        <rect x="68" y="118" width="10" height="70" rx="3" fill="#1a2a3a"/>
+                        <rect x="98" y="118" width="10" height="70" rx="3" fill="#1a2a3a"/>
+                        <rect x="152" y="118" width="10" height="70" rx="3" fill="#1a2a3a"/>
+                        <rect x="182" y="118" width="10" height="70" rx="3" fill="#1a2a3a"/>
+                        <!-- Подводный трубопровод -->
+                        <path d="M103 175 Q130 180 157 175" stroke="#4ade80" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.6"/>
+                        <path d="M157 175 Q200 170 230 165" stroke="#4ade80" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.5"/>
+                        <!-- Дельфины -->
+                        <g id="dolphin1" style="transform:translateX(0px);">
+                            <path d="M30,148 Q45,140 55,148 Q50,155 40,155 Q30,155 30,148 Z" fill="#2a4a6a" opacity="0.7"/>
+                            <path d="M55,148 Q62,145 65,150" stroke="#2a4a6a" stroke-width="2" fill="none" opacity="0.7"/>
+                            <path d="M38,140 Q42,135 46,140" fill="#2a4a6a" opacity="0.5"/>
+                        </g>
+                        <g id="dolphin2" style="transform:translateX(0px);">
+                            <path d="M195,158 Q210,150 220,158 Q215,165 205,165 Q195,165 195,158 Z" fill="#2a4a6a" opacity="0.6"/>
+                            <path d="M220,158 Q227,155 230,160" stroke="#2a4a6a" stroke-width="2" fill="none" opacity="0.6"/>
+                            <path d="M203,150 Q207,145 211,150" fill="#2a4a6a" opacity="0.4"/>
+                        </g>
+                        <!-- Пузырьки газа из скважины -->
+                        <circle class="gas-bubble" cx="130" cy="185" r="3" fill="#4ade80" opacity="0.3"/>
+                        <circle class="gas-bubble" cx="125" cy="175" r="2" fill="#4ade80" opacity="0.25"/>
+                        <circle class="gas-bubble" cx="135" cy="168" r="2.5" fill="#4ade80" opacity="0.2"/>
+                    </g>
+
+                    <!-- ПЛАТФОРМА (палуба) -->
+                    <!-- Основная палуба -->
+                    <rect x="60" y="95" width="140" height="26" rx="4" fill="#1a2a3a" stroke="#2a4a5a" stroke-width="1.5"/>
+                    <!-- Перила -->
+                    <rect x="60" y="93" width="140" height="4" rx="2" fill="#2a4a5a"/>
+                    <line x1="70" y1="93" x2="70" y2="100" stroke="#2a4a5a" stroke-width="1"/>
+                    <line x1="90" y1="93" x2="90" y2="100" stroke="#2a4a5a" stroke-width="1"/>
+                    <line x1="170" y1="93" x2="170" y2="100" stroke="#2a4a5a" stroke-width="1"/>
+                    <line x1="190" y1="93" x2="190" y2="100" stroke="#2a4a5a" stroke-width="1"/>
+
+                    <!-- Жилой модуль -->
+                    <rect x="65" y="72" width="55" height="25" rx="3" fill="#1e3040" stroke="#2a4a5a" stroke-width="1"/>
+                    <!-- Окна модуля -->
+                    <rect x="72" y="77" width="8" height="6" rx="1" fill="#4ade80" opacity="0.4"/>
+                    <rect x="84" y="77" width="8" height="6" rx="1" fill="#4ade80" opacity="0.3"/>
+                    <rect x="96" y="77" width="8" height="6" rx="1" fill="#60a5fa" opacity="0.3"/>
+                    <rect x="72" y="86" width="8" height="5" rx="1" fill="#60a5fa" opacity="0.2"/>
+                    <rect x="84" y="86" width="8" height="5" rx="1" fill="#4ade80" opacity="0.2"/>
+
+                    <!-- Кран -->
+                    <rect x="185" y="75" width="5" height="22" rx="2" fill="#2a4a5a"/>
+                    <rect x="175" y="75" width="15" height="4" rx="2" fill="#3a5a6a"/>
+                    <line x1="182" y1="75" x2="175" y2="85" stroke="#3a5a6a" stroke-width="1.5"/>
+
+                    <!-- Буровая вышка -->
+                    <polygon points="130,20 122,95 138,95" fill="#1e3040" stroke="#2a4a5a" stroke-width="1.5"/>
+                    <!-- Распорки вышки -->
+                    <line x1="122" y1="75" x2="138" y2="75" stroke="#2a4a5a" stroke-width="1.5"/>
+                    <line x1="123" y1="55" x2="137" y2="55" stroke="#2a4a5a" stroke-width="1.5"/>
+                    <line x1="125" y1="38" x2="135" y2="38" stroke="#2a4a5a" stroke-width="1"/>
+                    <!-- Диагонали -->
+                    <line x1="122" y1="75" x2="138" y2="55" stroke="#1a3a4a" stroke-width="1"/>
+                    <line x1="138" y1="75" x2="122" y2="55" stroke="#1a3a4a" stroke-width="1"/>
+                    <!-- Буровая штанга вниз -->
+                    <line x1="130" y1="95" x2="130" y2="185" stroke="#2a4a5a" stroke-width="2" stroke-dasharray="4,3" opacity="0.6"/>
+
+                    <!-- ФАКЕЛ (flare) -->
+                    <rect x="155" y="60" width="4" height="36" rx="2" fill="#2a4a5a"/>
+                    <!-- Пламя факела -->
+                    <g id="gasFlameTip" style="transform-origin:157px 58px;">
+                        <ellipse cx="157" cy="54" rx="7" ry="12" fill="#FFD700" opacity="0.9"/>
+                        <ellipse cx="157" cy="52" rx="5" ry="9" fill="#FF6600" opacity="0.85"/>
+                        <ellipse cx="157" cy="50" rx="3" ry="6" fill="#FF4500" opacity="0.8"/>
+                        <ellipse cx="157" cy="48" rx="2" ry="4" fill="white" opacity="0.5"/>
+                        <!-- Свечение -->
+                        <ellipse cx="157" cy="54" rx="12" ry="16" fill="#FF8C00" opacity="0.1"/>
+                    </g>
+
+                    <!-- Трубопровод на палубе -->
+                    <path d="M130 110 Q145 112 155 110 Q160 108 163 100" stroke="#4ade80" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+
+                    <!-- Статус -->
+                    <text x="130" y="14" text-anchor="middle" fill="#4ade80" font-size="11" font-family="monospace" font-weight="bold" id="gasRigStatusText">⏸ Остановлено</text>
+                    <text x="130" y="190" text-anchor="middle" fill="#666" font-size="10" font-family="monospace" id="gasRateText">0 м³/ч</text>
+                </svg>
+                <div class="rig-status-badge gas-badge" id="gasRigStatus">Добыча остановлена</div>
+            </div>
+
+            <!-- Сравнение с прошлым — ГАЗ -->
+            <div class="compare-card gas-compare">
+                <div class="compare-title">📊 Сравнение добычи газа</div>
+                <div class="compare-grid">
+                    <div class="compare-item">
+                        <div class="compare-label">За час</div>
+                        <div class="compare-val" id="gasHourCompare">—</div>
+                        <div class="compare-delta" id="gasHourDelta">нет данных</div>
+                    </div>
+                    <div class="compare-item">
+                        <div class="compare-label">За день</div>
+                        <div class="compare-val" id="gasDayCompare">—</div>
+                        <div class="compare-delta" id="gasDayDelta">нет данных</div>
+                    </div>
+                    <div class="compare-item">
+                        <div class="compare-label">Всего</div>
+                        <div class="compare-val" id="gasTotalCompare">—</div>
+                        <div class="compare-delta" id="gasTotalDelta" style="color:#4ade80;">м³</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SVG Цистерна газа (горизонтальный цилиндр) -->
+            <div class="svg-tank-wrap">
+                <div class="svg-tank-label">🔥 Газовый резервуар</div>
+                <div class="svg-tank-container">
+                    <svg class="svg-tank" viewBox="0 0 160 120" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <clipPath id="gasTankClip">
+                                <rect x="14" y="28" width="132" height="64" rx="32"/>
+                            </clipPath>
+                        </defs>
+                        <!-- Ножки -->
+                        <rect x="35" y="90" width="8" height="20" rx="3" fill="#1a2a1a"/>
+                        <rect x="117" y="90" width="8" height="20" rx="3" fill="#1a2a1a"/>
+                        <rect x="25" y="106" width="28" height="5" rx="2" fill="#111"/>
+                        <rect x="107" y="106" width="28" height="5" rx="2" fill="#111"/>
+                        <!-- Корпус горизонтального цилиндра -->
+                        <rect x="14" y="28" width="132" height="64" rx="32" fill="#0a1a0a" stroke="#4ade80" stroke-width="2"/>
+                        <!-- Торцы -->
+                        <ellipse cx="14" cy="60" rx="16" ry="32" fill="#0d200d" stroke="#4ade80" stroke-width="1.5"/>
+                        <ellipse cx="146" cy="60" rx="16" ry="32" fill="#0d200d" stroke="#4ade80" stroke-width="1.5"/>
+                        <!-- Жидкость -->
+                        <g clip-path="url(#gasTankClip)">
+                            <rect id="gasLiquidRect" x="14" y="92" width="132" height="0" fill="#0a2a1a"/>
+                            <path id="gasWavePath" d="M14,92 Q47,88 80,92 Q113,96 146,92 L146,92 L14,92 Z" fill="#4ade80" opacity="0.6"/>
+                            <!-- Пузырьки -->
+                            <circle class="gas-bubble" cx="40" cy="75" r="2.5" fill="#4ade80" opacity="0.4"/>
+                            <circle class="gas-bubble" cx="80" cy="68" r="3.5" fill="#4ade80" opacity="0.3"/>
+                            <circle class="gas-bubble" cx="120" cy="78" r="2" fill="#4ade80" opacity="0.4"/>
+                            <!-- Блик -->
+                            <rect x="25" y="35" width="8" height="40" rx="4" fill="white" opacity="0.04"/>
+                        </g>
+                        <!-- Риски уровня -->
+                        <line x1="14" y1="38" x2="8" y2="38" stroke="#4ade80" stroke-width="1" opacity="0.5"/>
+                        <line x1="14" y1="60" x2="8" y2="60" stroke="#4ade80" stroke-width="1" opacity="0.5"/>
+                        <line x1="14" y1="82" x2="8" y2="82" stroke="#4ade80" stroke-width="1" opacity="0.5"/>
+                        <text x="1" y="41" fill="#4ade80" font-size="7" opacity="0.6">75</text>
+                        <text x="1" y="63" fill="#4ade80" font-size="7" opacity="0.6">50</text>
+                        <text x="1" y="85" fill="#4ade80" font-size="7" opacity="0.6">25</text>
+                        <!-- Клапан сверху -->
+                        <rect x="72" y="18" width="16" height="12" rx="3" fill="#1a3a1a"/>
+                        <rect x="66" y="16" width="28" height="6" rx="3" fill="#111"/>
+                        <rect x="78" y="10" width="4" height="8" rx="2" fill="#4ade80" opacity="0.6"/>
+                        <!-- Трубопровод справа -->
+                        <path d="M162 60 Q172 60 175 50" stroke="#4ade80" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                        <circle cx="175" cy="49" r="3" fill="#4ade80" opacity="0.7"/>
+                    </svg>
+                    <div class="svg-tank-info">
+                        <div class="svg-tank-pct" id="gasTankPct" style="color:#4ade80;">0%</div>
+                        <div class="svg-tank-stored" id="gasStoredLabel">0 м³</div>
+                        <div class="svg-tank-cap" id="gasCapLabel">/ 1000 м³</div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="mine-btn mine-btn-gas" id="mineBtnGas" onclick="if(window.game)game.toggleMining()">
+                <span id="mineBtnGasIcon">🔥</span> <span id="mineBtnGasText">Начать добычу газа</span>
+            </button>
+            <div style="text-align:center;color:#444;font-size:12px;margin-top:8px;">
+                💡 Купите газовые вышки во вкладке «Оборудование»
+            </div>
+        </div>
+
     </div>
 
     <!-- ОБОРУДОВАНИЕ -->
