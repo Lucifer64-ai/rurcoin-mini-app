@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RURCoin - Русская криптовалюта</title>
+
+    <!-- Meta Tags -->
+    <meta name="description" content="Майнинг и управление национальной криптовалютой России RURCoin">
+    <meta name="keywords" content="RURCoin, криптовалюта, Россия, майнинг, TON, блокчейн">
+    <meta name="author" content="RURCoin Team">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="assets/icons/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/manifest/icon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/icons/manifest/icon-16.png">
+
+    <!-- Apple Touch Icon -->
+    <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Preload critical resources -->
+    <link rel="preload" href="script.js" as="script">
+    <link rel="preload" href="contracts.js" as="script">
+</head>
+<body>
+    <div class="container">
+        <!-- Патриотичный хедер -->
+        <header class="patriotic-header">
+            <div class="header-content">
+                <div class="logo-container">
+                    <div class="logo-placeholder">🇷🇺</div>
+                    <div class="header-text">
+                        <h1>RURCoin</h1>
+                        <p>Российская криптовалюта</p>
+                    </div>
+                </div>
+                <div class="header-stats">
+                    <div class="stat-badge">
+                        <span class="badge-icon">⛏️</span>
+                        <span id="headerHashrate">0 H/s</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Навигация по вкладкам -->
+        <nav class="tab-navigation">
+            <button class="tab-btn active" data-tab="mining">
+                <span class="tab-icon">⛏️</span>
+                <span>Майнинг</span>
+            </button>
+            <button class="tab-btn" data-tab="staking">
+                <span class="tab-icon">💰</span>
+                <span>Стейкинг</span>
+            </button>
+            <button class="tab-btn" data-tab="contracts">
+                <span class="tab-icon">📜</span>
+                <span>Контракты</span>
+            </button>
+            <button class="tab-btn" data-tab="transactions">
+                <span class="tab-icon">💸</span>
+                <span>Транзакции</span>
+            </button>
+            <button class="tab-btn" data-tab="halving">
+                <span class="tab-icon">✂️</span>
+                <span>Халвинг</span>
+            </button>
+            <button class="tab-btn" data-tab="history">
+                <span class="tab-icon">📊</span>
+                <span>История</span>
+            </button>
+        </nav>
+
+        <!-- Основной контент -->
+        <main class="main-content">
+            <!-- Вкладка майнинга -->
+            <section id="mining" class="tab-content active">
+                <div class="mining-interface">
+                    <div class="balance-card russian-card">
+                        <h2>Ваш баланс RURCoin</h2>
+                        <div class="balance-amount">
+                            <div class="balance" id="balance">0.00</div>
+                            <div class="currency">RURC</div>
+                        </div>
+                        <div class="balance-details">
+                            <div class="usd-value" id="usdValue">≈ $0.00</div>
+                            <div class="ton-balance">
+                                <span class="ton-icon">💎</span>
+                                <span id="tonBalance">0.00 TON</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mining-controls russian-card">
+                        <div class="mining-stats">
+                            <div class="stat-item">
+                                <span class="stat-label">Хешрейт:</span>
+                                <span class="stat-value" id="hashrate">0 H/s</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Добыто за сессию:</span>
+                                <span class="stat-value" id="minedThisSession">0 RURC</span>
+                            </div>
+                        </div>
+                        <button class="russian-button mining-btn" id="mineBtn">
+                            <span class="btn-icon">⚒️</span>
+                            Начать майнинг
+                        </button>
+                    </div>
+
+                    <div class="farms-section russian-card">
+                        <h3>🏭 Фермы для майнинга</h3>
+                        <div class="farms-list" id="farmItems">
+                            <!-- Фермы будут добавлены через JS -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Вкладка стейкинга -->
+            <section id="staking" class="tab-content">
+                <div class="staking-interface">
+                    <div class="staking-card russian-card">
+                        <h2 class="section-title">
+                            <span class="title-icon">💰</span>
+                            Стейкинг RURCoin
+                        </h2>
+
+                        <div class="staking-info">
+                            <div class="info-grid">
+                                <div class="info-card">
+                                    <div class="info-value apy">15%</div>
+                                    <div class="info-label">Годовая доходность</div>
+                                </div>
+                                <div class="info-card">
+                                    <div class="info-value" id="stakedBalance">0</div>
+                                    <div class="info-label">Застейкано RURC</div>
+                                </div>
+                                <div class="info-card">
+                                    <div class="info-value" id="stakingRewards">0</div>
+                                    <div class="info-label">Награды RURC</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="staking-actions">
+                            <div class="input-group">
+                                <input type="number" id="stakeAmount" placeholder="Сумма RURC" min="1">
+                                <button class="russian-button" id="stakeBtn">
+                                    <span class="btn-icon">🔒</span>
+                                    Застейкать
+                                </button>
+                            </div>
+                            <button class="russian-button secondary" id="unstakeBtn">
+                                <span class="btn-icon">💰</span>
+                                Забрать + награды
+                            </button>
+                        </div>
+
+                        <div class="staking-stats">
+                            <h4>Статистика стейкинга</h4>
+                            <div class="stats-list">
+                                <div class="stat-item">
+                                    <span>Общая прибыль:</span>
+                                    <span id="totalStakingProfit">0 RURC</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span>Дней в стейкинге:</span>
+                                    <span id="stakingDays">0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Вкладка контрактов -->
+            <section id="contracts" class="tab-content">
+                <div class="contracts-interface">
+                    <div class="contracts-card russian-card">
+                        <h2 class="section-title">
+                            <span class="title-icon">📜</span>
+                            Смарт-контракты
+                        </h2>
+                        <div class="contracts-list" id="contractsList">
+                            <!-- Контракты будут добавлены через JS -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Вкладка транзакций -->
+            <section id="transactions" class="tab-content">
+                <div class="transactions-interface">
+                    <div class="transactions-card russian-card">
+                        <h2 class="section-title">
+                            <span class="title-icon">💸</span>
+                            Транзакции
+                        </h2>
+                        <div class="transactions-feed" id="transactionsFeed">
+                            <!-- Транзакции будут добавлены через JS -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Вкладка халвинга -->
+            <section id="halving" class="tab-content">
+                <div class="halving-interface">
+                    <div class="halving-card russian-card">
+                        <h2 class="section-title">
+                            <span class="title-icon">✂️</span>
+                            Халвинг RURCoin
+                        </h2>
+
+                        <div class="halving-timer">
+                            <div class="timer-label">Следующий халвинг через:</div>
+                            <div class="timer-value" id="halvingTimer">91д 0ч 0м</div>
+                        </div>
+
+                        <div class="halving-info">
+                            <div class="info-grid">
+                                <div class="info-card">
+                                    <div class="info-value">100</div>
+                                    <div class="info-label">Текущая награда</div>
+                                </div>
+                                <div class="info-card">
+                                    <div class="info-value">52,416</div>
+                                    <div class="info-label">Блоков до халвинга</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="halving-history">
+                            <h4>История халвингов</h4>
+                            <div class="history-list">
+                                <div class="history-item">
+                                    <span class="halving-number">Халвинг #1</span>
+                                    <span class="halving-date">2024-01-15</span>
+                                    <span class="halving-reward">50 RURC</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Вкладка истории -->
+            <section id="history" class="tab-content">
+                <div class="history-interface">
+                    <div class="history-card russian-card">
+                        <h2 class="section-title">
+                            <span class="title-icon">📊</span>
+                            История операций
+                        </h2>
+                        <div class="history-list" id="historyList">
+                            <!-- История будет добавлена через JS -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Футер -->
+        <footer class="patriotic-footer">
+            <p>🇷🇺 RURCoin - Российская криптовалюта</p>
+            <p class="footer-version">Версия 1.0.0</p>
+        </footer>
+    </div>
+
+    <!-- Подключение скриптов -->
+    <script src="contracts.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
