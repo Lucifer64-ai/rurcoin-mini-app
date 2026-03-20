@@ -441,6 +441,7 @@
     <div class="tabs">
         <button class="tab-btn active" data-tab="mining">⛽ Добыча</button>
         <button class="tab-btn" data-tab="equipment">🔧 Оборудование</button>
+                <button class="tab-btn" data-tab="upgrades">⬆️ Улучшения</button>
         <button class="tab-btn" data-tab="storage">🏭 Хранилище</button>
         <button class="tab-btn" data-tab="wallet">🔑 Кошелёк</button>
         <button class="tab-btn" data-tab="staking">💎 Стейкинг</button>
@@ -483,7 +484,19 @@
     </div>
 
     <!-- ХРАНИЛИЩЕ -->
-    <div class="tab-content" id="storage">
+    
+                <!-- ===== ВКЛАДКА УЛУЧШЕНИЙ ===== -->
+                <div id="upgrades" class="tab-content" style="display:none;">
+                    <div style="padding:4px 0 12px;">
+                        <div style="font-size:13px;color:#888;margin-bottom:12px;">
+                            💡 Улучшай оборудование за TON — увеличивай добычу и цену продажи
+                        </div>
+                        <div id="upgradesList">
+                            <div style="text-align:center;color:#555;padding:20px;">Загрузка...</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-content" id="storage">
         <div class="section-title">Хранилища ресурсов</div>
         <div id="storageInfo"></div>
     </div>
