@@ -1,0 +1,584 @@
+/* Патриотичная цветовая схема России */
+:root {
+    --russian-white: #FFFFFF;
+    --russian-blue: #0039A6;
+    --russian-red: #D52B1E;
+    --russian-gold: #FFD700;
+    --russian-dark-blue: #0D2B5D;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    color: #333;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 10px;
+}
+
+/* Патриотичный хедер */
+.patriotic-header {
+    background: linear-gradient(90deg, 
+        var(--russian-white) 0%, 
+        var(--russian-white) 33%, 
+        var(--russian-blue) 33%, 
+        var(--russian-blue) 66%, 
+        var(--russian-red) 66%, 
+        var(--russian-red) 100%);
+    color: var(--russian-dark-blue);
+    padding: 15px;
+    border-radius: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+    background: var(--russian-gold);
+    padding: 10px;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.header-text h1 {
+    font-size: 20px;
+    margin-bottom: 5px;
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+.header-text p {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo-placeholder {
+    font-size: 40px;
+}
+
+.header-stats {
+    display: flex;
+    gap: 10px;
+}
+
+.stat-badge {
+    background: rgba(255, 255, 255, 0.3);
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Навигация по вкладкам */
+.tab-navigation {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 15px;
+}
+
+.tab-btn {
+    flex: 1 1 calc(33.333% - 5px);
+    padding: 10px 5px;
+    border: none;
+    background: var(--russian-white);
+    color: var(--russian-dark-blue);
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.tab-btn.active {
+    background: var(--russian-blue);
+    color: var(--russian-white);
+}
+
+.tab-icon {
+    font-size: 20px;
+}
+
+/* Основной контент */
+.main-content {
+    min-height: 400px;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Карточки */
+.russian-card {
+    background: var(--russian-white);
+    border-radius: 15px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border: 2px solid var(--russian-blue);
+}
+
+.russian-card h2 {
+    color: var(--russian-dark-blue);
+    margin-bottom: 15px;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.russian-card h3 {
+    color: var(--russian-dark-blue);
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+/* Баланс */
+.balance-card {
+    text-align: center;
+}
+
+.balance-amount {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.balance {
+    font-size: 36px;
+    font-weight: bold;
+    color: var(--russian-dark-blue);
+}
+
+.currency {
+    font-size: 18px;
+    color: var(--russian-blue);
+}
+
+.balance-details {
+    display: flex;
+    justify-content: space-around;
+    padding-top: 10px;
+    border-top: 1px solid #eee;
+}
+
+.usd-value {
+    color: #666;
+    font-size: 14px;
+}
+
+.ton-balance {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--russian-blue);
+    font-weight: bold;
+}
+
+.ton-icon {
+    font-size: 18px;
+}
+
+/* Майнинг */
+.mining-controls {
+    text-align: center;
+}
+
+.mining-stats {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 15px;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-label {
+    display: block;
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.stat-value {
+    font-size: 16px;
+    font-weight: bold;
+    color: var(--russian-dark-blue);
+}
+
+.russian-button {
+    background: linear-gradient(135deg, var(--russian-blue), var(--russian-dark-blue));
+    color: var(--russian-white);
+    border: none;
+    padding: 15px 30px;
+    border-radius: 25px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 4px 15px rgba(0, 57, 166, 0.3);
+}
+
+.russian-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 57, 166, 0.4);
+}
+
+.russian-button.secondary {
+    background: linear-gradient(135deg, var(--russian-red), #b91c1c);
+    box-shadow: 0 4px 15px rgba(213, 43, 30, 0.3);
+}
+
+.russian-button.secondary:hover {
+    box-shadow: 0 6px 20px rgba(213, 43, 30, 0.4);
+}
+
+.mining-btn {
+    width: 100%;
+    font-size: 18px;
+    padding: 20px;
+}
+
+.btn-icon {
+    font-size: 20px;
+}
+
+/* Фермы */
+.farms-section {
+    margin-top: 15px;
+}
+
+.farms-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.farm-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background: #f5f5f5;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+}
+
+.farm-info {
+    flex: 1;
+}
+
+.farm-name {
+    font-weight: bold;
+    color: var(--russian-dark-blue);
+}
+
+.farm-stats {
+    font-size: 12px;
+    color: #666;
+}
+
+/* Стейкинг */
+.staking-interface {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.info-card {
+    text-align: center;
+    padding: 10px;
+    background: #f5f5f5;
+    border-radius: 10px;
+}
+
+.info-value {
+    font-size: 20px;
+    font-weight: bold;
+    color: var(--russian-dark-blue);
+}
+
+.info-value.apy {
+    color: var(--russian-red);
+    font-size: 24px;
+}
+
+.info-label {
+    font-size: 10px;
+    color: #666;
+    margin-top: 5px;
+}
+
+.staking-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.input-group {
+    display: flex;
+    gap: 10px;
+}
+
+.input-group input {
+    flex: 1;
+    padding: 12px;
+    border: 2px solid var(--russian-blue);
+    border-radius: 10px;
+    font-size: 14px;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: var(--russian-gold);
+}
+
+.staking-stats {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+}
+
+.staking-stats h4 {
+    margin-bottom: 10px;
+    color: var(--russian-dark-blue);
+}
+
+.stats-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.stats-list .stat-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px;
+    background: #f5f5f5;
+    border-radius: 8px;
+}
+
+/* Контракты */
+.contracts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.contract-item {
+    padding: 12px;
+    background: #f5f5f5;
+    border-radius: 10px;
+    border-left: 4px solid var(--russian-blue);
+}
+
+.contract-name {
+    font-weight: bold;
+    color: var(--russian-dark-blue);
+    margin-bottom: 5px;
+}
+
+.contract-desc {
+    font-size: 12px;
+    color: #666;
+}
+
+/* Транзакции */
+.transactions-feed {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.transaction-item {
+    padding: 10px;
+    background: #f5f5f5;
+    border-radius: 10px;
+    font-size: 12px;
+}
+
+.transaction-item.new-transaction {
+    animation: highlight 1s ease;
+}
+
+@keyframes highlight {
+    0% { background: var(--russian-gold); }
+    100% { background: #f5f5f5; }
+}
+
+/* Халвинг */
+.halving-timer {
+    text-align: center;
+    padding: 20px;
+    background: linear-gradient(135deg, var(--russian-blue), var(--russian-dark-blue));
+    border-radius: 15px;
+    margin: 15px 0;
+    color: var(--russian-white);
+}
+
+.timer-label {
+    font-size: 14px;
+    opacity: 0.8;
+    margin-bottom: 10px;
+}
+
+.timer-value {
+    font-size: 32px;
+    font-weight: bold;
+}
+
+.halving-history {
+    margin-top: 15px;
+}
+
+.history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.history-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    background: #f5f5f5;
+    border-radius: 8px;
+    font-size: 12px;
+}
+
+.halving-number {
+    font-weight: bold;
+    color: var(--russian-dark-blue);
+}
+
+.halving-date {
+    color: #666;
+}
+
+.halving-reward {
+    color: var(--russian-red);
+    font-weight: bold;
+}
+
+/* История */
+.history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.history-item {
+    padding: 12px;
+    background: #f5f5f5;
+    border-radius: 10px;
+    border-left: 4px solid var(--russian-blue);
+}
+
+.history-date {
+    font-size: 10px;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.history-action {
+    font-weight: bold;
+    color: var(--russian-dark-blue);
+}
+
+.history-amount {
+    font-size: 14px;
+    color: var(--russian-blue);
+    font-weight: bold;
+}
+
+/* Футер */
+.patriotic-footer {
+    text-align: center;
+    padding: 20px;
+    margin-top: 20px;
+    color: var(--russian-dark-blue);
+}
+
+.footer-version {
+    font-size: 12px;
+    color: #666;
+    margin-top: 5px;
+}
+
+/* Адаптивность */
+@media (max-width: 400px) {
+    .container {
+        padding: 5px;
+    }
+
+    .tab-btn {
+        flex: 1 1 calc(50% - 5px);
+    }
+
+    .balance {
+        font-size: 28px;
+    }
+
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+}
