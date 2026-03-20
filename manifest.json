@@ -1,0 +1,26 @@
+{
+  "name": "RURCoin - Русская криптовалюта",
+  "short_name": "RURCoin",
+  "description": "Майнинг и управление национальной криптовалюты России",
+  "version": "1.0.0",
+  "manifest_version": 3,
+  "icons": {
+    "16": "assets/icons/icon-16.png",
+    "32": "assets/icons/icon-32.png",
+    "64": "assets/icons/icon-64.png",
+    "128": "assets/icons/icon-128.png",
+    "256": "assets/icons/icon-256.png",
+    "512": "assets/icons/icon-512.png"
+  },
+  "permissions": [
+    "storage",
+    "notifications"
+  ],
+  "start_url": "/index.html",
+  "display": "fullscreen",
+  "orientation": "portrait",
+  "theme_color": "#0039A6",
+  "background_color": "#FFFFFF",
+  "categories": ["finance", "business"],
+  "lang": "ru"
+}
