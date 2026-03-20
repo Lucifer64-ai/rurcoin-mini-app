@@ -247,6 +247,14 @@ function onMultiWalletConnected(address, network, walletApp) {
     loadMultiBalance(address, network);
     loadPlayerProgress(address);
 
+    // Регистрируем игрока в глобальной статистике
+    if (window.registerPlayer) {
+        const isNew = registerPlayer(address, network);
+        if (!isNew) {
+            console.log('[Wallet] Игрок уже зарегистрирован:', address.slice(0,8) + '...');
+        }
+    }
+
     showWalletMsg(`✅ ${MULTI_WALLET_CONFIG.networks[network].name} подключён!`, 'success');
     updateHeaderWallet();
 }
