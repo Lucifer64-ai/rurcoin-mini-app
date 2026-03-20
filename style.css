@@ -1207,3 +1207,186 @@ body {
 .pump-arm{transform-origin:50% 80%;animation:pump-rock 1.8s ease-in-out infinite;display:inline-block}
 .pump-arm.slow{animation-duration:3s}
 .pump-arm.fast{animation-duration:1s}
+
+/* ══════════════════════════════════════
+   TIER SYSTEM — карточки улучшений
+══════════════════════════════════════ */
+
+/* Базовая карточка */
+.upgrade-card {
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 8px;
+    transition: transform .15s;
+}
+.upgrade-card:hover { transform: translateY(-1px); }
+
+/* Прогресс-бар обёртка */
+.upgrade-bar-wrap {
+    background: #111;
+    border-radius: 3px;
+    height: 4px;
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+.upgrade-bar {
+    height: 4px;
+    border-radius: 3px;
+    transition: width .4s;
+}
+
+/* Бейдж тира */
+.tier-badge {
+    font-size: 9px;
+    font-weight: 900;
+    padding: 2px 6px;
+    border-radius: 5px;
+}
+
+/* Кнопка улучшения */
+.upgrade-btn {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform .15s;
+}
+.upgrade-btn:hover  { transform: scale(1.02); }
+.upgrade-btn:active { transform: scale(0.98); }
+.upgrade-btn:disabled { background: #181818 !important; color: #444 !important; box-shadow: none !important; border-color: #2a2a2a !important; cursor: not-allowed; }
+
+/* Иконка улучшения */
+.upgrade-icon { font-size: 26px; }
+
+/* Уровень */
+.upgrade-level { font-size: 11px; font-weight: 700; }
+
+/* Описание */
+.upgrade-desc { font-size: 11px; color: #555; }
+
+/* Максимальный уровень */
+.upgrade-maxed { text-align: center; font-size: 12px; }
+
+/* ── ТИРЫ ── */
+
+/* F — серый */
+.tier-f .upgrade-card    { background: #161616; border: 1px solid #1e1e1e; }
+.tier-f.maxed            { border-color: #e0e0e0 !important; box-shadow: 0 0 8px #ffffff55; }
+.tier-f .tier-badge      { color: #e0e0e0; border: 1px solid #e0e0e0; background: #e0e0e018; }
+.tier-f .upgrade-bar     { background: #e0e0e0; }
+.tier-f .upgrade-icon    { filter: drop-shadow(0 0 6px #e0e0e0); }
+.tier-f .upgrade-level   { color: #444; }
+.tier-f.maxed .upgrade-level { color: #e0e0e0; }
+.tier-f .upgrade-btn     { background: linear-gradient(135deg, #e0e0e0bb, #e0e0e0); color: #111; border: 1px solid #e0e0e0; box-shadow: 0 0 8px #ffffff55; }
+.tier-f .upgrade-maxed   { color: #e0e0e0; }
+
+/* E — зелёный */
+.tier-e .upgrade-card    { background: #0a1a0a; border: 1px solid #1e1e1e; }
+.tier-e.maxed            { border-color: #4ade80 !important; box-shadow: 0 0 8px #22c55e66; }
+.tier-e .tier-badge      { color: #4ade80; border: 1px solid #4ade80; background: #4ade8018; }
+.tier-e .upgrade-bar     { background: #4ade80; }
+.tier-e .upgrade-icon    { filter: drop-shadow(0 0 6px #4ade80); }
+.tier-e .upgrade-level   { color: #444; }
+.tier-e.maxed .upgrade-level { color: #4ade80; }
+.tier-e .upgrade-btn     { background: linear-gradient(135deg, #4ade80bb, #4ade80); color: #111; border: 1px solid #4ade80; box-shadow: 0 0 8px #22c55e66; }
+.tier-e .upgrade-maxed   { color: #4ade80; }
+
+/* D — синий */
+.tier-d .upgrade-card    { background: #0a0f1f; border: 1px solid #1e1e1e; }
+.tier-d.maxed            { border-color: #60a5fa !important; box-shadow: 0 0 8px #3b82f666; }
+.tier-d .tier-badge      { color: #60a5fa; border: 1px solid #60a5fa; background: #60a5fa18; }
+.tier-d .upgrade-bar     { background: #60a5fa; }
+.tier-d .upgrade-icon    { filter: drop-shadow(0 0 6px #60a5fa); }
+.tier-d .upgrade-level   { color: #444; }
+.tier-d.maxed .upgrade-level { color: #60a5fa; }
+.tier-d .upgrade-btn     { background: linear-gradient(135deg, #60a5fabb, #60a5fa); color: #fff; border: 1px solid #60a5fa; box-shadow: 0 0 8px #3b82f666; }
+.tier-d .upgrade-maxed   { color: #60a5fa; }
+
+/* C — фиолетовый */
+.tier-c .upgrade-card    { background: #130a1f; border: 1px solid #1e1e1e; }
+.tier-c.maxed            { border-color: #c084fc !important; box-shadow: 0 0 8px #a855f766; }
+.tier-c .tier-badge      { color: #c084fc; border: 1px solid #c084fc; background: #c084fc18; }
+.tier-c .upgrade-bar     { background: #c084fc; }
+.tier-c .upgrade-icon    { filter: drop-shadow(0 0 6px #c084fc); }
+.tier-c .upgrade-level   { color: #444; }
+.tier-c.maxed .upgrade-level { color: #c084fc; }
+.tier-c .upgrade-btn     { background: linear-gradient(135deg, #c084fcbb, #c084fc); color: #fff; border: 1px solid #c084fc; box-shadow: 0 0 8px #a855f766; }
+.tier-c .upgrade-maxed   { color: #c084fc; }
+
+/* B — оранжевый */
+.tier-b .upgrade-card    { background: #1f0f0a; border: 1px solid #1e1e1e; }
+.tier-b.maxed            { border-color: #fb923c !important; box-shadow: 0 0 8px #f9731666; }
+.tier-b .tier-badge      { color: #fb923c; border: 1px solid #fb923c; background: #fb923c18; }
+.tier-b .upgrade-bar     { background: #fb923c; }
+.tier-b .upgrade-icon    { filter: drop-shadow(0 0 6px #fb923c); }
+.tier-b .upgrade-level   { color: #444; }
+.tier-b.maxed .upgrade-level { color: #fb923c; }
+.tier-b .upgrade-btn     { background: linear-gradient(135deg, #fb923cbb, #fb923c); color: #fff; border: 1px solid #fb923c; box-shadow: 0 0 8px #f9731666; }
+.tier-b .upgrade-maxed   { color: #fb923c; }
+
+/* A — красный */
+.tier-a .upgrade-card    { background: #1f0a0a; border: 1px solid #1e1e1e; }
+.tier-a.maxed            { border-color: #f87171 !important; box-shadow: 0 0 10px #ef444466; }
+.tier-a .tier-badge      { color: #f87171; border: 1px solid #f87171; background: #f8717118; }
+.tier-a .upgrade-bar     { background: #f87171; }
+.tier-a .upgrade-icon    { filter: drop-shadow(0 0 6px #f87171); }
+.tier-a .upgrade-level   { color: #444; }
+.tier-a.maxed .upgrade-level { color: #f87171; }
+.tier-a .upgrade-btn     { background: linear-gradient(135deg, #f87171bb, #f87171); color: #fff; border: 1px solid #f87171; box-shadow: 0 0 10px #ef444466; }
+.tier-a .upgrade-maxed   { color: #f87171; }
+
+/* S — золотой */
+.tier-s .upgrade-card    { background: #1a1400; border: 1px solid #1e1e1e; }
+.tier-s.maxed            { border-color: #fbbf24 !important; box-shadow: 0 0 12px #f59e0b99; }
+.tier-s .tier-badge      { color: #fbbf24; border: 1px solid #fbbf24; background: #fbbf2418; }
+.tier-s .upgrade-bar     { background: #fbbf24; }
+.tier-s .upgrade-icon    { filter: drop-shadow(0 0 6px #fbbf24); }
+.tier-s .upgrade-level   { color: #444; }
+.tier-s.maxed .upgrade-level { color: #fbbf24; }
+.tier-s .upgrade-btn     { background: linear-gradient(135deg, #fbbf24bb, #fbbf24); color: #111; border: 1px solid #fbbf24; box-shadow: 0 0 12px #f59e0b99; }
+.tier-s .upgrade-maxed   { color: #fbbf24; }
+
+/* SS — радужный */
+.tier-ss .upgrade-card {
+    background: #0d0d1a;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    background-image: linear-gradient(#0d0d1a, #0d0d1a);
+    outline: 2px solid transparent;
+    position: relative;
+}
+.tier-ss .upgrade-card::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 16px;
+    background: linear-gradient(90deg, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00);
+    background-size: 200%;
+    animation: rainbow-shift 2s linear infinite;
+    z-index: -1;
+}
+.tier-ss .tier-badge {
+    background: linear-gradient(90deg, #f00, #ff0, #0f0, #0ff, #00f, #f0f);
+    color: #fff;
+    border: none;
+}
+.tier-ss .upgrade-bar {
+    background: linear-gradient(90deg, #f00, #ff0, #0f0, #0ff, #00f, #f0f);
+    background-size: 200%;
+    animation: rainbow-shift 2s linear infinite;
+}
+.tier-ss .upgrade-icon  { filter: drop-shadow(0 0 8px #f0f); }
+.tier-ss .upgrade-level { color: #444; }
+.tier-ss.maxed .upgrade-level { color: #fff; }
+.tier-ss .upgrade-btn {
+    background: linear-gradient(90deg, #f00, #ff0, #0f0, #0ff, #00f, #f0f);
+    background-size: 200%;
+    animation: rainbow-shift 2s linear infinite;
+    color: #fff;
+    border: none;
+    box-shadow: 0 0 16px #f0fa;
+}
+.tier-ss .upgrade-maxed { color: #fff; }
