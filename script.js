@@ -267,15 +267,50 @@ class RURCoinMiner {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    const requiredElements = ['mineBtn', 'balance', 'hashrate'];
-    let allElementsExist = true;
-    requiredElements.forEach(id => {
-        if (!document.getElementById(id)) { console.error('Элемент не найден:', id); allElementsExist = false; }
-    });
-    if (allElementsExist) {
-        window.rurcoinApp = new RURCoinMiner();
-        console.log('RURCoin Oil & Gas запущено!');
+    // Инициализация приложения
+    window.rurcoinApp = new RURCoinMiner();
+    console.log('RURCoin Oil & Gas запущено!');
+
+    // ── ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК ──
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    function switchTab(tabId) {
+        tabBtns.forEach(b => b.classList.remove('active'));
+        tabContents.forEach(c => {
+            c.classList.remove('active');
+            c.style.display = 'none';
+        });
+        const activeBtn = document.querySelector('.tab-btn[data-tab="' + tabId + '"]');
+        const activeContent = document.getElementById(tabId);
+        if (activeBtn) activeBtn.classList.add('active');
+        if (activeContent) {
+            activeContent.classList.add('active');
+            activeContent.style.display = 'block';
+        }
     }
+
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const tabId = this.getAttribute('data-tab');
+            switchTab(tabId);
+            // Анимация ripple на кнопке
+            const ripple = document.createElement('span');
+            ripple.className = 'btn-ripple';
+            ripple.style.cssText = 'position:absolute;border-radius:50%;background:rgba(255,107,0,0.4);width:80px;height:80px;margin-top:-40px;margin-left:-40px;animation:ripple-anim 0.5s linear;pointer-events:none;';
+            this.style.position = 'relative';
+            this.style.overflow = 'hidden';
+            this.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 500);
+        });
+    });
+
+    // Показываем первую вкладку
+    switchTab('mining');
+
+    // Экспортируем switchTab глобально
+    window.switchTab = switchTab;
+    if (window.rurcoinApp) window.rurcoinApp.switchTab = switchTab;
 });
 
 // Обновляем UI при изменении цен
