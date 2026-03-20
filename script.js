@@ -256,6 +256,12 @@ class RURCoinMiner {
         }
 
         this.tonBalance -= cost;
+
+        // Покупка улучшения → напрямую пополняет пул ликвидности RURC
+        if (window.mintToLiquidityPool) {
+            mintToLiquidityPool(cost, upg.name);
+        }
+
         this.upgrades[upgradeId]++;
         this.showMessage(`✅ ${upg.icon} ${upg.name} → Уровень ${this.upgrades[upgradeId]}`);
         this.saveData();
@@ -276,6 +282,8 @@ class RURCoinMiner {
         if (window.initGlobalStats) initGlobalStats();
         // Инициализируем реальные цены
         if (window.initPriceFeed) initPriceFeed();
+        // Инициализируем пул ликвидности RURC
+        if (window.initLiquidityPool) initLiquidityPool();
     }
 
     initTelegram() {
