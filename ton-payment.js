@@ -5,7 +5,7 @@
 // ============================================================
 
 // ⚠️ ЗАМЕНИТЕ НА СВОЙ КОШЕЛЁК ДЛЯ ЗАРПЛАТ КОМАНДЫ
-const DEV_WALLET_ADDRESS = 'UQD_REPLACE_WITH_YOUR_WALLET_ADDRESS';
+const DEV_WALLET_ADDRESS = 'UQBMECsWYTb9gHH5bT-fweEZQXptdgmKpOy0mIswhbu0RqEb';
 
 // Комментарий к транзакции (виден в блокчейне)
 const DEV_WALLET_COMMENT = 'RURCoin Equipment Purchase — Dev Fund';
