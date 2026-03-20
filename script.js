@@ -62,552 +62,86 @@ class RURCoinMiner {
     //  Конфиг улучшений
     // ============================================================
     getUpgradeConfig() {
+        const T={F:{c:1},E:{c:4},D:{c:12},C:{c:30},B:{c:75},A:{c:180},S:{c:450},SS:{c:1200}};
         return {
-            // ---- НЕФТЯНОЙ НАСОС ----
-            oilPumpSpeed: {
-                icon: '⚡', category: 'oil',
-                name: 'Скорость насоса',
-                desc: (lvl) => `+${lvl * 30}% скорость добычи нефти`,
-                maxLevel: 10,
-                cost: (lvl) => (lvl + 1) * 3.0,   // TON
-                effect: (lvl) => 1 + lvl * 0.30,   // множитель
-            },
-            oilPumpEff: {
-                icon: '🔧', category: 'oil',
-                name: 'КПД насоса',
-                desc: (lvl) => `+${lvl * 15}% эффективность (меньше потерь)`,
-                maxLevel: 10,
-                cost: (lvl) => (lvl + 1) * 4,
-                effect: (lvl) => 1 + lvl * 0.15,
-            },
-            oilPumpAuto: {
-                icon: '🤖', category: 'oil',
-                name: 'Автонасос',
-                desc: (lvl) => lvl === 0 ? 'Насос работает без нажатий' : `Уровень ${lvl}: +${lvl * 20}% авто-добыча`,
-                maxLevel: 5,
-                cost: (lvl) => (lvl + 1) * 6,
-                effect: (lvl) => lvl * 0.20,
-            },
-            oilPumpDeep: {
-                icon: '⛏️', category: 'oil',
-                name: 'Глубокое бурение',
-                desc: (lvl) => `Доступ к пластам +${lvl * 50}% нефти`,
-                maxLevel: 8,
-                cost: (lvl) => (lvl + 1) * 5.0,
-                effect: (lvl) => 1 + lvl * 0.50,
-            },
-            oilPumpTurbo: {
-                icon: '🚀', category: 'oil',
-                name: 'Турбонасос',
-                desc: (lvl) => `x${(1 + lvl * 0.5).toFixed(1)} производительность`,
-                maxLevel: 5,
-                cost: (lvl) => (lvl + 1) * 10,
-                effect: (lvl) => 1 + lvl * 0.50,
-            },
-
-            // ---- ГАЗОВАЯ ВЫШКА ----
-            gasTowerSpeed: {
-                icon: '💨', category: 'gas',
-                name: 'Скорость вышки',
-                desc: (lvl) => `+${lvl * 30}% скорость добычи газа`,
-                maxLevel: 10,
-                cost: (lvl) => (lvl + 1) * 1.5,
-                effect: (lvl) => 1 + lvl * 0.30,
-            },
-            gasTowerPressure: {
-                icon: '🔴', category: 'gas',
-                name: 'Давление газа',
-                desc: (lvl) => `+${lvl * 25}% объём добычи`,
-                maxLevel: 10,
-                cost: (lvl) => (lvl + 1) * 2,
-                effect: (lvl) => 1 + lvl * 0.25,
-            },
-            gasTowerAuto: {
-                icon: '🤖', category: 'gas',
-                name: 'Автовышка',
-                desc: (lvl) => `Уровень ${lvl}: +${lvl * 20}% авто-добыча газа`,
-                maxLevel: 5,
-                cost: (lvl) => (lvl + 1) * 3,
-                effect: (lvl) => lvl * 0.20,
-            },
-            gasTowerFilter: {
-                icon: '🧪', category: 'gas',
-                name: 'Фильтрация газа',
-                desc: (lvl) => `+${lvl * 20}% цена продажи газа`,
-                maxLevel: 8,
-                cost: (lvl) => (lvl + 1) * 2,
-                effect: (lvl) => 1 + lvl * 0.20,
-            },
-            gasTowerTurbo: {
-                icon: '🚀', category: 'gas',
-                name: 'Турбовышка',
-                desc: (lvl) => `x${(1 + lvl * 0.5).toFixed(1)} производительность`,
-                maxLevel: 5,
-                cost: (lvl) => (lvl + 1) * 5,
-                effect: (lvl) => 1 + lvl * 0.50,
-            },
-
-            // ---- ОБЩИЕ ----
-            refinery: {
-                icon: '🏭', category: 'common',
-                name: 'Нефтезавод',
-                desc: (lvl) => `+${lvl * 40}% цена нефти при продаже`,
-                maxLevel: 5,
-                cost: (lvl) => (lvl + 1) * 12,
-                effect: (lvl) => 1 + lvl * 0.40,
-            },
-            pipeline: {
-                icon: '🔩', category: 'common',
-                name: 'Трубопровод',
-                desc: (lvl) => `Авто-продажа каждые ${Math.max(5, 30 - lvl * 5)} мин`,
-                maxLevel: 5,
-                cost: (lvl) => (lvl + 1) * 6,
-                effect: (lvl) => Math.max(5, 30 - lvl * 5),
-            },
-            compressor: {
-                icon: '⚙️', category: 'common',
-                name: 'Компрессор',
-                desc: (lvl) => `+${lvl * 50}% ёмкость газовых цистерн`,
-                maxLevel: 8,
-                cost: (lvl) => (lvl + 1) * 2,
-                effect: (lvl) => 1 + lvl * 0.50,
-            },
-            drillBit: {
-                icon: '💎', category: 'common',
-                name: 'Алмазное сверло',
-                desc: (lvl) => `+${lvl * 20}% ко всей добыче`,
-                maxLevel: 10,
-                cost: (lvl) => (lvl + 1) * 4,
-                effect: (lvl) => 1 + lvl * 0.20,
-            },
-            aiControl: {
-                icon: '🧠', category: 'common',
-                name: 'ИИ-управление',
-                desc: (lvl) => `+${lvl * 35}% ко всем показателям`,
-                maxLevel: 5,
-                cost: (lvl) => (lvl + 1) * 10,
-                effect: (lvl) => 1 + lvl * 0.35,
-            },
+            oilPumpSpeed:   {icon:'⚡',  cat:'oil',    tier:'F',  name:'Скорость насоса',       desc:(l)=>`+${l*30}% скорость нефти`,           max:10, cost:(l)=>(l+1)*T.F.c,  fx:(l)=>1+l*0.30},
+            oilPumpEff:     {icon:'🔧', cat:'oil',    tier:'E',  name:'КПД насоса',             desc:(l)=>`+${l*15}% эффективность`,             max:10, cost:(l)=>(l+1)*T.E.c,  fx:(l)=>1+l*0.15},
+            oilPumpAuto:    {icon:'🤖', cat:'oil',    tier:'D',  name:'Автонасос',              desc:(l)=>`+${l*20}% авто-добыча нефти`,         max:5,  cost:(l)=>(l+1)*T.D.c,  fx:(l)=>l*0.20},
+            oilPumpDeep:    {icon:'⛏️', cat:'oil',    tier:'C',  name:'Глубокое бурение',       desc:(l)=>`+${l*50}% доступ к пластам`,          max:8,  cost:(l)=>(l+1)*T.C.c,  fx:(l)=>1+l*0.50},
+            oilPumpTurbo:   {icon:'🚀', cat:'oil',    tier:'B',  name:'Турбонасос',             desc:(l)=>`x${(1+l*0.5).toFixed(1)} произв.`,    max:5,  cost:(l)=>(l+1)*T.B.c,  fx:(l)=>1+l*0.50},
+            oilPumpPlasma:  {icon:'⚛️', cat:'oil',    tier:'A',  name:'Плазменный насос',       desc:(l)=>`+${l*80}% добыча + авто-продажа`,     max:5,  cost:(l)=>(l+1)*T.A.c,  fx:(l)=>1+l*0.80},
+            oilPumpQuantum: {icon:'🌀', cat:'oil',    tier:'S',  name:'Квантовый насос',        desc:(l)=>`x${1+l*2} вся нефтедобыча`,           max:3,  cost:(l)=>(l+1)*T.S.c,  fx:(l)=>1+l*2},
+            oilPumpGod:     {icon:'👑', cat:'oil',    tier:'SS', name:'Богоуровень насоса',     desc:(l)=>`x${1+l*5} ВСЯ нефть`,                 max:1,  cost:(l)=>(l+1)*T.SS.c, fx:(l)=>1+l*5},
+            gasTowerSpeed:  {icon:'💨', cat:'gas',    tier:'F',  name:'Скорость вышки',         desc:(l)=>`+${l*30}% скорость газа`,             max:10, cost:(l)=>(l+1)*T.F.c,  fx:(l)=>1+l*0.30},
+            gasTowerPres:   {icon:'🔴', cat:'gas',    tier:'E',  name:'Давление газа',          desc:(l)=>`+${l*25}% объём добычи`,              max:10, cost:(l)=>(l+1)*T.E.c,  fx:(l)=>1+l*0.25},
+            gasTowerAuto:   {icon:'🤖', cat:'gas',    tier:'D',  name:'Автовышка',              desc:(l)=>`+${l*20}% авто-добыча газа`,          max:5,  cost:(l)=>(l+1)*T.D.c,  fx:(l)=>l*0.20},
+            gasTowerFilter: {icon:'🧪', cat:'gas',    tier:'C',  name:'Фильтрация газа',        desc:(l)=>`+${l*20}% цена газа`,                 max:8,  cost:(l)=>(l+1)*T.C.c,  fx:(l)=>1+l*0.20},
+            gasTowerTurbo:  {icon:'🚀', cat:'gas',    tier:'B',  name:'Турбовышка',             desc:(l)=>`x${(1+l*0.5).toFixed(1)} произв.`,    max:5,  cost:(l)=>(l+1)*T.B.c,  fx:(l)=>1+l*0.50},
+            gasTowerCryo:   {icon:'❄️', cat:'gas',    tier:'A',  name:'Крио-сжижение',          desc:(l)=>`+${l*70}% ёмкость + цена газа`,       max:5,  cost:(l)=>(l+1)*T.A.c,  fx:(l)=>1+l*0.70},
+            gasTowerFusion: {icon:'☢️', cat:'gas',    tier:'S',  name:'Термоядерная вышка',     desc:(l)=>`x${1+l*2} вся газодобыча`,            max:3,  cost:(l)=>(l+1)*T.S.c,  fx:(l)=>1+l*2},
+            gasTowerGod:    {icon:'🌌', cat:'gas',    tier:'SS', name:'Богоуровень вышки',      desc:(l)=>`x${1+l*5} ВЕСЬ газ`,                  max:1,  cost:(l)=>(l+1)*T.SS.c, fx:(l)=>1+l*5},
+            refinery:       {icon:'🏭', cat:'common', tier:'E',  name:'Нефтезавод',             desc:(l)=>`+${l*40}% цена нефти`,                max:5,  cost:(l)=>(l+1)*T.E.c,  fx:(l)=>1+l*0.40},
+            pipeline:       {icon:'🔩', cat:'common', tier:'D',  name:'Трубопровод',            desc:(l)=>`Авто-продажа каждые ${Math.max(5,30-l*5)} мин`, max:5, cost:(l)=>(l+1)*T.D.c, fx:(l)=>Math.max(5,30-l*5)},
+            compressor:     {icon:'⚙️', cat:'common', tier:'D',  name:'Компрессор',             desc:(l)=>`+${l*50}% ёмкость цистерн`,           max:8,  cost:(l)=>(l+1)*T.D.c,  fx:(l)=>1+l*0.50},
+            drillBit:       {icon:'💎', cat:'common', tier:'C',  name:'Алмазное сверло',        desc:(l)=>`+${l*20}% ко всей добыче`,            max:10, cost:(l)=>(l+1)*T.C.c,  fx:(l)=>1+l*0.20},
+            aiControl:      {icon:'🧠', cat:'common', tier:'B',  name:'ИИ-управление',          desc:(l)=>`+${l*35}% ко всем показателям`,       max:5,  cost:(l)=>(l+1)*T.B.c,  fx:(l)=>1+l*0.35},
+            satellite:      {icon:'🛰️', cat:'common', tier:'A',  name:'Спутниковый мониторинг', desc:(l)=>`+${l*60}% точность добычи`,           max:5,  cost:(l)=>(l+1)*T.A.c,  fx:(l)=>1+l*0.60},
+            nanoTech:       {icon:'🔬', cat:'common', tier:'S',  name:'Нанотехнологии',         desc:(l)=>`x${(1+l*1.5).toFixed(1)} весь доход`, max:3,  cost:(l)=>(l+1)*T.S.c,  fx:(l)=>1+l*1.5},
+            godMode:        {icon:'🌈', cat:'common', tier:'SS', name:'Режим Бога',             desc:(l)=>`x${1+l*10} ВСЁ`,                      max:1,  cost:(l)=>(l+1)*T.SS.c, fx:(l)=>1+l*10},
         };
     }
 
-    // ============================================================
-    //  Расчёт добычи с учётом улучшений
-    // ============================================================
-    getOilPerSec() {
-        if (this.oilPumps === 0) return 0;
-        const cfg = this.getUpgradeConfig();
-        const base = (this.oilPumps * 2) / 3600;
-        const speed    = cfg.oilPumpSpeed.effect(this.upgrades.oilPumpSpeed);
-        const eff      = cfg.oilPumpEff.effect(this.upgrades.oilPumpEff);
-        const deep     = cfg.oilPumpDeep.effect(this.upgrades.oilPumpDeep);
-        const turbo    = cfg.oilPumpTurbo.effect(this.upgrades.oilPumpTurbo);
-        const drill    = cfg.drillBit.effect(this.upgrades.drillBit);
-        const ai       = cfg.aiControl.effect(this.upgrades.aiControl);
-        return base * speed * eff * deep * turbo * drill * ai;
-    }
-
-    getGasPerSec() {
-        if (this.gasTowers === 0) return 0;
-        const cfg = this.getUpgradeConfig();
-        const base = (this.gasTowers * 50) / 3600;
-        const speed    = cfg.gasTowerSpeed.effect(this.upgrades.gasTowerSpeed);
-        const pressure = cfg.gasTowerPressure.effect(this.upgrades.gasTowerPressure);
-        const turbo    = cfg.gasTowerTurbo.effect(this.upgrades.gasTowerTurbo);
-        const drill    = cfg.drillBit.effect(this.upgrades.drillBit);
-        const ai       = cfg.aiControl.effect(this.upgrades.aiControl);
-        return base * speed * pressure * turbo * drill * ai;
-    }
-
-    getOilSellPrice() {
-        const cfg = this.getUpgradeConfig();
-        const refinery = cfg.refinery.effect(this.upgrades.refinery);
-        // Реальная цена нефти Brent (USD/барр.) × коэффициент НПЗ
-        const basePrice = window.getOilPriceRURC ? getOilPriceRURC() : 75.0;
-        return basePrice * refinery;
-    }
-
-    getGasSellPrice() {
-        const cfg = this.getUpgradeConfig();
-        const filter = cfg.gasTowerFilter.effect(this.upgrades.gasTowerFilter);
-        // Реальная цена газа (USD/м³) × коэффициент фильтра
-        const basePrice = window.getGasPriceRURC ? getGasPriceRURC() : 0.13;
-        return basePrice * filter;
-    }
-
-    // ============================================================
-    //  Купить улучшение
-    // ============================================================
-    buyUpgrade(upgradeId) {
-        const cfg = this.getUpgradeConfig();
-        const upg = cfg[upgradeId];
-        if (!upg) return;
-
-        const currentLevel = this.upgrades[upgradeId];
-        if (currentLevel >= upg.maxLevel) {
-            this.showMessage(`✅ ${upg.name} — максимальный уровень!`);
-            return;
-        }
-
-        const cost = upg.cost(currentLevel);
-        if (this.tonBalance < cost) {
-            this.showMessage(`❌ Нужно ${cost.toFixed(1)} TON. У тебя: ${this.tonBalance.toFixed(2)} TON`);
-            return;
-        }
-
-        this.tonBalance -= cost;
-
-        // Покупка улучшения → напрямую пополняет пул ликвидности RURC
-        if (window.mintToLiquidityPool) {
-            mintToLiquidityPool(cost, upg.name);
-        }
-
-        this.upgrades[upgradeId]++;
-        this.showMessage(`✅ ${upg.icon} ${upg.name} → Уровень ${this.upgrades[upgradeId]}`);
-        this.saveData();
-        this.render();
-        this.renderUpgradesTab();
-    }
-
-    init() {
-        this.initTelegram();
-        this.setupEventListeners();
-        this.setupTabs();
-        this.loadData();
-        this.render();
-        this.startGameLoop();
-        this.startHalvingTimer();
-        this.loadTransactionHistory();
-        // Инициализируем глобальную статистику
-        if (window.initGlobalStats) initGlobalStats();
-        // Инициализируем реальные цены
-        if (window.initPriceFeed) initPriceFeed();
-        // Инициализируем пул ликвидности RURC
-        if (window.initLiquidityPool) initLiquidityPool();
-    }
-
-    initTelegram() {
-        try {
-            if (window.Telegram && window.Telegram.WebApp) {
-                Telegram.WebApp.ready();
-                Telegram.WebApp.expand();
-                const user = Telegram.WebApp.initDataUnsafe?.user;
-                if (user) this.username = user.username || user.first_name;
-            }
-        } catch (e) { console.log('Telegram WebApp not available'); }
-    }
-
-    setupEventListeners() {
-        const mineBtn = document.getElementById('mineBtn');
-        if (mineBtn) mineBtn.addEventListener('click', () => this.toggleMining());
-        const stakeBtn = document.getElementById('stakeBtn');
-        if (stakeBtn) stakeBtn.addEventListener('click', () => this.stake());
-        const unstakeBtn = document.getElementById('unstakeBtn');
-        if (unstakeBtn) unstakeBtn.addEventListener('click', () => this.unstake());
-        const sellOilBtn = document.getElementById('sellOilBtn');
-        if (sellOilBtn) sellOilBtn.addEventListener('click', () => this.sellOil());
-        const sellGasBtn = document.getElementById('sellGasBtn');
-        if (sellGasBtn) sellGasBtn.addEventListener('click', () => this.sellGas());
-    }
-
-    setupTabs() {
-        const tabButtons = document.querySelectorAll('.tab-btn');
-        tabButtons.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const tabId = e.target.getAttribute('data-tab');
-                if (tabId) this.switchTab(tabId);
-            });
-        });
-        this.switchTab('mining');
-    }
-
-    switchTab(tabId) {
-        document.querySelectorAll('.tab-content').forEach(content => {
-            content.classList.remove('active');
-            content.style.display = 'none';
-        });
-        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-        const targetTab = document.getElementById(tabId);
-        const targetBtn = document.querySelector(`[data-tab="${tabId}"]`);
-        if (targetTab && targetBtn) {
-            targetTab.classList.add('active');
-            targetTab.style.display = 'block';
-            targetBtn.classList.add('active');
-            this.currentTab = tabId;
-            this.updateTabContent(tabId);
-        }
-    }
-
-    updateTabContent(tabId) {
-        switch(tabId) {
-            case 'mining':      this.updateMiningTab(); break;
-            case 'equipment':   this.updateEquipmentTab(); break;
-            case 'upgrades':    this.renderUpgradesTab(); break;
-            case 'storage':     this.updateStorageTab(); break;
-            case 'staking':     this.updateStakingTab(); break;
-            case 'contracts':   this.updateContractsTab(); break;
-            case 'transactions':this.updateTransactionsTab(); break;
-            case 'halving':     this.updateHalvingTab(); break;
-        }
-    }
-
-    updateMiningTab()      { this.renderMiningData(); }
-    updateEquipmentTab()   { this.renderEquipmentData(); }
-    updateStorageTab()     { this.renderStorageData(); }
-    updateStakingTab()     { this.renderStakingData(); }
-    updateContractsTab()   { this.renderContractsData(); }
-    updateTransactionsTab(){ this.renderTransactionsData(); }
-    updateHalvingTab()     { this.renderHalvingData(); }
-
-    toggleMining() {
-        this.isMining = !this.isMining;
-        const button = document.getElementById('mineBtn');
-        if (this.isMining) {
-            this.miningStartTime = Date.now();
-            button.textContent = '⏸️ Остановить добычу';
-            button.style.background = 'linear-gradient(135deg, #f44336, #d32f2f)';
-        } else {
-            button.textContent = '⛽ Начать добычу';
-            button.style.background = 'linear-gradient(135deg, #FF8C00, #FF6000)';
-            this.totalMined += this.miningSessionCoins;
-            this.miningSessionCoins = 0;
-        }
-    }
-
-    mine() {
-        if (!this.isMining) return;
-        const oilPerSec = this.getOilPerSec();
-        const gasPerSec = this.getGasPerSec();
-
-        if (this.oilStored < this.oilCapacity)
-            this.oilStored = Math.min(this.oilCapacity, this.oilStored + oilPerSec);
-        if (this.gasStored < this.gasCapacity)
-            this.gasStored = Math.min(this.gasCapacity, this.gasStored + gasPerSec);
-
-        const rurcPerSec = (oilPerSec * 3600 * 2.0 + gasPerSec * 3600 * 0.15) / 3600;
-        this.balance += rurcPerSec;
-        this.miningSessionCoins += rurcPerSec;
-
-        // Авто-продажа (pipeline)
-        const cfg = this.getUpgradeConfig();
-        const pipelineLevel = this.upgrades.pipeline;
-        if (pipelineLevel > 0) {
-            const intervalSec = cfg.pipeline.effect(pipelineLevel) * 60;
-            if (!this._lastAutosell) this._lastAutosell = Date.now();
-            if ((Date.now() - this._lastAutosell) / 1000 >= intervalSec) {
-                if (this.oilStored > 0) this.sellOil(true);
-                if (this.gasStored > 0) this.sellGas(true);
-                this._lastAutosell = Date.now();
-            }
-        }
-
-        // Добавляем добытое в глобальный резервуар
-        if (window.addToGlobalReserve) {
-            addToGlobalReserve(oilPerSec, gasPerSec);
-        }
-
-        this.saveData();
-    }
-
-    sellOil(silent = false) {
-        if (this.oilStored <= 0) { if (!silent) this.showMessage('Нет нефти для продажи'); return; }
-        const price = this.getOilSellPrice();
-        const earned = this.oilStored * price;
-        this.balance += earned;
-        if (!silent) this.showMessage(`💰 Продано ${this.oilStored.toFixed(1)} барр. нефти за ${earned.toFixed(2)} RURC (${price.toFixed(2)} RURC/барр.)`);
-        this.oilStored = 0;
-        if (window.subtractFromGlobalReserve) subtractFromGlobalReserve(sold, 0);
-        this.saveData(); this.render();
-    }
-
-    sellGas(silent = false) {
-        if (this.gasStored <= 0) { if (!silent) this.showMessage('Нет газа для продажи'); return; }
-        const price = this.getGasSellPrice();
-        const earned = this.gasStored * price;
-        this.balance += earned;
-        if (!silent) this.showMessage(`💰 Продано ${this.gasStored.toFixed(0)} м³ газа за ${earned.toFixed(2)} RURC (${price.toFixed(2)} RURC/м³)`);
-        this.gasStored = 0;
-        if (window.subtractFromGlobalReserve) subtractFromGlobalReserve(0, sold);
-        this.saveData(); this.render();
-    }
-
-    stake() {
-        const amount = parseFloat(document.getElementById('stakeAmount').value);
-        if (!amount || amount <= 0) { this.showMessage('Введите корректную сумму'); return; }
-        if (amount > this.balance) { this.showMessage('Недостаточно RURC'); return; }
-        this.balance -= amount;
-        this.stakedBalance += amount;
-        this.showMessage(`✅ Застейкано ${amount} RURC!`);
-        this.saveData(); this.render();
-    }
-
-    unstake() {
-        if (this.stakedBalance <= 0) { this.showMessage('Нет застейканных средств'); return; }
-        const total = this.stakedBalance + this.stakingRewards;
-        this.balance += total;
-        this.showMessage(`💰 Выведено ${total.toFixed(2)} RURC`);
-        this.stakedBalance = 0; this.stakingRewards = 0;
-        this.saveData(); this.render();
-    }
-
-    calculateStakingRewards() {
-        if (this.stakedBalance > 0) {
-            const dailyReward = (this.stakedBalance * 0.15) / 365;
-            this.stakingRewards += dailyReward / 86400;
-        }
-    }
-
-    buyEquipment(type) {
-        const prices = {
-            oilPump:  { cost: 5,   currency: 'TON', label: 'Нефтяной насос' },
-            gasTower: { cost: 2,   currency: 'TON', label: 'Газовая вышка' },
-            oilTank:  { cost: 3,   currency: 'TON', label: 'Цистерна для нефти' },
-            gasTank:  { cost: 1.5, currency: 'TON', label: 'Цистерна для газа' }
-        };
-        const item = prices[type];
-        if (!item) return;
-        if (this.tonBalance < item.cost) { this.showMessage(`Недостаточно TON. Нужно ${item.cost} TON`); return; }
-
-        // Отправляем TON на кошелёк команды разработчиков
-        sendTonToDevWallet(item.cost, item.label, () => {
-            // Только после подтверждения транзакции — зачисляем оборудование
-            this.tonBalance -= item.cost;
-            switch(type) {
-                case 'oilPump':  this.oilPumps++; break;
-                case 'gasTower': this.gasTowers++; break;
-                case 'oilTank':  this.oilTanks++; this.oilCapacity += 200; break;
-                case 'gasTank':  this.gasTanks++; this.gasCapacity += 2000; break;
-            }
-            this.showMessage(`✅ Куплено: ${item.label}`);
-            this.saveData(); this.render(); this.renderEquipmentData();
-        });
-    }
-
-    render() {
-        const el = (id) => document.getElementById(id);
-        if (el('balance'))       el('balance').textContent = this.balance.toFixed(2) + ' RURC';
-        if (el('usdValue'))      el('usdValue').textContent = `≈ $${(this.balance * 0.01).toFixed(2)}`;
-        if (el('tonBalance'))    el('tonBalance').textContent = this.tonBalance.toFixed(2);
-        if (el('hashrate'))      el('hashrate').textContent = (this.getOilPerSec() * 3600).toFixed(2) + ' барр/ч + ' + (this.getGasPerSec() * 3600).toFixed(0) + ' м³/ч';
-        if (el('stakedBalance')) el('stakedBalance').textContent = this.stakedBalance.toFixed(2) + ' RURC';
-        if (el('stakingRewards'))el('stakingRewards').textContent = this.stakingRewards.toFixed(4) + ' RURC';
-        if (el('oilStored'))     el('oilStored').textContent = this.oilStored.toFixed(1) + ' барр.';
-        if (el('gasStored'))     el('gasStored').textContent = this.gasStored.toFixed(0) + ' м³';
-        if (el('oilPumpsCount')) el('oilPumpsCount').textContent = this.oilPumps;
-        if (el('gasTowersCount'))el('gasTowersCount').textContent = this.gasTowers;
-        if (el('oilTanksCount')) el('oilTanksCount').textContent = this.oilTanks;
-        if (el('gasTanksCount')) el('gasTanksCount').textContent = this.gasTanks;
-        if (el('oilBar')) el('oilBar').style.width = Math.min(100, (this.oilStored / this.oilCapacity) * 100) + '%';
-        if (el('gasBar')) el('gasBar').style.width = Math.min(100, (this.gasStored / this.gasCapacity) * 100) + '%';
-        // SVG цистерны
-        if (window.updateTankSVG) {
-            updateTankSVG('oil', this.oilStored, this.oilCapacity);
-            updateTankSVG('gas', this.gasStored, this.gasCapacity);
-        }
-        // Визуал качалки / морской платформы
-        if (window.updateRigVisuals) {
-            updateRigVisuals(this.isMining, this.getOilPerSec() * 3600, this.getGasPerSec() * 3600);
-        }
-    }
-
-    renderMiningData() {
-        this.render();
-        if (window.renderGlobalStats) renderGlobalStats();
-    }
-
-    renderEquipmentData() {
-        const container = document.getElementById('equipmentList');
-        if (!container) return;
-        const equipment = [
-            { type: 'oilPump',  icon: '🛢️', name: 'Нефтяной насос',  desc: '+2 барр/ч',  cost: '2 TON', count: this.oilPumps },
-            { type: 'gasTower', icon: '🏗️', name: 'Газовая вышка',   desc: '+50 м³/ч',   cost: '3 TON', count: this.gasTowers },
-            { type: 'oilTank',  icon: '🛢️', name: 'Цистерна нефти',  desc: '+200 барр.', cost: '1 TON', count: this.oilTanks },
-            { type: 'gasTank',  icon: '⚗️', name: 'Цистерна газа',   desc: '+2000 м³',   cost: '1 TON', count: this.gasTanks }
-        ];
-        container.innerHTML = equipment.map(item => `
-            <div class="equipment-card">
-                <div class="eq-icon">${item.icon}</div>
-                <div class="eq-info">
-                    <div class="eq-name">${item.name}</div>
-                    <div class="eq-desc">${item.desc}</div>
-                    <div class="eq-count">Куплено: ${item.count}</div>
-                </div>
-                <button class="eq-buy-btn" onclick="window.rurcoinApp.buyEquipment('${item.type}')">
-                    ${item.cost}
-                </button>
-            </div>
-        `).join('');
-    }
-
-    // ============================================================
-    //  РЕНДЕР ВКЛАДКИ УЛУЧШЕНИЙ
-    // ============================================================
     renderUpgradesTab() {
-        const container = document.getElementById('upgradesList');
-        if (!container) return;
-
+        const el = document.getElementById('upgradesList');
+        if (!el) return;
         const cfg = this.getUpgradeConfig();
-        const categories = {
-            oil:    { label: '🛢️ Нефтяной насос', color: '#8B4513' },
-            gas:    { label: '🏗️ Газовая вышка',  color: '#1565C0' },
-            common: { label: '⚙️ Общие улучшения', color: '#2E7D32' },
+        const TC = {
+            F: {color:'#e0e0e0',bg:'#161616',glow:'0 0 8px #fff5'},
+            E: {color:'#4ade80',bg:'#0a1a0a',glow:'0 0 8px #22c55e6'},
+            D: {color:'#60a5fa',bg:'#0a0f1f',glow:'0 0 8px #3b82f66'},
+            C: {color:'#c084fc',bg:'#130a1f',glow:'0 0 8px #a855f76'},
+            B: {color:'#fb923c',bg:'#1f0f0a',glow:'0 0 8px #f973166'},
+            A: {color:'#f87171',bg:'#1f0a0a',glow:'0 0 10px #ef44446'},
+            S: {color:'#fbbf24',bg:'#1a1400',glow:'0 0 12px #f59e0b9'},
+            SS:{color:'#fff',   bg:'#0d0d1a',glow:'0 0 16px #f0fa'},
         };
-
-        let html = '';
-        for (const [catId, cat] of Object.entries(categories)) {
-            const items = Object.entries(cfg).filter(([, v]) => v.category === catId);
-            html += `
-                <div style="margin-bottom:20px;">
-                    <div style="font-size:14px;font-weight:700;color:${cat.color};
-                                padding:8px 12px;background:#111;border-radius:8px;
-                                margin-bottom:10px;border-left:3px solid ${cat.color};">
-                        ${cat.label}
+        const cats={oil:'🛢️ Нефтяной насос',gas:'🏗️ Газовая вышка',common:'⚙️ Общие улучшения'};
+        let h='';
+        for(const[catId,catLabel]of Object.entries(cats)){
+            const items=Object.entries(cfg).filter(([,v])=>v.cat===catId);
+            h+=`<div style="margin-bottom:22px"><div style="font-size:11px;font-weight:700;color:#555;letter-spacing:2px;padding:4px 0 10px">${catLabel}</div>`;
+            for(const[id,u]of items){
+                const lvl=this.upgrades[id]||0,maxed=lvl>=u.max,tc=TC[u.tier],isRainbow=u.tier==='SS';
+                const pct=Math.round(lvl/u.max*100),cost=maxed?0:u.cost(lvl),canAfford=!maxed&&this.tonBalance>=cost;
+                const badge=isRainbow
+                    ?`<span style="font-size:9px;font-weight:900;padding:2px 6px;border-radius:5px;background:linear-gradient(90deg,#f00,#ff0,#0f0,#0ff,#00f,#f0f);color:#fff">SS</span>`
+                    :`<span style="font-size:9px;font-weight:900;padding:2px 6px;border-radius:5px;color:${tc.color};border:1px solid ${tc.color};background:${tc.color}18">${u.tier}</span>`;
+                const bdr=isRainbow
+                    ?`border:2px solid transparent;background:linear-gradient(${tc.bg},${tc.bg}) padding-box,linear-gradient(90deg,#f00,#ff0,#0f0,#0ff,#00f,#f0f,#f00) border-box`
+                    :`border:1px solid ${maxed?tc.color:'#1e1e1e'};box-shadow:${maxed?tc.glow:'none'}`;
+                const btnBg=canAfford?(isRainbow?'linear-gradient(90deg,#f00,#ff0,#0f0,#0ff,#00f,#f0f)':`linear-gradient(135deg,${tc.color}bb,${tc.color})`):'#181818';
+                h+=`<div style="background:${tc.bg};${bdr};border-radius:14px;padding:14px;margin-bottom:8px">
+                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+                        <span style="font-size:26px;filter:drop-shadow(0 0 6px ${isRainbow?'#f0f':tc.color})">${u.icon}</span>
+                        <div style="flex:1">
+                            <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">${badge}<span style="font-size:13px;font-weight:700;color:#eee">${u.name}</span></div>
+                            <div style="font-size:11px;color:#555">${u.desc(lvl)}</div>
+                        </div>
+                        <div style="font-size:11px;font-weight:700;color:${maxed?tc.color:'#444'}">${maxed?'MAX':`${lvl}/${u.max}`}</div>
                     </div>
-                    ${items.map(([id, upg]) => {
-                        const lvl = this.upgrades[id];
-                        const maxed = lvl >= upg.maxLevel;
-                        const nextCost = maxed ? null : upg.cost(lvl).toFixed(1);
-                        const canAfford = !maxed && this.tonBalance >= upg.cost(lvl);
-                        const pct = Math.round((lvl / upg.maxLevel) * 100);
-
-                        return `
-                        <div style="background:#111122;border:1px solid ${maxed ? '#4ade80' : '#222'};
-                                    border-radius:12px;padding:14px;margin-bottom:8px;">
-                            <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-                                <span style="font-size:24px;">${upg.icon}</span>
-                                <div style="flex:1;">
-                                    <div style="font-size:13px;font-weight:700;">${upg.name}</div>
-                                    <div style="font-size:11px;color:#888;margin-top:2px;">${upg.desc(lvl)}</div>
-                                </div>
-                                <div style="text-align:right;">
-                                    <div style="font-size:12px;font-weight:700;color:${maxed ? '#4ade80' : '#FF8C00'};">
-                                        ${maxed ? 'MAX' : `Ур. ${lvl}/${upg.maxLevel}`}
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Прогресс-бар уровня -->
-                            <div style="background:#1a1a2e;border-radius:4px;height:4px;margin-bottom:10px;">
-                                <div style="background:${maxed ? '#4ade80' : cat.color};height:4px;
-                                            border-radius:4px;width:${pct}%;transition:width 0.3s;"></div>
-                            </div>
-                            ${maxed
-                                ? `<div style="text-align:center;font-size:12px;color:#4ade80;">✅ Максимальный уровень</div>`
-                                : `<button onclick="window.rurcoinApp.buyUpgrade('${id}')"
-                                        style="width:100%;padding:10px;border:none;border-radius:8px;
-                                               font-size:13px;font-weight:700;cursor:pointer;
-                                               background:${canAfford ? 'linear-gradient(135deg,#FF8C00,#FF6000)' : '#333'};
-                                               color:${canAfford ? '#fff' : '#666'};">
-                                        ${upg.icon} Улучшить → Ур. ${lvl + 1} &nbsp;|&nbsp; ${nextCost} TON
-                                   </button>`
-                            }
-                        </div>`;
-                    }).join('')}
+                    <div style="background:#111;border-radius:3px;height:4px;margin-bottom:10px;overflow:hidden">
+                        <div style="height:4px;border-radius:3px;width:${pct}%;transition:width .4s;background:${isRainbow?'linear-gradient(90deg,#f00,#ff0,#0f0,#0ff,#00f,#f0f)':tc.color};box-shadow:${maxed?tc.glow:'none'}"></div>
+                    </div>
+                    ${maxed
+                        ?`<div style="text-align:center;font-size:12px;color:${tc.color}">✅ Максимальный уровень</div>`
+                        :`<button onclick="window.rurcoinApp.buyUpgrade('${id}')" style="width:100%;padding:10px;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;background:${btnBg};color:${canAfford?'#fff':'#444'};box-shadow:${canAfford?tc.glow:'none'};border:1px solid ${canAfford?tc.color:'#2a2a2a'};transition:transform .15s" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">${u.icon} Улучшить → Ур.${lvl+1} | 💎 ${cost.toFixed(1)} TON</button>`
+                    }
                 </div>`;
+            }
+            h+='</div>';
         }
-
-        container.innerHTML = html;
+        el.innerHTML=h;
     }
-
     renderStorageData() {
         const container = document.getElementById('storageInfo');
         if (!container) return;
