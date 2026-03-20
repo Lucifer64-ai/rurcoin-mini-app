@@ -455,6 +455,46 @@
 
     <!-- ДОБЫЧА -->
     <div class="tab-content active" id="mining">
+                    
+                    <!-- ===== ТИКЕР ЦЕН ===== -->
+                    <div style="background:linear-gradient(135deg,#0a0a1a,#0d0d2d);
+                                border:1px solid #2d2d5a;border-radius:14px;
+                                padding:14px;margin-bottom:12px;">
+                        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+                            <span style="font-size:18px;">📈</span>
+                            <span style="font-size:13px;font-weight:700;color:#60a5fa;">Биржевые цены</span>
+                            <span style="margin-left:auto;font-size:10px;color:#444;" id="priceLastUpdated">Загрузка...</span>
+                        </div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                            <!-- Нефть -->
+                            <div style="background:#0d0d1a;border-radius:10px;padding:10px;text-align:center;
+                                        border:1px solid #1a1a3a;">
+                                <div style="font-size:18px;margin-bottom:4px;">🛢️</div>
+                                <div style="font-size:10px;color:#888;margin-bottom:4px;">Нефть Brent</div>
+                                <div style="font-size:16px;font-weight:700;color:#FF8C00;" id="liveOilPrice">$75.00</div>
+                                <div style="font-size:11px;margin-top:3px;" id="liveOilChange">+0.00%</div>
+                                <div style="font-size:9px;color:#555;margin-top:2px;">USD / барр.</div>
+                            </div>
+                            <!-- Газ -->
+                            <div style="background:#0d0d1a;border-radius:10px;padding:10px;text-align:center;
+                                        border:1px solid #1a1a3a;">
+                                <div style="font-size:18px;margin-bottom:4px;">⛽</div>
+                                <div style="font-size:10px;color:#888;margin-bottom:4px;">Природный газ</div>
+                                <div style="font-size:16px;font-weight:700;color:#4ade80;" id="liveGasPrice">$0.1300</div>
+                                <div style="font-size:11px;margin-top:3px;" id="liveGasChange">+0.00%</div>
+                                <div style="font-size:9px;color:#555;margin-top:2px;">USD / м³</div>
+                            </div>
+                        </div>
+                        <div style="margin-top:10px;padding:8px;background:#0d0d1a;border-radius:8px;
+                                    display:flex;justify-content:space-between;align-items:center;">
+                            <span style="font-size:10px;color:#555;">Обновление каждые 5 мин</span>
+                            <button onclick="if(window.fetchRealPrices)fetchRealPrices()"
+                                    style="background:#1a1a3a;border:1px solid #2d2d5a;border-radius:6px;
+                                           color:#60a5fa;font-size:10px;padding:3px 8px;cursor:pointer;">
+                                🔄 Обновить
+                            </button>
+                        </div>
+                    </div>
                     <!-- ===== ГЛОБАЛЬНАЯ СТАТИСТИКА ===== -->
                     <div style="background:linear-gradient(135deg,#0a1a0a,#0d2d0d);
                                 border:1px solid #2d5a2d;border-radius:14px;
@@ -589,7 +629,8 @@ function switchToWalletTab() {
 <script src="contracts.js"></script>
 <script src="payment.js"></script>
 <script src="wallet.js"></script>
-<script src="global_stats.js"></script>
+<script src="price_feed.js"></script>
+    <script src="global_stats.js"></script>
     <script src="script.js"></script>
 
 </body>
