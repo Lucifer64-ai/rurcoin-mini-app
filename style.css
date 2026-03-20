@@ -1391,62 +1391,286 @@ body {
 }
 .tier-ss .upgrade-maxed { color: #fff; }
 
-
 /* ══════════════════════════════════════════════════════════════
-   ISOMETRIC THEME — RURCoin Oil & Gas
-   Изометрический стиль поверх базовых стилей
+   ISOMETRIC CYBERPUNK THEME — RURCoin Oil & Gas
+   Стиль: изометрия + неон + киберпанк + голограмма
 ══════════════════════════════════════════════════════════════ */
 
-/* ── ПЕРЕМЕННЫЕ ИЗОМЕТРИИ ── */
+/* ── GOOGLE FONT: ORBITRON (геометрический sci-fi) ── */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&display=swap');
+
+/* ── ПЕРЕМЕННЫЕ ── */
 :root {
-  --iso-ground:   #0a0a14;
-  --iso-face-top: #1a1a2e;
-  --iso-face-l:   #12122a;
-  --iso-face-r:   #0d0d20;
-  --iso-oil-top:  #3d1a00;
-  --iso-oil-l:    #2a1200;
-  --iso-oil-r:    #1f0d00;
-  --iso-gas-top:  #003d1a;
-  --iso-gas-l:    #002a12;
-  --iso-gas-r:    #001f0d;
-  --iso-accent:   #FF6000;
-  --iso-gas-acc:  #00e676;
-  --iso-shadow:   rgba(0,0,0,0.6);
-  --iso-depth:    4px;
+  --c-bg:       #050508;
+  --c-bg2:      #08080f;
+  --c-bg3:      #0c0c18;
+  --c-panel:    #0a0a14;
+  --c-border:   #1a1a30;
+  --c-oil:      #FF6600;
+  --c-oil-glow: rgba(255,102,0,0.6);
+  --c-oil-dim:  rgba(255,102,0,0.15);
+  --c-gas:      #00FFB2;
+  --c-gas-glow: rgba(0,255,178,0.5);
+  --c-gas-dim:  rgba(0,255,178,0.1);
+  --c-ton:      #4FC3F7;
+  --c-ton-glow: rgba(79,195,247,0.5);
+  --c-accent2:  #B44FFF;
+  --c-text:     #E0E0FF;
+  --c-muted:    #3a3a5a;
+  --c-grid:     rgba(255,102,0,0.06);
+  --iso-depth:  3px;
+  --iso-angle:  -1deg;
 }
 
-/* ── ФОНОВАЯ СЕТКА (изометрическая) ── */
+/* ── RESET ── */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+/* ── BODY — тёмный фон с изометрической сеткой ── */
 body {
-  background-color: #06060f;
+  font-family: 'Orbitron', 'Share Tech Mono', monospace, sans-serif;
+  background-color: var(--c-bg);
+  color: var(--c-text);
+  min-height: 100vh;
+  overflow-x: hidden;
+  /* Изометрическая сетка */
   background-image:
-    linear-gradient(rgba(255,96,0,.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,96,0,.04) 1px, transparent 1px),
-    linear-gradient(rgba(255,96,0,.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,96,0,.02) 1px, transparent 1px);
-  background-size: 60px 60px, 60px 60px, 12px 12px, 12px 12px;
-  background-position: -1px -1px, -1px -1px, -1px -1px, -1px -1px;
+    /* Диагональные линии изометрии */
+    repeating-linear-gradient(
+      60deg,
+      transparent,
+      transparent 59px,
+      var(--c-grid) 59px,
+      var(--c-grid) 60px
+    ),
+    repeating-linear-gradient(
+      -60deg,
+      transparent,
+      transparent 59px,
+      var(--c-grid) 59px,
+      var(--c-grid) 60px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 29px,
+      rgba(255,102,0,0.03) 29px,
+      rgba(255,102,0,0.03) 30px
+    );
+  background-size: 60px 60px, 60px 60px, 60px 30px;
 }
 
-/* ── ХЕДЕР — изометрическая панель ── */
-.app-header {
-  background: linear-gradient(180deg, #12080a 0%, #0a0510 100%);
-  border-bottom: 2px solid var(--iso-accent);
-  box-shadow:
-    0 4px 0 #3d1200,
-    0 8px 0 #1f0900,
-    0 12px 24px rgba(0,0,0,.8);
-  position: relative;
+/* ── KEYFRAMES ── */
+@keyframes neon-flicker {
+  0%,19%,21%,23%,25%,54%,56%,100% {
+    text-shadow:
+      0 0 4px var(--c-oil),
+      0 0 12px var(--c-oil),
+      0 0 24px var(--c-oil-glow);
+  }
+  20%,24%,55% { text-shadow: none; }
 }
+@keyframes neon-border-pulse {
+  0%,100% { box-shadow: 0 0 4px var(--c-oil), 0 0 12px var(--c-oil-glow), inset 0 0 4px rgba(255,102,0,0.05); }
+  50%      { box-shadow: 0 0 10px var(--c-oil), 0 0 28px var(--c-oil-glow), inset 0 0 8px rgba(255,102,0,0.1); }
+}
+@keyframes neon-border-gas {
+  0%,100% { box-shadow: 0 0 4px var(--c-gas), 0 0 12px var(--c-gas-glow), inset 0 0 4px rgba(0,255,178,0.05); }
+  50%      { box-shadow: 0 0 10px var(--c-gas), 0 0 28px var(--c-gas-glow), inset 0 0 8px rgba(0,255,178,0.1); }
+}
+@keyframes neon-border-ton {
+  0%,100% { box-shadow: 0 0 4px var(--c-ton), 0 0 12px var(--c-ton-glow); }
+  50%      { box-shadow: 0 0 10px var(--c-ton), 0 0 28px var(--c-ton-glow); }
+}
+@keyframes scan-line {
+  0%   { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+@keyframes holo-shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+@keyframes iso-rise {
+  from { opacity:0; transform: perspective(800px) rotateX(15deg) rotateY(-5deg) translateY(30px); }
+  to   { opacity:1; transform: perspective(800px) rotateX(4deg)  rotateY(-1deg) translateY(0); }
+}
+@keyframes corner-glow {
+  0%,100% { opacity: 0.6; }
+  50%      { opacity: 1; }
+}
+@keyframes data-flow {
+  0%   { stroke-dashoffset: 100; }
+  100% { stroke-dashoffset: 0; }
+}
+@keyframes float-iso {
+  0%,100% { transform: perspective(800px) rotateX(4deg) rotateY(-1deg) translateY(0); }
+  50%      { transform: perspective(800px) rotateX(4deg) rotateY(-1deg) translateY(-4px); }
+}
+
+/* ── СКАНИРУЮЩАЯ ЛИНИЯ (голограмма) ── */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--c-oil), var(--c-gas), transparent);
+  opacity: 0.15;
+  animation: scan-line 8s linear infinite;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* ── ХЕДЕР ── */
+.app-header {
+  background: linear-gradient(180deg, #0c0810 0%, #080510 100%);
+  border-bottom: 1px solid var(--c-oil);
+  box-shadow:
+    0 0 20px var(--c-oil-glow),
+    0 4px 0 #1a0800,
+    0 8px 0 #0d0400;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%);
+}
+
+/* Угловые декоры хедера */
 .app-header::before {
   content: '';
   position: absolute;
-  bottom: -6px; left: 0; right: 0;
-  height: 6px;
-  background: linear-gradient(180deg, #3d1200, #1f0900);
-  clip-path: polygon(0 0, 100% 0, 98% 100%, 2% 100%);
+  top: 4px; left: 4px;
+  width: 12px; height: 12px;
+  border-top: 2px solid var(--c-oil);
+  border-left: 2px solid var(--c-oil);
+  animation: corner-glow 2s ease-in-out infinite;
+}
+.app-header::after {
+  content: '';
+  position: absolute;
+  bottom: 4px; right: 4px;
+  width: 12px; height: 12px;
+  border-bottom: 2px solid var(--c-gas);
+  border-right: 2px solid var(--c-gas);
+  animation: corner-glow 2s ease-in-out infinite 1s;
 }
 
-/* ── КАРТОЧКИ — изометрические блоки ── */
+/* Логотип */
+.app-logo-text h1 {
+  font-family: 'Orbitron', monospace;
+  font-weight: 900;
+  font-size: 16px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, #FF6600, #FFD700, #FF6600, #FFD700, #FF6600);
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: holo-shimmer 4s linear infinite;
+}
+.app-logo-text p {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px;
+  color: var(--c-gas);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+/* ── БАЛАНС-ЧИПЫ ── */
+.balance-chip {
+  border-radius: 2px !important;
+  clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px));
+  font-family: 'Share Tech Mono', monospace;
+  letter-spacing: 1px;
+}
+.balance-chip.rurc-chip {
+  background: rgba(255,102,0,0.08) !important;
+  border: 1px solid var(--c-oil) !important;
+  color: var(--c-oil) !important;
+  animation: neon-border-pulse 2.5s ease-in-out infinite !important;
+}
+.balance-chip.ton-chip {
+  background: rgba(79,195,247,0.08) !important;
+  border: 1px solid var(--c-ton) !important;
+  color: var(--c-ton) !important;
+  animation: neon-border-ton 2.5s ease-in-out infinite !important;
+}
+
+/* ── STATS BAR ── */
+.stats-bar {
+  background: var(--c-bg2);
+  border-bottom: 1px solid var(--c-border);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.6);
+}
+.stat-item {
+  background: transparent !important;
+  border: none !important;
+  border-right: 1px solid var(--c-border) !important;
+  border-radius: 0 !important;
+  position: relative;
+  transition: background .2s;
+}
+.stat-item:hover {
+  background: rgba(255,102,0,0.05) !important;
+}
+.stat-item::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 0; height: 2px;
+  background: var(--c-oil);
+  transition: width .3s;
+  box-shadow: 0 0 6px var(--c-oil);
+}
+.stat-item:hover::after { width: 80%; }
+.stat-val { font-family: 'Share Tech Mono', monospace; color: var(--c-oil) !important; }
+.stat-lbl { font-family: 'Orbitron', monospace; font-size: 8px !important; letter-spacing: 1px; color: var(--c-muted) !important; }
+
+/* ── ТАБЫ ── */
+.tabs-wrap {
+  background: var(--c-bg2);
+  border-bottom: 1px solid var(--c-border);
+}
+.tab-btn {
+  font-family: 'Orbitron', monospace !important;
+  font-size: 9px !important;
+  font-weight: 600 !important;
+  letter-spacing: 1px !important;
+  text-transform: uppercase !important;
+  border-radius: 0 !important;
+  border: none !important;
+  border-right: 1px solid var(--c-border) !important;
+  color: var(--c-muted) !important;
+  background: transparent !important;
+  padding: 10px 12px !important;
+  position: relative;
+  transition: color .2s, background .2s !important;
+  clip-path: none !important;
+}
+.tab-btn::before {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--c-oil);
+  box-shadow: 0 0 8px var(--c-oil);
+  transform: scaleX(0);
+  transition: transform .2s;
+}
+.tab-btn:hover { color: var(--c-oil) !important; background: rgba(255,102,0,0.05) !important; }
+.tab-btn:hover::before { transform: scaleX(1); }
+.tab-btn.active {
+  color: var(--c-oil) !important;
+  background: rgba(255,102,0,0.08) !important;
+  border-top: 1px solid var(--c-oil) !important;
+  box-shadow: none !important;
+}
+.tab-btn.active::before { transform: scaleX(1); }
+
+/* ── КАРТОЧКИ — изометрические панели ── */
 .price-card,
 .global-card,
 .stat-card,
@@ -1457,40 +1681,85 @@ body {
 .halving-card,
 .exchange-card,
 .community-card {
+  background: var(--c-panel) !important;
+  border: 1px solid var(--c-border) !important;
+  border-radius: 0 !important;
+  /* Изометрический срез углов */
+  clip-path: polygon(
+    0 0,
+    calc(100% - 12px) 0,
+    100% 12px,
+    100% 100%,
+    12px 100%,
+    0 calc(100% - 12px)
+  );
   position: relative;
-  border-radius: 4px !important;
-  transform: perspective(600px) rotateX(2deg);
-  transform-origin: top center;
-  transition: transform .2s, box-shadow .2s;
+  margin-bottom: 12px;
+  /* Изометрическая тень */
   box-shadow:
-    4px 4px 0 rgba(0,0,0,.5),
-    8px 8px 0 rgba(0,0,0,.3),
-    0 16px 32px rgba(0,0,0,.6);
+    4px 4px 0 #0a0a14,
+    8px 8px 0 rgba(0,0,0,0.4),
+    0 0 0 1px rgba(255,102,0,0.08),
+    0 16px 32px rgba(0,0,0,0.6) !important;
+  transform: perspective(1000px) rotateX(2deg);
+  transform-origin: top center;
+  transition: transform .25s, box-shadow .25s !important;
+  animation: iso-rise .4s ease both;
 }
 .price-card:hover,
 .global-card:hover,
 .equipment-card:hover {
-  transform: perspective(600px) rotateX(1deg) translateY(-2px);
+  transform: perspective(1000px) rotateX(0deg) translateY(-3px) !important;
   box-shadow:
-    6px 6px 0 rgba(0,0,0,.5),
-    12px 12px 0 rgba(0,0,0,.3),
-    0 24px 48px rgba(0,0,0,.7);
+    6px 6px 0 #0a0a14,
+    12px 12px 0 rgba(0,0,0,0.4),
+    0 0 16px var(--c-oil-glow),
+    0 24px 48px rgba(0,0,0,0.7) !important;
+  border-color: var(--c-oil) !important;
 }
 
-/* ── ИЗОМЕТРИЧЕСКИЕ БЛОКИ СТАТИСТИКИ ── */
-.stat-item {
-  position: relative;
-  background: linear-gradient(145deg, #1a1a2e, #0d0d20) !important;
-  border: 1px solid rgba(255,96,0,.25) !important;
-  border-radius: 4px !important;
-  box-shadow:
-    3px 3px 0 #0a0a14,
-    6px 6px 0 rgba(0,0,0,.4);
-  transform: perspective(400px) rotateX(3deg) rotateY(-1deg);
-  transition: transform .2s;
+/* Угловые декоры карточек */
+.price-card::before,
+.global-card::before,
+.equipment-card::before {
+  content: '';
+  position: absolute;
+  top: 6px; left: 6px;
+  width: 10px; height: 10px;
+  border-top: 1px solid var(--c-oil);
+  border-left: 1px solid var(--c-oil);
+  opacity: 0.7;
 }
-.stat-item:hover {
-  transform: perspective(400px) rotateX(1deg) rotateY(0deg) translateY(-2px);
+.price-card::after,
+.global-card::after,
+.equipment-card::after {
+  content: '';
+  position: absolute;
+  bottom: 6px; right: 6px;
+  width: 10px; height: 10px;
+  border-bottom: 1px solid var(--c-gas);
+  border-right: 1px solid var(--c-gas);
+  opacity: 0.7;
+}
+
+/* ── PRICE / GLOBAL ITEMS ── */
+.price-item,
+.global-item {
+  background: var(--c-bg2) !important;
+  border: 1px solid var(--c-border) !important;
+  border-radius: 0 !important;
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+  transition: border-color .2s, box-shadow .2s, transform .2s !important;
+}
+.price-item:hover,
+.global-item:hover {
+  border-color: var(--c-oil) !important;
+  box-shadow: 0 0 12px var(--c-oil-glow) !important;
+  transform: translateY(-2px) scale(1.02) !important;
+}
+.price-val, .g-val {
+  font-family: 'Share Tech Mono', monospace !important;
+  color: var(--c-oil) !important;
 }
 
 /* ── КНОПКИ — изометрические ── */
@@ -1499,226 +1768,215 @@ button,
 .buy-btn,
 .sell-btn,
 .upgrade-btn,
-.tab-btn {
+.topup-fab {
+  font-family: 'Orbitron', monospace !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  letter-spacing: 2px !important;
+  text-transform: uppercase !important;
+  border-radius: 0 !important;
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px)) !important;
   position: relative !important;
-  border-radius: 4px !important;
-  transition: transform .1s, box-shadow .1s !important;
+  transition: transform .1s, box-shadow .1s, background .2s !important;
 }
 
-/* Нажатие — эффект "вдавливания" */
-button:active,
-.mine-btn:active,
-.buy-btn:active,
-.upgrade-btn:active {
-  transform: translate(3px, 3px) !important;
-  box-shadow: 1px 1px 0 rgba(0,0,0,.5) !important;
-}
-
-/* ── КНОПКИ ДОБЫЧИ ── */
+/* Основная кнопка добычи */
 .mine-btn {
+  background: linear-gradient(135deg, #1a0800, #2a1000) !important;
+  border: 1px solid var(--c-oil) !important;
+  color: var(--c-oil) !important;
   box-shadow:
-    0 4px 0 #7a2d00,
-    0 8px 0 #3d1600,
-    0 12px 20px rgba(255,96,0,.3) !important;
-}
-.mine-btn:not(:active) {
+    0 0 12px var(--c-oil-glow),
+    3px 3px 0 #0d0400,
+    6px 6px 0 rgba(0,0,0,0.4) !important;
   transform: translateY(-2px) !important;
 }
-
-/* ── ТАБЫ — изометрическая полоса ── */
-.tabs-wrap {
-  background: linear-gradient(180deg, #0e0e1e, #080814);
-  border-bottom: 2px solid rgba(255,96,0,.3);
-  box-shadow: 0 4px 0 #0a0a14, 0 8px 16px rgba(0,0,0,.5);
-  position: relative;
-}
-.tab-btn {
-  border-radius: 4px 4px 0 0 !important;
-  position: relative;
-  transition: background .2s, color .2s, transform .1s !important;
-}
-.tab-btn.active {
-  background: linear-gradient(180deg, #2a1200, #1a0900) !important;
-  border-top: 2px solid var(--iso-accent) !important;
-  border-left: 1px solid rgba(255,96,0,.4) !important;
-  border-right: 1px solid rgba(255,96,0,.4) !important;
+.mine-btn:hover {
+  background: linear-gradient(135deg, #2a1000, #3d1800) !important;
   box-shadow:
-    inset 0 1px 0 rgba(255,150,0,.2),
-    0 -2px 8px rgba(255,96,0,.3) !important;
+    0 0 20px var(--c-oil-glow),
+    3px 3px 0 #0d0400,
+    6px 6px 0 rgba(0,0,0,0.4) !important;
+}
+.mine-btn:active {
+  transform: translate(3px, 3px) !important;
+  box-shadow: 0 0 6px var(--c-oil-glow), 1px 1px 0 #0d0400 !important;
 }
 
-/* ── SVG ЦИСТЕРНЫ — изометрический вид ── */
-.svg-tank-wrap {
-  position: relative;
-}
-.svg-tank-container {
-  filter:
-    drop-shadow(4px 4px 0 rgba(0,0,0,.6))
-    drop-shadow(8px 8px 12px rgba(0,0,0,.4));
-  transform: perspective(500px) rotateX(8deg) rotateY(-5deg) scale(1.02);
-  transition: transform .3s;
-}
-.svg-tank-container:hover {
-  transform: perspective(500px) rotateX(5deg) rotateY(-3deg) scale(1.05);
-}
-
-/* ── ИЗОМЕТРИЧЕСКИЕ БЛОКИ ОБОРУДОВАНИЯ ── */
-.equip-item,
-.equip-card {
-  position: relative;
-  border-radius: 6px !important;
-  box-shadow:
-    4px 4px 0 rgba(0,0,0,.5),
-    8px 8px 0 rgba(0,0,0,.3),
-    0 12px 24px rgba(0,0,0,.5);
-  transform: perspective(500px) rotateX(2deg);
-  transition: transform .2s, box-shadow .2s;
-}
-.equip-item:hover,
-.equip-card:hover {
-  transform: perspective(500px) rotateX(0deg) translateY(-3px);
-  box-shadow:
-    6px 6px 0 rgba(0,0,0,.5),
-    12px 12px 0 rgba(0,0,0,.3),
-    0 20px 40px rgba(0,0,0,.6);
-}
-
-/* ── ИЗОМЕТРИЧЕСКИЕ КАРТОЧКИ УЛУЧШЕНИЙ ── */
-.upgrade-card {
-  border-radius: 6px !important;
-  box-shadow:
-    4px 4px 0 rgba(0,0,0,.6),
-    8px 8px 0 rgba(0,0,0,.3) !important;
-  transform: perspective(600px) rotateX(2deg);
-  transition: transform .2s, box-shadow .2s !important;
-}
-.upgrade-card:hover {
-  transform: perspective(600px) rotateX(0deg) translateY(-3px) !important;
-  box-shadow:
-    6px 6px 0 rgba(0,0,0,.6),
-    12px 12px 0 rgba(0,0,0,.3) !important;
-}
-
-/* ── ИЗОМЕТРИЧЕСКИЙ ПРОГРЕСС-БАР ── */
-.upgrade-bar-wrap {
-  border-radius: 2px !important;
-  box-shadow: inset 2px 2px 4px rgba(0,0,0,.5), 1px 1px 0 rgba(0,0,0,.3);
-}
-.upgrade-bar {
-  border-radius: 2px !important;
-  box-shadow: 0 0 6px currentColor, inset 0 1px 0 rgba(255,255,255,.2);
-}
-
-/* ── КНОПКА УЛУЧШЕНИЯ ── */
+/* Кнопка улучшения */
 .upgrade-btn {
+  background: linear-gradient(135deg, #0a1a08, #0d2a0d) !important;
+  border: 1px solid var(--c-gas) !important;
+  color: var(--c-gas) !important;
   box-shadow:
-    0 4px 0 rgba(0,0,0,.5),
-    0 6px 0 rgba(0,0,0,.3) !important;
-}
-.upgrade-btn:not(:disabled):not(:active) {
+    0 0 8px var(--c-gas-glow),
+    3px 3px 0 #040d04,
+    5px 5px 0 rgba(0,0,0,0.4) !important;
   transform: translateY(-2px) !important;
+}
+.upgrade-btn:not(:disabled):hover {
+  box-shadow: 0 0 16px var(--c-gas-glow), 3px 3px 0 #040d04 !important;
 }
 .upgrade-btn:not(:disabled):active {
-  transform: translateY(2px) !important;
-  box-shadow: 0 1px 0 rgba(0,0,0,.5) !important;
+  transform: translate(3px, 3px) !important;
+  box-shadow: 0 0 4px var(--c-gas-glow), 1px 1px 0 #040d04 !important;
+}
+.upgrade-btn:disabled {
+  border-color: var(--c-border) !important;
+  color: var(--c-muted) !important;
+  box-shadow: 2px 2px 0 rgba(0,0,0,0.3) !important;
+  transform: none !important;
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px)) !important;
 }
 
-/* ── ИЗОМЕТРИЧЕСКИЕ БЛОКИ БАЛАНСА ── */
-.balance-chip {
-  border-radius: 4px !important;
-  box-shadow:
-    2px 2px 0 rgba(0,0,0,.5),
-    4px 4px 0 rgba(0,0,0,.3) !important;
-}
-
-/* ── ИЗОМЕТРИЧЕСКИЕ ИКОНКИ НАСОСА ── */
-.pump-arm {
-  filter: drop-shadow(2px 4px 4px rgba(0,0,0,.6));
-}
-
-/* ── ИЗОМЕТРИЧЕСКАЯ СЕТКА ЦЕН ── */
-.price-item,
-.global-item {
-  border-radius: 4px !important;
-  box-shadow:
-    3px 3px 0 rgba(0,0,0,.4),
-    6px 6px 0 rgba(0,0,0,.2);
-  transform: perspective(300px) rotateX(3deg);
-  transition: transform .2s, box-shadow .2s;
-}
-.price-item:hover,
-.global-item:hover {
-  transform: perspective(300px) rotateX(0deg) translateY(-2px) scale(1.03) !important;
-  box-shadow:
-    5px 5px 0 rgba(0,0,0,.4),
-    10px 10px 0 rgba(0,0,0,.2) !important;
-}
-
-/* ── ИЗОМЕТРИЧЕСКИЕ ТЕНИ ТЕКСТА ── */
-.app-logo-text h1 {
-  text-shadow: 2px 2px 0 rgba(0,0,0,.5), 4px 4px 8px rgba(255,96,0,.3);
-}
-
-/* ── ИЗОМЕТРИЧЕСКИЙ FAB ── */
+/* FAB */
 .topup-fab {
-  border-radius: 4px !important;
+  background: linear-gradient(135deg, #1a0800, #2a1000) !important;
+  border: 1px solid var(--c-oil) !important;
+  color: var(--c-oil) !important;
   box-shadow:
-    0 6px 0 #7a2d00,
-    0 10px 0 #3d1600,
-    0 14px 28px rgba(255,96,0,.4) !important;
+    0 0 16px var(--c-oil-glow),
+    4px 4px 0 #0d0400,
+    8px 8px 0 rgba(0,0,0,0.5) !important;
   transform: translateY(-3px) !important;
+  animation: neon-border-pulse 2s ease-in-out infinite !important;
 }
 .topup-fab:active {
-  transform: translateY(3px) !important;
-  box-shadow:
-    0 2px 0 #7a2d00,
-    0 4px 0 #3d1600,
-    0 6px 12px rgba(255,96,0,.3) !important;
+  transform: translate(4px, 4px) !important;
+  box-shadow: 0 0 6px var(--c-oil-glow), 1px 1px 0 #0d0400 !important;
 }
 
-/* ── ИЗОМЕТРИЧЕСКИЕ НОТИФИКАЦИИ ── */
+/* ── ПРОГРЕСС-БАРЫ ── */
+.upgrade-bar-wrap {
+  border-radius: 0 !important;
+  background: var(--c-bg2) !important;
+  border: 1px solid var(--c-border) !important;
+  box-shadow: inset 2px 2px 4px rgba(0,0,0,0.5);
+}
+.upgrade-bar {
+  border-radius: 0 !important;
+  background: linear-gradient(90deg, var(--c-oil), #FFD700) !important;
+  box-shadow: 0 0 8px var(--c-oil-glow), inset 0 1px 0 rgba(255,255,255,0.2) !important;
+  position: relative;
+}
+.upgrade-bar::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%; right: 0; bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  animation: holo-shimmer 2s linear infinite;
+  background-size: 200% auto;
+}
+
+/* ── КАРТОЧКИ УЛУЧШЕНИЙ ── */
+.upgrade-card {
+  background: var(--c-panel) !important;
+  border: 1px solid var(--c-border) !important;
+  border-radius: 0 !important;
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+  box-shadow:
+    3px 3px 0 rgba(0,0,0,0.5),
+    6px 6px 0 rgba(0,0,0,0.3) !important;
+  transform: perspective(600px) rotateX(2deg);
+  transition: transform .2s, border-color .2s, box-shadow .2s !important;
+}
+.upgrade-card:hover {
+  border-color: var(--c-oil) !important;
+  box-shadow:
+    3px 3px 0 rgba(0,0,0,0.5),
+    6px 6px 0 rgba(0,0,0,0.3),
+    0 0 12px var(--c-oil-glow) !important;
+  transform: perspective(600px) rotateX(0deg) translateY(-2px) !important;
+}
+
+/* Тиры */
+.tier-s .upgrade-card { border-color: rgba(255,215,0,0.4) !important; }
+.tier-s .upgrade-card:hover { border-color: #FFD700 !important; box-shadow: 0 0 16px rgba(255,215,0,0.5) !important; }
+.tier-a .upgrade-card { border-color: rgba(255,102,0,0.4) !important; }
+.tier-b .upgrade-card { border-color: rgba(0,255,178,0.3) !important; }
+.tier-b .upgrade-card:hover { border-color: var(--c-gas) !important; box-shadow: 0 0 12px var(--c-gas-glow) !important; }
+
+/* ── SVG ЦИСТЕРНЫ ── */
+.svg-tank-container {
+  filter:
+    drop-shadow(0 0 8px rgba(255,102,0,0.4))
+    drop-shadow(4px 4px 0 rgba(0,0,0,0.6));
+  transform: perspective(600px) rotateX(10deg) rotateY(-8deg) scale(1.02);
+  transition: transform .3s, filter .3s;
+}
+.svg-tank-container:hover {
+  filter:
+    drop-shadow(0 0 16px rgba(255,102,0,0.7))
+    drop-shadow(4px 4px 0 rgba(0,0,0,0.6));
+  transform: perspective(600px) rotateX(6deg) rotateY(-5deg) scale(1.06);
+}
+
+/* ── НОТИФИКАЦИИ ── */
 .notification {
-  border-radius: 4px !important;
-  box-shadow:
-    4px 4px 0 rgba(0,0,0,.5),
-    8px 8px 16px rgba(0,0,0,.4) !important;
-  transform: perspective(400px) rotateX(2deg);
+  border-radius: 0 !important;
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px)) !important;
+  font-family: 'Share Tech Mono', monospace !important;
+  border-left: 2px solid var(--c-oil) !important;
+  box-shadow: 0 0 12px var(--c-oil-glow), 4px 4px 0 rgba(0,0,0,0.5) !important;
 }
 
-/* ── ИЗОМЕТРИЧЕСКИЙ СКРОЛЛБАР ── */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: #0a0a14; }
+/* ── СКРОЛЛБАР ── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--c-bg); }
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, var(--iso-accent), #7a2d00);
-  border-radius: 2px;
-  box-shadow: 2px 0 0 rgba(0,0,0,.5);
+  background: linear-gradient(180deg, var(--c-oil), #7a2d00);
+  border-radius: 0;
+  box-shadow: 0 0 4px var(--c-oil-glow);
 }
 
-/* ── ИЗОМЕТРИЧЕСКИЕ РАЗДЕЛИТЕЛИ ── */
-.stats-bar {
-  box-shadow:
-    0 4px 0 #0a0a14,
-    0 8px 0 rgba(0,0,0,.3),
-    0 12px 24px rgba(0,0,0,.5);
-}
-
-/* ── АНИМАЦИЯ ПОЯВЛЕНИЯ КАРТОЧЕК ── */
+/* ── АНИМАЦИЯ ПОЯВЛЕНИЯ ВКЛАДОК ── */
 .tab-content.active > * {
-  animation: iso-slide-in .3s ease both;
+  animation: iso-rise .35s ease both;
 }
-.tab-content.active > *:nth-child(1) { animation-delay: .0s; }
-.tab-content.active > *:nth-child(2) { animation-delay: .05s; }
-.tab-content.active > *:nth-child(3) { animation-delay: .10s; }
-.tab-content.active > *:nth-child(4) { animation-delay: .15s; }
-.tab-content.active > *:nth-child(5) { animation-delay: .20s; }
+.tab-content.active > *:nth-child(1) { animation-delay: .00s; }
+.tab-content.active > *:nth-child(2) { animation-delay: .06s; }
+.tab-content.active > *:nth-child(3) { animation-delay: .12s; }
+.tab-content.active > *:nth-child(4) { animation-delay: .18s; }
+.tab-content.active > *:nth-child(5) { animation-delay: .24s; }
 
-@keyframes iso-slide-in {
-  from {
-    opacity: 0;
-    transform: perspective(600px) rotateX(8deg) translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: perspective(600px) rotateX(2deg) translateY(0);
-  }
+/* ── HEADER WALLET BADGE ── */
+.header-wallet-badge {
+  font-family: 'Share Tech Mono', monospace !important;
+  font-size: 9px !important;
+  letter-spacing: 1px !important;
+  border-radius: 0 !important;
+  clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px));
+  border: 1px solid var(--c-border) !important;
+  background: var(--c-bg2) !important;
+  color: var(--c-muted) !important;
+  padding: 4px 10px !important;
+  transition: border-color .2s, color .2s;
+}
+.header-wallet-badge:hover {
+  border-color: var(--c-ton) !important;
+  color: var(--c-ton) !important;
+  box-shadow: 0 0 8px var(--c-ton-glow) !important;
+}
+
+/* ── ТЕКСТОВЫЕ АКЦЕНТЫ ── */
+h2, h3, .section-title {
+  font-family: 'Orbitron', monospace !important;
+  letter-spacing: 2px !important;
+  text-transform: uppercase !important;
+}
+
+/* ── ИНПУТЫ ── */
+input, select, textarea {
+  font-family: 'Share Tech Mono', monospace !important;
+  background: var(--c-bg2) !important;
+  border: 1px solid var(--c-border) !important;
+  border-radius: 0 !important;
+  color: var(--c-text) !important;
+  clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px));
+  transition: border-color .2s, box-shadow .2s !important;
+}
+input:focus, select:focus {
+  border-color: var(--c-oil) !important;
+  box-shadow: 0 0 8px var(--c-oil-glow) !important;
+  outline: none !important;
 }
