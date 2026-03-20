@@ -754,3 +754,142 @@ const topUpStyles = `
 const styleEl = document.createElement('style');
 styleEl.textContent = topUpStyles;
 document.head.appendChild(styleEl);
+
+
+// ============ PayPal ============
+const PAYPAL_CONFIG = {
+    clientId: 'YOUR_PAYPAL_CLIENT_ID',
+    currency: 'USD',
+    // Курс USD -> RURC
+    usdToRurc: 90  // 1 USD = 90 RURC (примерно по курсу рубля)
+};
+
+// Загрузить PayPal SDK
+function loadPayPalSDK() {
+    if (document.getElementById('paypal-sdk')) return Promise.resolve();
+    return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.id = 'paypal-sdk';
+        script.src = `https://www.paypal.com/sdk/js?client-id=${PAYPAL_CONFIG.clientId}&currency=${PAYPAL_CONFIG.currency}`;
+        script.onload = resolve;
+        script.onerror = reject;
+        document.head.appendChild(script);
+    });
+}
+
+// Показать форму PayPal
+async function showPayPalModal(amountRub) {
+    const amountUsd = (amountRub / 90).toFixed(2);
+    const rurcAmount = Math.floor(amountRub * PAYMENT_CONFIG.rate);
+
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.id = 'paypalModal';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>💙 Оплата через PayPal</h2>
+                <button class="close-btn" onclick="document.getElementById('paypalModal').remove()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="paypal-summary">
+                    <div class="summary-row"><span>Сумма:</span><span>$${amountUsd}</span></div>
+                    <div class="summary-row total"><span>Вы получите:</span><span>${rurcAmount} RURC</span></div>
+                </div>
+                <div id="paypal-button-container" style="margin-top:20px;"></div>
+                <div id="paypal-status" style="text-align:center; margin-top:16px; color:#aaa; font-size:13px;"></div>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+
+    // Демо режим
+    if (PAYPAL_CONFIG.clientId === 'YOUR_PAYPAL_CLIENT_ID') {
+        document.getElementById('paypal-button-container').innerHTML = `
+            <button onclick="simulatePayPalPayment(${rurcAmount})" style="
+                width:100%; padding:14px;
+                background:#0070BA; border:none; border-radius:10px;
+                color:#fff; font-size:16px; font-weight:700; cursor:pointer;">
+                💙 Оплатить $${amountUsd} через PayPal (демо)
+            </button>
+        `;
+        return;
+    }
+
+    // Реальный PayPal
+    try {
+        await loadPayPalSDK();
+        paypal.Buttons({
+            createOrder: (data, actions) => {
+                return actions.order.create({
+                    purchase_units: [{
+                        amount: { value: amountUsd, currency_code: PAYPAL_CONFIG.currency },
+                        description: `Пополнение RURC на ${rurcAmount} токенов`
+                    }]
+                });
+            },
+            onApprove: async (data, actions) => {
+                const order = await actions.order.capture();
+                document.getElementById('paypal-status').textContent = '✅ Платёж подтверждён!';
+                await handlePaymentSuccess(rurcAmount);
+                setTimeout(() => document.getElementById('paypalModal').remove(), 3000);
+            },
+            onError: (err) => {
+                document.getElementById('paypal-status').textContent = '❌ Ошибка PayPal: ' + err;
+            }
+        }).render('#paypal-button-container');
+    } catch (e) {
+        document.getElementById('paypal-button-container').innerHTML =
+            `<p style="color:#f44; text-align:center;">Ошибка загрузки PayPal SDK</p>`;
+    }
+}
+
+// Симуляция PayPal (демо)
+async function simulatePayPalPayment(rurcAmount) {
+    const statusEl = document.getElementById('paypal-status');
+    statusEl.textContent = '🔄 Обработка платежа...';
+    await new Promise(r => setTimeout(r, 1500));
+    statusEl.textContent = '✅ Платёж успешен!';
+    await handlePaymentSuccess(rurcAmount);
+    setTimeout(() => {
+        const m = document.getElementById('paypalModal');
+        if (m) m.remove();
+        showNotification(`Баланс пополнен на ${rurcAmount} RURC`, 'success');
+    }, 2000);
+}
+
+// Добавить PayPal в список методов
+SUPPORTED_PAYMENTS.push({ id: 'paypal', name: 'PayPal', icon: '💙', group: 'international' });
+
+// Перехват выбора PayPal
+const _origSelectPaymentMethod = window.selectPaymentMethod;
+window.selectPaymentMethod = function(methodId) {
+    if (methodId === 'paypal') {
+        document.querySelectorAll('.method-item').forEach(i => i.classList.remove('active'));
+        const sel = document.querySelector('[data-method="paypal"]');
+        if (sel) sel.classList.add('active');
+        paymentState.paymentMethod = 'paypal';
+        document.getElementById('yookassaInfo').style.display = 'none';
+        document.getElementById('webmoneyInfo').style.display = 'none';
+        const payBtn = document.getElementById('payBtn');
+        payBtn.textContent = 'Оплатить через PayPal';
+        validateForm();
+        return;
+    }
+    _origSelectPaymentMethod(methodId);
+};
+
+// Перехват processPayment для PayPal
+const _origProcessPayment = window.processPayment;
+window.processPayment = async function() {
+    if (paymentState.paymentMethod === 'paypal') {
+        closeTopUpModal();
+        await showPayPalModal(paymentState.amount);
+        return;
+    }
+    _origProcessPayment();
+};
+
+window.showPayPalModal = showPayPalModal;
+window.simulatePayPalPayment = simulatePayPalPayment;
+window.PAYPAL_CONFIG = PAYPAL_CONFIG;
