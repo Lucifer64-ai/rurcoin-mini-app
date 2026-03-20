@@ -27,18 +27,13 @@ const CONTRACTS = {
 
 // ABI контракта
 const RURC_ABI = {
-    // Баланс
     balanceOf: "balanceOf(address):uint256",
-    // Перевод
     transfer: "transfer(address,uint256)",
-    // approve
     approve: "approve(address,uint256)",
-    // allowance
     allowance: "allowance(address,address):uint256",
-    // totalSupply
     totalSupply: "totalSupply():uint256",
-    // Mint (через minting контракт)
-    mint: "mint(address,uint256)"
+    mint: "mint(address,uint256)",
+    burn: "burn(uint256)"
 };
 
 // Инициализация контрактов
@@ -101,13 +96,10 @@ async function transferRURC(to, amount) {
 }
 
 // ============ MINT ФУНКЦИЯ ============
-// Майнинг новых токенов (доступно только владельцу контракта)
-
 async function mintRURC(toAddress, amount) {
     try {
         const sender = await window.ton.sender;
 
-        // Формируем payload для mint
         const mintPayload = {
             method: 'mint',
             params: {
@@ -118,7 +110,7 @@ async function mintRURC(toAddress, amount) {
 
         await sender.send({
             to: CONTRACTS.rurc.address,
-            amount: 0, // Комиссия за майнинг
+            amount: 0,
             payload: mintPayload
         });
 
@@ -130,7 +122,6 @@ async function mintRURC(toAddress, amount) {
     }
 }
 
-// Майнинг на адрес текущего кошелька
 async function mintToSelf(amount) {
     try {
         const walletAddress = await window.ton.getWalletAddress();
@@ -141,12 +132,10 @@ async function mintToSelf(amount) {
     }
 }
 
-// Майнинг с UI уведомлением
 async function mintWithUI(amount, onSuccess, onError) {
     try {
         const walletAddress = await window.ton.getWalletAddress();
 
-        // Показываем индикатор загрузки
         showNotification('⛽ Майнинг...', 'pending');
 
         const result = await mintRURC(walletAddress, amount);
@@ -168,7 +157,86 @@ async function mintWithUI(amount, onSuccess, onError) {
     }
 }
 
-// Получить totalSupply
+// ============ BURN ФУНКЦИЯ ============
+// Сжигание токенов (уменьшает totalSupply)
+
+async function burnRURC(amount) {
+    try {
+        const sender = await window.ton.sender;
+
+        // Сначала approve контракту на сжигание
+        const burnPayload = {
+            method: 'burn',
+            params: {
+                amount: amount * Math.pow(10, CONTRACTS.rurc.decimals)
+            }
+        };
+
+        await sender.send({
+            to: CONTRACTS.rurc.address,
+            amount: 0,
+            payload: burnPayload
+        });
+
+        console.log(`Burned ${amount} RURC`);
+        return true;
+    } catch (error) {
+        console.error('Ошибка burn:', error);
+        return false;
+    }
+}
+
+// Сжигание со своего кошелька через transfer на burn адрес
+async function burnToAddress(amount, burnAddress = "0x0000000000000000000000000000000000000000") {
+    try {
+        // Стандартный способ burn - отправить на нулевой адрес
+        const sender = await window.ton.sender;
+
+        await sender.send({
+            to: CONTRACTS.rurc.address,
+            amount: amount * Math.pow(10, CONTRACTS.rurc.decimals),
+            payload: {
+                method: 'transfer',
+                params: { 
+                    to: burnAddress, 
+                    amount: amount * Math.pow(10, CONTRACTS.rurc.decimals) 
+                }
+            }
+        });
+
+        console.log(`Burned ${amount} RURC (sent to burn address)`);
+        return true;
+    } catch (error) {
+        console.error('Ошибка burn:', error);
+        return false;
+    }
+}
+
+// Burn с UI уведомлением
+async function burnWithUI(amount, onSuccess, onError) {
+    try {
+        showNotification('🔥 Сжигание токенов...', 'pending');
+
+        const result = await burnRURC(amount);
+
+        if (result) {
+            showNotification(`🔥 Сожжено ${amount} RURC`, 'success');
+            if (onSuccess) onSuccess();
+        } else {
+            showNotification('❌ Ошибка сжигания', 'error');
+            if (onError) onError();
+        }
+
+        return result;
+    } catch (error) {
+        console.error('Burn error:', error);
+        showNotification('❌ Ошибка: ' + error.message, 'error');
+        if (onError) onError(error);
+        return false;
+    }
+}
+
+// ============ ОБЩИЕ ФУНКЦИИ ============
 async function getTotalSupply() {
     try {
         const result = await window.ton.provider.call(
@@ -196,7 +264,7 @@ function renderContracts() {
     `).join('');
 }
 
-// UI для майнинга
+// UI для майнинга и сжигания
 function renderMintUI() {
     const container = document.getElementById('mintSection');
     if (!container) return;
@@ -208,14 +276,24 @@ function renderMintUI() {
                 <input type="number" id="mintAmount" placeholder="Количество RURC" min="1" max="1000000">
                 <button onclick="handleMint()">Майнить</button>
             </div>
-            <div class="mint-info">
-                <p>💡 Майнинг доступен только владельцу контракта</p>
-                <p>📊 Total Supply: <span id="totalSupply">...</span> RURC</p>
+        </div>
+
+        <div class="burn-panel">
+            <h3>🔥 Сжигание RURC</h3>
+            <div class="burn-form">
+                <input type="number" id="burnAmount" placeholder="Количество RURC" min="1" max="1000000">
+                <button onclick="handleBurn()" class="burn-btn">Сжечь</button>
             </div>
+            <div class="burn-info">
+                <p>⚠️ Внимание: сожжённые токены нельзя восстановить</p>
+            </div>
+        </div>
+
+        <div class="mint-info">
+            <p>📊 Total Supply: <span id="totalSupply">...</span> RURC</p>
         </div>
     `;
 
-    // Загружаем totalSupply
     getTotalSupply().then(supply => {
         const el = document.getElementById('totalSupply');
         if (el) el.textContent = supply.toLocaleString();
@@ -232,7 +310,25 @@ async function handleMint() {
     }
 
     await mintWithUI(amount, () => {
-        // Обновить баланс
+        updateBalance();
+    });
+}
+
+async function handleBurn() {
+    const input = document.getElementById('burnAmount');
+    const amount = parseFloat(input.value);
+
+    if (!amount || amount <= 0) {
+        showNotification('Введите корректное количество', 'error');
+        return;
+    }
+
+    // Подтверждение
+    if (!confirm(`Вы уверены, что хотите сжечь ${amount} RURC?`)) {
+        return;
+    }
+
+    await burnWithUI(amount, () => {
         updateBalance();
     });
 }
@@ -261,6 +357,9 @@ window.transferRURC = transferRURC;
 window.mintRURC = mintRURC;
 window.mintToSelf = mintToSelf;
 window.mintWithUI = mintWithUI;
+window.burnRURC = burnRURC;
+window.burnToAddress = burnToAddress;
+window.burnWithUI = burnWithUI;
 window.getTotalSupply = getTotalSupply;
 window.renderContracts = renderContracts;
 window.renderMintUI = renderMintUI;
