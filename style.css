@@ -1,584 +1,984 @@
-/* Патриотичная цветовая схема России */
+/* ============================================================
+   RURCoin — Animated UI Stylesheet
+   Нефть & Газ — Dark Neon Theme
+   ============================================================ */
+
+/* ── CSS VARIABLES ─────────────────────────────────────────── */
 :root {
-    --russian-white: #FFFFFF;
-    --russian-blue: #0039A6;
-    --russian-red: #D52B1E;
-    --russian-gold: #FFD700;
-    --russian-dark-blue: #0D2B5D;
+  --oil:       #FF6000;
+  --oil-light: #FFD700;
+  --gas:       #00e676;
+  --gas-dark:  #004d40;
+  --ton:       #60a5fa;
+  --ton-dark:  #0088cc;
+  --bg:        #080810;
+  --bg2:       #0d0d1a;
+  --bg3:       #120800;
+  --border:    #2a1500;
+  --text:      #ffffff;
+  --muted:     #555555;
+  --card-bg:   rgba(255,96,0,0.06);
+  --card-border: rgba(255,96,0,0.18);
+  --radius-lg: 20px;
+  --radius-md: 14px;
+  --radius-sm: 10px;
 }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+/* ── RESET ──────────────────────────────────────────────────── */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+/* ── KEYFRAMES ──────────────────────────────────────────────── */
+
+/* Мерцание неона */
+@keyframes neon-pulse {
+  0%,100% { box-shadow: 0 0 6px var(--oil), 0 0 14px rgba(255,96,0,.4); }
+  50%      { box-shadow: 0 0 18px var(--oil), 0 0 36px rgba(255,96,0,.7); }
+}
+@keyframes neon-pulse-gas {
+  0%,100% { box-shadow: 0 0 6px var(--gas), 0 0 14px rgba(0,230,118,.3); }
+  50%      { box-shadow: 0 0 18px var(--gas), 0 0 36px rgba(0,230,118,.6); }
+}
+@keyframes neon-pulse-ton {
+  0%,100% { box-shadow: 0 0 6px var(--ton), 0 0 14px rgba(96,165,250,.3); }
+  50%      { box-shadow: 0 0 18px var(--ton), 0 0 36px rgba(96,165,250,.6); }
 }
 
+/* Шиммер (бегущий блик) */
+@keyframes shimmer {
+  0%   { background-position: -300% center; }
+  100% { background-position:  300% center; }
+}
+
+/* Плавание */
+@keyframes float {
+  0%,100% { transform: translateY(0)   scale(1); }
+  50%      { transform: translateY(-8px) scale(1.06); }
+}
+@keyframes float-slow {
+  0%,100% { transform: translateY(0); }
+  50%      { transform: translateY(-5px); }
+}
+
+/* Прыжок */
+@keyframes bounce {
+  0%,100% { transform: translateY(0); }
+  40%      { transform: translateY(-8px); }
+  60%      { transform: translateY(-4px); }
+}
+
+/* Вращение */
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes spin-rev { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
+
+/* Насос (качалка) */
+@keyframes pump {
+  0%,100% { transform: scaleY(1)    translateY(0); }
+  50%      { transform: scaleY(.88) translateY(4px); }
+}
+
+/* Появление */
+@keyframes slide-up {
+  from { opacity:0; transform:translateY(16px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+@keyframes fade-in {
+  from { opacity:0; }
+  to   { opacity:1; }
+}
+@keyframes scale-in {
+  from { opacity:0; transform:scale(.92); }
+  to   { opacity:1; transform:scale(1); }
+}
+
+/* Заполнение бара */
+@keyframes fill-bar {
+  from { width:0%; }
+}
+@keyframes fill-tank {
+  from { height:0%; }
+}
+
+/* Бегущая подсветка внутри бара */
+@keyframes bar-shine {
+  0%   { left:-100%; }
+  100% { left: 200%; }
+}
+
+/* Пульс точки */
+@keyframes dot-pulse {
+  0%,100% { transform:scale(1);   opacity:1; }
+  50%      { transform:scale(1.6); opacity:.6; }
+}
+
+/* Волна (ripple) при нажатии */
+@keyframes ripple {
+  0%   { transform:scale(0); opacity:.6; }
+  100% { transform:scale(4); opacity:0; }
+}
+
+/* Мигание рамки */
+@keyframes border-glow {
+  0%,100% { border-color: var(--oil); }
+  50%      { border-color: var(--oil-light); }
+}
+
+/* Частицы нефти */
+@keyframes oil-drop {
+  0%   { transform:translateY(0)   scale(1);   opacity:.9; }
+  100% { transform:translateY(60px) scale(.4); opacity:0; }
+}
+
+/* Счётчик (число растёт) */
+@keyframes count-up {
+  from { opacity:0; transform:translateY(6px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+/* ── BODY ───────────────────────────────────────────────────── */
 body {
-    font-family: 'Arial', sans-serif;
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    color: #333;
-    min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+  /* Фоновая сетка */
+  background-image:
+    radial-gradient(ellipse at 20% 10%, rgba(255,96,0,.07) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 90%, rgba(0,136,204,.05) 0%, transparent 50%),
+    linear-gradient(rgba(255,96,0,.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,96,0,.03) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 32px 32px, 32px 32px;
 }
 
-.container {
-    max-width: 400px;
-    margin: 0 auto;
-    padding: 10px;
+/* ── SCROLLBAR ──────────────────────────────────────────────── */
+::-webkit-scrollbar { width:4px; }
+::-webkit-scrollbar-track { background:var(--bg); }
+::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+
+/* ── HEADER ─────────────────────────────────────────────────── */
+.app-header {
+  background: linear-gradient(135deg, #0e0600, #1a0d00);
+  border-bottom: 2px solid var(--oil);
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  animation: border-glow 3s ease-in-out infinite;
+  /* Стеклянный эффект */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.app-header::after {
+  content:'';
+  position:absolute;
+  bottom:-1px; left:0; right:0;
+  height:1px;
+  background: linear-gradient(90deg, transparent, var(--oil), var(--oil-light), var(--oil), transparent);
+  animation: shimmer 3s linear infinite;
+  background-size: 300% auto;
 }
 
-/* Патриотичный хедер */
-.patriotic-header {
-    background: linear-gradient(90deg, 
-        var(--russian-white) 0%, 
-        var(--russian-white) 33%, 
-        var(--russian-blue) 33%, 
-        var(--russian-blue) 66%, 
-        var(--russian-red) 66%, 
-        var(--russian-red) 100%);
-    color: var(--russian-dark-blue);
-    padding: 15px;
-    border-radius: 15px;
-    margin-bottom: 15px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+.app-logo { display:flex; align-items:center; gap:10px; }
+.app-logo-icon {
+  font-size: 30px;
+  display: inline-block;
+  animation: float 3s ease-in-out infinite;
+  filter: drop-shadow(0 0 10px rgba(255,96,0,.7));
+}
+.app-logo-text h1 {
+  font-size: 17px;
+  font-weight: 800;
+  background: linear-gradient(90deg, #FF8C00, #FFD700, #FF4500, #FFD700, #FF8C00);
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 4s linear infinite;
+}
+.app-logo-text p { font-size:10px; color:var(--muted); }
+
+.header-right { text-align:right; }
+.header-balance { display:flex; flex-direction:column; gap:4px; }
+
+.balance-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border-radius: 20px;
+  padding: 3px 10px;
+  font-size: 13px;
+  font-weight: 700;
+  transition: transform .2s;
+}
+.balance-chip:active { transform: scale(.95); }
+
+.balance-chip.rurc-chip {
+  background: rgba(255,96,0,.12);
+  border: 1px solid rgba(255,96,0,.35);
+  color: #FF8C00;
+  animation: neon-pulse 2.5s ease-in-out infinite;
+}
+.balance-chip.ton-chip {
+  background: rgba(96,165,250,.08);
+  border: 1px solid rgba(96,165,250,.3);
+  color: var(--ton);
+  animation: neon-pulse-ton 2.5s ease-in-out infinite;
 }
 
-.header-content {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
+.coin-icon {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 900;
+}
+.rurc-chip .coin-icon {
+  background: linear-gradient(135deg, var(--oil), var(--oil-light));
+  color: #000;
+  animation: spin 4s linear infinite;
+}
+.ton-chip .coin-icon {
+  background: linear-gradient(135deg, var(--ton-dark), var(--ton));
+  color: #fff;
+  animation: spin-rev 4s linear infinite;
 }
 
-.logo {
-    font-size: 24px;
-    font-weight: bold;
-    background: var(--russian-gold);
-    padding: 10px;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.header-wallet-badge {
+  font-size:10px; color:#f44336;
+  margin-top:4px; cursor:pointer;
+  transition: color .2s;
 }
+.header-wallet-badge:hover { color:#ff6b6b; }
 
-.header-text h1 {
-    font-size: 20px;
-    margin-bottom: 5px;
-    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+/* ── STATS BAR ──────────────────────────────────────────────── */
+.stats-bar {
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+  gap: 1px;
+  background: #111;
+  border-bottom: 1px solid #1a1a1a;
 }
+.stat-item {
+  background: var(--bg2);
+  padding: 8px 4px;
+  text-align: center;
+  transition: background .3s;
+  cursor: default;
+}
+.stat-item:hover { background: rgba(255,96,0,.08); }
 
-.header-text p {
-    font-size: 12px;
-    opacity: 0.8;
+.stat-icon {
+  font-size: 18px;
+  display: inline-block;
+  animation: bounce 2.2s ease-in-out infinite;
 }
+.stat-item:nth-child(2) .stat-icon { animation-delay:.25s; }
+.stat-item:nth-child(3) .stat-icon { animation-delay:.5s; }
+.stat-item:nth-child(4) .stat-icon { animation-delay:.75s; }
 
-.logo-container {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+.stat-val {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--oil-light);
+  margin-top: 2px;
+  animation: count-up .4s ease;
 }
+.stat-lbl { font-size:9px; color:var(--muted); margin-top:1px; }
 
-.logo-placeholder {
-    font-size: 40px;
+/* ── TABS ───────────────────────────────────────────────────── */
+.tabs-wrap {
+  background: #0a0a14;
+  border-bottom: 1px solid #1a1a2e;
+  overflow-x: auto;
+  white-space: nowrap;
+  scrollbar-width: none;
+  position: sticky;
+  top: 62px;
+  z-index: 100;
 }
-
-.header-stats {
-    display: flex;
-    gap: 10px;
-}
-
-.stat-badge {
-    background: rgba(255, 255, 255, 0.3);
-    padding: 5px 10px;
-    border-radius: 20px;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-}
-
-/* Навигация по вкладкам */
-.tab-navigation {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
-    margin-bottom: 15px;
-}
+.tabs-wrap::-webkit-scrollbar { display:none; }
+.tabs { display:inline-flex; padding:0 6px; }
 
 .tab-btn {
-    flex: 1 1 calc(33.333% - 5px);
-    padding: 10px 5px;
-    border: none;
-    background: var(--russian-white);
-    color: var(--russian-dark-blue);
-    border-radius: 10px;
-    cursor: pointer;
-    font-size: 12px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 5px;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  background: none;
+  border: none;
+  color: var(--muted);
+  padding: 10px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color .25s, transform .15s;
+  white-space: nowrap;
+  position: relative;
+  overflow: hidden;
 }
-
-.tab-btn.active {
-    background: var(--russian-blue);
-    color: var(--russian-white);
+/* Ripple при клике */
+.tab-btn .ripple-el {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255,140,0,.3);
+  animation: ripple .6s ease-out forwards;
+  pointer-events: none;
 }
-
-.tab-icon {
-    font-size: 20px;
+.tab-btn::after {
+  content:'';
+  position:absolute;
+  bottom:0; left:50%;
+  width:0; height:2px;
+  background: linear-gradient(90deg, var(--oil), var(--oil-light));
+  transition: width .3s, left .3s;
+  transform: translateX(-50%);
 }
+.tab-btn.active { color: var(--oil-light); }
+.tab-btn.active::after { width:100%; }
+.tab-btn:active { transform: scale(.93); }
 
-/* Основной контент */
-.main-content {
-    min-height: 400px;
-}
+/* ── CONTENT ────────────────────────────────────────────────── */
+.content { padding:12px; padding-bottom:100px; }
 
-.tab-content {
-    display: none;
-}
-
+.tab-content { display:none; }
 .tab-content.active {
-    display: block;
-    animation: fadeIn 0.3s ease;
+  display: block;
+  animation: slide-up .35s cubic-bezier(.4,0,.2,1);
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+/* ── SECTION TITLE ──────────────────────────────────────────── */
+.section-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--oil-light);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.section-title::before {
+  content:'';
+  width:3px; height:16px;
+  background: linear-gradient(180deg, var(--oil), var(--oil-light));
+  border-radius:2px;
+  display:inline-block;
+  animation: neon-pulse 2s ease-in-out infinite;
 }
 
-/* Карточки */
-.russian-card {
-    background: var(--russian-white);
-    border-radius: 15px;
-    padding: 15px;
-    margin-bottom: 15px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    border: 2px solid var(--russian-blue);
+/* ── CARDS ──────────────────────────────────────────────────── */
+.card {
+  background: linear-gradient(135deg, var(--bg2), var(--bg3));
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  margin-bottom: 12px;
+  animation: slide-up .35s ease;
+  transition: border-color .3s, transform .2s, box-shadow .3s;
+}
+.card:hover {
+  border-color: var(--oil);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(255,96,0,.15);
 }
 
-.russian-card h2 {
-    color: var(--russian-dark-blue);
-    margin-bottom: 15px;
-    font-size: 18px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+/* ── OIL RIG VISUAL ─────────────────────────────────────────── */
+.oil-rig-visual {
+  background: linear-gradient(180deg, var(--bg2) 0%, var(--bg3) 100%);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  text-align: center;
+  margin-bottom: 14px;
+  position: relative;
+  overflow: hidden;
+  animation: border-glow 4s ease-in-out infinite;
+}
+/* Фоновое свечение */
+.oil-rig-visual::before {
+  content:'';
+  position:absolute;
+  top:0;left:0;right:0;bottom:0;
+  background: radial-gradient(ellipse at 50% 0%, rgba(255,96,0,.1) 0%, transparent 65%);
+  pointer-events:none;
+  animation: fade-in 1s ease;
+}
+/* Частицы нефти */
+.oil-rig-visual::after {
+  content:'🛢';
+  position:absolute;
+  font-size:12px;
+  left:20%;
+  top:10%;
+  animation: oil-drop 3s ease-in infinite;
+  opacity:0;
 }
 
-.russian-card h3 {
-    color: var(--russian-dark-blue);
-    margin-bottom: 10px;
-    font-size: 16px;
+.rig-emoji {
+  font-size: 60px;
+  display: block;
+  animation: pump 1.6s ease-in-out infinite;
+  filter: drop-shadow(0 0 16px rgba(255,96,0,.8));
+  transition: filter .3s;
+}
+.rig-emoji.active {
+  filter: drop-shadow(0 0 24px rgba(255,96,0,1)) drop-shadow(0 0 48px rgba(255,200,0,.5));
 }
 
-/* Баланс */
-.balance-card {
-    text-align: center;
+.rig-status {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 8px 0 14px;
+  font-weight: 600;
+  transition: color .3s;
+}
+.rig-status.active { color: var(--gas); }
+
+/* ── PRODUCTION RATES ───────────────────────────────────────── */
+.production-rates {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.rate-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  text-align: center;
+  transition: border-color .3s, transform .2s;
+}
+.rate-card:hover { border-color: var(--oil); transform: scale(1.03); }
+
+.rate-icon {
+  font-size: 26px;
+  display: inline-block;
+  animation: float 2.8s ease-in-out infinite;
+}
+.rate-card:nth-child(2) .rate-icon { animation-delay:.9s; }
+
+.rate-val { font-size:15px; font-weight:700; color:var(--oil-light); margin-top:4px; }
+.rate-lbl { font-size:10px; color:var(--muted); margin-top:2px; }
+
+/* ── TANK BARS ──────────────────────────────────────────────── */
+.tank-section {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  margin-bottom: 10px;
+  transition: border-color .3s;
+}
+.tank-section:hover { border-color: var(--oil); }
+
+.tank-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.tank-icon {
+  font-size: 20px;
+  display: inline-block;
+  animation: bounce 2s ease-in-out infinite;
+}
+.tank-label { font-size:13px; font-weight:700; color:var(--oil-light); }
+.tank-value { margin-left:auto; font-size:12px; color:#888; font-weight:700; }
+
+.tank-bar-wrap {
+  background: #0a0a14;
+  border-radius: 10px;
+  height: 14px;
+  overflow: hidden;
+  border: 1px solid #1a1a2e;
+  position: relative;
+}
+.tank-bar {
+  height: 100%;
+  border-radius: 10px;
+  transition: width 1.2s cubic-bezier(.4,0,.2,1);
+  position: relative;
+  overflow: hidden;
+  animation: fill-bar 1.5s ease-out;
+}
+/* Бегущий блик */
+.tank-bar::after {
+  content:'';
+  position:absolute;
+  top:0; left:-100%;
+  width:60%; height:100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.35), transparent);
+  animation: bar-shine 2.2s ease-in-out infinite;
+}
+.tank-bar.oil { background: linear-gradient(90deg, #8B4513, var(--oil), var(--oil-light)); }
+.tank-bar.gas { background: linear-gradient(90deg, var(--gas-dark), var(--gas), #69f0ae); }
+
+/* ── MINE BUTTON ────────────────────────────────────────────── */
+.mine-btn {
+  width: 100%;
+  padding: 16px;
+  border: none;
+  border-radius: 18px;
+  font-size: 17px;
+  font-weight: 800;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: transform .15s, box-shadow .3s;
+  background: linear-gradient(135deg, #FF4500, #FF8C00, #FFD700, #FF8C00, #FF4500);
+  background-size: 300% auto;
+  color: #000;
+  letter-spacing: .5px;
+  animation: shimmer 3s linear infinite, neon-pulse 2s ease-in-out infinite;
+  margin-top: 14px;
+}
+.mine-btn:active { transform: scale(.96); }
+.mine-btn.mining {
+  background: linear-gradient(135deg, #00c853, #00e676, #69f0ae, #00e676, #00c853);
+  background-size: 300% auto;
+  animation: shimmer 3s linear infinite, neon-pulse-gas 2s ease-in-out infinite;
+  color: #000;
+}
+/* Ripple при нажатии */
+.mine-btn::before {
+  content:'';
+  position:absolute;
+  top:50%; left:50%;
+  width:0; height:0;
+  background: rgba(255,255,255,.25);
+  border-radius:50%;
+  transform:translate(-50%,-50%);
+  transition: width .5s, height .5s, opacity .5s;
+}
+.mine-btn:active::before { width:300px; height:300px; opacity:0; }
+
+/* ── EQUIPMENT CARDS ────────────────────────────────────────── */
+.equipment-card {
+  background: linear-gradient(135deg, var(--bg2), var(--bg3));
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 14px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: border-color .3s, transform .2s, box-shadow .3s;
+  animation: slide-up .3s ease;
+}
+.equipment-card:hover {
+  border-color: var(--oil);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255,96,0,.15);
 }
 
-.balance-amount {
-    display: flex;
-    align-items: baseline;
-    justify-content: center;
-    gap: 10px;
-    margin: 15px 0;
+.eq-icon {
+  font-size: 34px;
+  animation: bounce 2.5s ease-in-out infinite;
+  min-width: 42px;
+  text-align: center;
+  filter: drop-shadow(0 0 6px rgba(255,96,0,.5));
 }
+.eq-info { flex:1; }
+.eq-name { font-size:13px; font-weight:700; color:var(--text); }
+.eq-desc { font-size:11px; color:var(--gas); margin-top:2px; }
+.eq-count { font-size:10px; color:var(--muted); margin-top:2px; }
 
-.balance {
-    font-size: 36px;
-    font-weight: bold;
-    color: var(--russian-dark-blue);
+.eq-buy-btn {
+  background: linear-gradient(135deg, #FF4500, #FF8C00);
+  border: none;
+  border-radius: 12px;
+  color: #000;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 9px 14px;
+  cursor: pointer;
+  transition: transform .15s, box-shadow .2s;
+  box-shadow: 0 4px 12px rgba(255,96,0,.4);
+  white-space: nowrap;
+  position: relative;
+  overflow: hidden;
 }
+.eq-buy-btn:hover { box-shadow: 0 6px 20px rgba(255,96,0,.65); }
+.eq-buy-btn:active { transform: scale(.91); }
 
-.currency {
-    font-size: 18px;
-    color: var(--russian-blue);
+/* ── STAKING ────────────────────────────────────────────────── */
+.staking-card {
+  background: linear-gradient(135deg, #0a0a1a, #0d0d2d);
+  border: 1px solid #2d2d5a;
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  animation: neon-pulse-ton 3s ease-in-out infinite;
 }
-
-.balance-details {
-    display: flex;
-    justify-content: space-around;
-    padding-top: 10px;
-    border-top: 1px solid #eee;
+.staking-info {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
 }
-
-.usd-value {
-    color: #666;
-    font-size: 14px;
+.staking-stat {
+  background: rgba(96,165,250,.07);
+  border: 1px solid rgba(96,165,250,.2);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  text-align: center;
+  transition: border-color .3s, transform .2s;
 }
+.staking-stat:hover { border-color: var(--ton); transform: scale(1.03); }
+.s-val { font-size:16px; font-weight:700; color:var(--ton); }
+.s-lbl { font-size:10px; color:var(--muted); margin-top:4px; }
 
-.ton-balance {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    color: var(--russian-blue);
-    font-weight: bold;
-}
-
-.ton-icon {
-    font-size: 18px;
-}
-
-/* Майнинг */
-.mining-controls {
-    text-align: center;
-}
-
-.mining-stats {
-    display: flex;
-    justify-content: space-around;
-    margin-bottom: 15px;
-}
-
-.stat-item {
-    text-align: center;
-}
-
-.stat-label {
-    display: block;
-    font-size: 12px;
-    color: #666;
-    margin-bottom: 5px;
-}
-
-.stat-value {
-    font-size: 16px;
-    font-weight: bold;
-    color: var(--russian-dark-blue);
-}
-
-.russian-button {
-    background: linear-gradient(135deg, var(--russian-blue), var(--russian-dark-blue));
-    color: var(--russian-white);
-    border: none;
-    padding: 15px 30px;
-    border-radius: 25px;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    box-shadow: 0 4px 15px rgba(0, 57, 166, 0.3);
-}
-
-.russian-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 57, 166, 0.4);
-}
-
-.russian-button.secondary {
-    background: linear-gradient(135deg, var(--russian-red), #b91c1c);
-    box-shadow: 0 4px 15px rgba(213, 43, 30, 0.3);
-}
-
-.russian-button.secondary:hover {
-    box-shadow: 0 6px 20px rgba(213, 43, 30, 0.4);
-}
-
-.mining-btn {
-    width: 100%;
-    font-size: 18px;
-    padding: 20px;
-}
-
-.btn-icon {
-    font-size: 20px;
-}
-
-/* Фермы */
-.farms-section {
-    margin-top: 15px;
-}
-
-.farms-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.farm-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    background: #f5f5f5;
-    border-radius: 10px;
-    border: 1px solid #ddd;
-}
-
-.farm-info {
-    flex: 1;
-}
-
-.farm-name {
-    font-weight: bold;
-    color: var(--russian-dark-blue);
-}
-
-.farm-stats {
-    font-size: 12px;
-    color: #666;
-}
-
-/* Стейкинг */
-.staking-interface {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.info-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    margin: 15px 0;
-}
-
-.info-card {
-    text-align: center;
-    padding: 10px;
-    background: #f5f5f5;
-    border-radius: 10px;
-}
-
-.info-value {
-    font-size: 20px;
-    font-weight: bold;
-    color: var(--russian-dark-blue);
-}
-
-.info-value.apy {
-    color: var(--russian-red);
-    font-size: 24px;
-}
-
-.info-label {
-    font-size: 10px;
-    color: #666;
-    margin-top: 5px;
-}
-
-.staking-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 15px;
-}
-
-.input-group {
-    display: flex;
-    gap: 10px;
-}
-
+.input-group { display:flex; gap:8px; margin-bottom:10px; }
 .input-group input {
-    flex: 1;
-    padding: 12px;
-    border: 2px solid var(--russian-blue);
-    border-radius: 10px;
-    font-size: 14px;
+  flex:1;
+  background: #0a0a14;
+  border: 1px solid #2d2d5a;
+  border-radius: 12px;
+  color: var(--text);
+  font-size: 14px;
+  padding: 10px 14px;
+  outline: none;
+  transition: border-color .25s, box-shadow .25s;
 }
-
 .input-group input:focus {
-    outline: none;
-    border-color: var(--russian-gold);
+  border-color: var(--ton);
+  box-shadow: 0 0 0 3px rgba(96,165,250,.15);
 }
 
-.staking-stats {
-    margin-top: 15px;
-    padding-top: 15px;
-    border-top: 1px solid #eee;
+.btn-stake {
+  background: linear-gradient(135deg, #1565c0, var(--ton));
+  border: none;
+  border-radius: 12px;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 10px 18px;
+  cursor: pointer;
+  transition: transform .15s, box-shadow .2s;
+  box-shadow: 0 4px 12px rgba(96,165,250,.3);
 }
+.btn-stake:active { transform: scale(.93); }
+.btn-stake:hover { box-shadow: 0 6px 20px rgba(96,165,250,.5); }
 
-.staking-stats h4 {
-    margin-bottom: 10px;
-    color: var(--russian-dark-blue);
+.btn-unstake {
+  width: 100%;
+  background: rgba(244,67,54,.1);
+  border: 1px solid rgba(244,67,54,.3);
+  border-radius: 12px;
+  color: #f44336;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 10px;
+  cursor: pointer;
+  transition: all .2s;
 }
+.btn-unstake:hover { background: rgba(244,67,54,.2); }
+.btn-unstake:active { transform: scale(.97); }
 
-.stats-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+/* ── HALVING ────────────────────────────────────────────────── */
+.halving-card {
+  background: linear-gradient(135deg, #0a0a1a, #1a0a00);
+  border: 1px solid var(--oil);
+  border-radius: var(--radius-lg);
+  padding: 30px 20px;
+  text-align: center;
+  animation: border-glow 3s ease-in-out infinite;
 }
-
-.stats-list .stat-item {
-    display: flex;
-    justify-content: space-between;
-    padding: 8px;
-    background: #f5f5f5;
-    border-radius: 8px;
-}
-
-/* Контракты */
-.contracts-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.contract-item {
-    padding: 12px;
-    background: #f5f5f5;
-    border-radius: 10px;
-    border-left: 4px solid var(--russian-blue);
-}
-
-.contract-name {
-    font-weight: bold;
-    color: var(--russian-dark-blue);
-    margin-bottom: 5px;
-}
-
-.contract-desc {
-    font-size: 12px;
-    color: #666;
-}
-
-/* Транзакции */
-.transactions-feed {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    max-height: 400px;
-    overflow-y: auto;
-}
-
-.transaction-item {
-    padding: 10px;
-    background: #f5f5f5;
-    border-radius: 10px;
-    font-size: 12px;
-}
-
-.transaction-item.new-transaction {
-    animation: highlight 1s ease;
-}
-
-@keyframes highlight {
-    0% { background: var(--russian-gold); }
-    100% { background: #f5f5f5; }
-}
-
-/* Халвинг */
 .halving-timer {
-    text-align: center;
-    padding: 20px;
-    background: linear-gradient(135deg, var(--russian-blue), var(--russian-dark-blue));
-    border-radius: 15px;
-    margin: 15px 0;
-    color: var(--russian-white);
+  font-size: 32px;
+  font-weight: 800;
+  background: linear-gradient(90deg, var(--oil), var(--oil-light), var(--oil));
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 3s linear infinite;
+  margin: 12px 0;
 }
 
-.timer-label {
-    font-size: 14px;
-    opacity: 0.8;
-    margin-bottom: 10px;
+/* ── STORAGE BIG TANKS ──────────────────────────────────────── */
+.storage-big-tank {
+  background: linear-gradient(135deg, var(--bg2), var(--bg3));
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  margin-bottom: 12px;
+  transition: border-color .3s;
+}
+.storage-big-tank:hover { border-color: var(--oil); }
+
+.tank-label-big {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.tank-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+}
+.tank-name .t-icon {
+  font-size: 24px;
+  display: inline-block;
+  animation: pump 2s ease-in-out infinite;
+}
+.tank-pct-big { font-size:20px; font-weight:800; color:var(--oil-light); }
+
+.tank-visual {
+  position: relative;
+  height: 80px;
+  background: #0a0a14;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #1a1a2e;
+  margin: 8px 0;
+}
+.tank-fill {
+  position: absolute;
+  bottom:0; left:0; right:0;
+  border-radius: 0 0 12px 12px;
+  transition: height 1.5s cubic-bezier(.4,0,.2,1);
+  overflow: hidden;
+  animation: fill-tank 1.5s ease-out;
+}
+.tank-fill::after {
+  content:'';
+  position:absolute;
+  top:0; left:-100%;
+  width:200%; height:100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent);
+  animation: bar-shine 2.5s ease-in-out infinite;
+}
+.tank-fill.oil-fill { background: linear-gradient(180deg, var(--oil), #8B4513); }
+.tank-fill.gas-fill { background: linear-gradient(180deg, var(--gas), var(--gas-dark)); }
+
+.tank-label-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: #444;
+  margin-top: 4px;
 }
 
-.timer-value {
-    font-size: 32px;
-    font-weight: bold;
+/* ── PRICE CARD ─────────────────────────────────────────────── */
+.price-card {
+  background: linear-gradient(135deg, #0a0a1a, #0d0d2d);
+  border: 1px solid #2d2d5a;
+  border-radius: 16px;
+  padding: 14px;
+  margin-bottom: 12px;
+  transition: border-color .3s;
+}
+.price-card:hover { border-color: var(--ton); }
+
+.price-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 10px;
+}
+.price-item {
+  background: var(--bg2);
+  border-radius: 12px;
+  padding: 12px;
+  text-align: center;
+  border: 1px solid #1a1a3a;
+  transition: border-color .3s, transform .2s;
+}
+.price-item:hover { border-color: var(--oil); transform: scale(1.03); }
+
+.p-icon {
+  font-size: 22px;
+  display: inline-block;
+  animation: float 3s ease-in-out infinite;
+}
+.price-item:nth-child(2) .p-icon { animation-delay:1.2s; }
+.price-val { font-size:16px; font-weight:700; color:var(--oil-light); margin-top:4px; }
+.price-change { font-size:11px; margin-top:3px; }
+.price-unit { font-size:9px; color:#444; margin-top:2px; }
+
+/* ── GLOBAL CARD ────────────────────────────────────────────── */
+.global-card {
+  background: linear-gradient(135deg, #0a1a0a, #0d2d0d);
+  border: 1px solid #2d5a2d;
+  border-radius: 16px;
+  padding: 14px;
+  margin-bottom: 12px;
+  transition: border-color .3s;
+}
+.global-card:hover { border-color: var(--gas); }
+
+.global-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 10px;
+}
+.global-item {
+  background: #0d1a0d;
+  border-radius: 12px;
+  padding: 12px;
+  text-align: center;
+  transition: transform .2s;
+}
+.global-item:hover { transform: scale(1.04); }
+.g-icon {
+  font-size: 22px;
+  display: inline-block;
+  animation: bounce 2s ease-in-out infinite;
+}
+.global-item:nth-child(2) .g-icon { animation-delay:.5s; }
+.g-val { font-size:15px; font-weight:700; color:var(--oil-light); margin-top:4px; }
+.g-lbl { font-size:10px; color:#444; margin-top:2px; }
+
+/* ── TOKEN ICONS ────────────────────────────────────────────── */
+.token-icon {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 900;
+  vertical-align: middle;
+}
+.token-icon.rurc {
+  background: linear-gradient(135deg, var(--oil), var(--oil-light));
+  color: #000;
+  animation: spin 4s linear infinite;
+}
+.token-icon.ton {
+  background: linear-gradient(135deg, var(--ton-dark), var(--ton));
+  color: #fff;
+  animation: spin-rev 4s linear infinite;
 }
 
-.halving-history {
-    margin-top: 15px;
+/* ── FAB ────────────────────────────────────────────────────── */
+.topup-fab {
+  position: fixed;
+  bottom: 20px;
+  right: 16px;
+  background: linear-gradient(135deg, #FF4500, #FF8C00);
+  border: none;
+  border-radius: 28px;
+  color: #000;
+  font-size: 13px;
+  font-weight: 800;
+  padding: 12px 20px;
+  cursor: pointer;
+  box-shadow: 0 6px 24px rgba(255,96,0,.55);
+  animation: neon-pulse 2s ease-in-out infinite;
+  z-index: 300;
+  transition: transform .15s;
+}
+.topup-fab:active { transform: scale(.94); }
+.topup-fab:hover { box-shadow: 0 8px 32px rgba(255,96,0,.75); }
+
+/* ── STATUS DOT ─────────────────────────────────────────────── */
+.status-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 4px;
+}
+.status-dot.green {
+  background: var(--gas);
+  animation: dot-pulse 1.5s ease-in-out infinite;
+  box-shadow: 0 0 6px var(--gas);
+}
+.status-dot.red {
+  background: #f44336;
+  animation: dot-pulse 2s ease-in-out infinite;
 }
 
-.history-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+/* ── EXCHANGE ───────────────────────────────────────────────── */
+#exchangeTab input[type=number]::-webkit-inner-spin-button,
+#exchangeTab input[type=number]::-webkit-outer-spin-button { -webkit-appearance:none; }
+#exchangeTab input[type=number] { -moz-appearance:textfield; }
+
+/* ── NOTIFICATIONS ──────────────────────────────────────────── */
+.notification-toast {
+  position: fixed;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-20px);
+  background: linear-gradient(135deg, #1a1a2e, #0d0d1a);
+  border: 1px solid var(--oil);
+  border-radius: 14px;
+  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--oil-light);
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity .3s, transform .3s;
+  box-shadow: 0 8px 24px rgba(255,96,0,.3);
+  max-width: 280px;
+  text-align: center;
+  pointer-events: none;
 }
-
-.history-item {
-    display: flex;
-    justify-content: space-between;
-    padding: 10px;
-    background: #f5f5f5;
-    border-radius: 8px;
-    font-size: 12px;
+.notification-toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
 }
+.notification-toast.success { border-color: var(--gas); color: var(--gas); }
+.notification-toast.error   { border-color: #f44336; color: #f44336; }
+.notification-toast.info    { border-color: var(--ton); color: var(--ton); }
 
-.halving-number {
-    font-weight: bold;
-    color: var(--russian-dark-blue);
+/* ── UPGRADE CARDS ──────────────────────────────────────────── */
+.upgrade-card {
+  background: #111122;
+  border: 1px solid #222;
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 8px;
+  transition: border-color .3s, transform .2s;
+  animation: slide-up .3s ease;
 }
+.upgrade-card:hover { border-color: var(--oil); transform: translateY(-1px); }
+.upgrade-card.maxed { border-color: var(--gas); }
 
-.halving-date {
-    color: #666;
+/* ── TRANSACTION ITEMS ──────────────────────────────────────── */
+.tx-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  margin-bottom: 8px;
+  animation: slide-up .3s ease;
+  transition: border-color .3s;
 }
+.tx-item:hover { border-color: var(--oil); }
+.tx-icon { font-size: 22px; animation: float-slow 3s ease-in-out infinite; }
+.tx-info { flex:1; }
+.tx-type { font-size:12px; font-weight:700; color:var(--text); }
+.tx-time { font-size:10px; color:var(--muted); margin-top:2px; }
+.tx-amount { font-size:13px; font-weight:700; color:var(--gas); }
+.tx-amount.negative { color:#f44336; }
 
-.halving-reward {
-    color: var(--russian-red);
-    font-weight: bold;
+/* ── WALLET SECTION ─────────────────────────────────────────── */
+.wallet-address-box {
+  background: #050508;
+  border: 1px solid #1a1a2e;
+  border-radius: 12px;
+  padding: 12px;
+  font-family: monospace;
+  font-size: 12px;
+  color: var(--ton);
+  word-break: break-all;
+  margin: 10px 0;
+  transition: border-color .3s;
 }
+.wallet-address-box:hover { border-color: var(--ton); }
 
-/* История */
-.history-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.history-item {
-    padding: 12px;
-    background: #f5f5f5;
-    border-radius: 10px;
-    border-left: 4px solid var(--russian-blue);
-}
-
-.history-date {
-    font-size: 10px;
-    color: #666;
-    margin-bottom: 5px;
-}
-
-.history-action {
-    font-weight: bold;
-    color: var(--russian-dark-blue);
-}
-
-.history-amount {
-    font-size: 14px;
-    color: var(--russian-blue);
-    font-weight: bold;
-}
-
-/* Футер */
-.patriotic-footer {
-    text-align: center;
-    padding: 20px;
-    margin-top: 20px;
-    color: var(--russian-dark-blue);
-}
-
-.footer-version {
-    font-size: 12px;
-    color: #666;
-    margin-top: 5px;
-}
-
-/* Адаптивность */
-@media (max-width: 400px) {
-    .container {
-        padding: 5px;
-    }
-
-    .tab-btn {
-        flex: 1 1 calc(50% - 5px);
-    }
-
-    .balance {
-        font-size: 28px;
-    }
-
-    .info-grid {
-        grid-template-columns: 1fr;
-    }
+/* ── RESPONSIVE ─────────────────────────────────────────────── */
+@media (max-width: 360px) {
+  .production-rates { grid-template-columns: 1fr; }
+  .price-grid       { grid-template-columns: 1fr; }
+  .global-grid      { grid-template-columns: 1fr; }
+  .staking-info     { grid-template-columns: 1fr; }
 }
