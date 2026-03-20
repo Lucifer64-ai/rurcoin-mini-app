@@ -982,3 +982,216 @@ body {
   .global-grid      { grid-template-columns: 1fr; }
   .staking-info     { grid-template-columns: 1fr; }
 }
+
+
+/* ===== RESOURCE SLIDER NAV ===== */
+.resource-slider-nav {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+    background: var(--bg2);
+    border-radius: 14px;
+    padding: 4px;
+    border: 1px solid var(--border);
+}
+.res-slide-btn {
+    flex: 1;
+    padding: 10px 8px;
+    border: none;
+    border-radius: 10px;
+    background: transparent;
+    color: #666;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+.res-slide-btn.active {
+    background: linear-gradient(135deg, #FF4500, #FF8C00);
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(255,100,0,0.35);
+}
+.res-slide-btn:nth-child(2).active {
+    background: linear-gradient(135deg, #0d3a1a, #4ade80);
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(74,222,128,0.3);
+}
+.resource-slide { animation: slide-in 0.3s ease; }
+
+/* ===== RIG VISUAL WRAP ===== */
+.rig-visual-wrap {
+    background: linear-gradient(180deg, var(--bg2) 0%, var(--bg3) 100%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 16px;
+    text-align: center;
+    margin-bottom: 12px;
+    position: relative;
+    overflow: hidden;
+    animation: border-glow 4s ease-in-out infinite;
+}
+.gas-rig-wrap {
+    border-color: rgba(74,222,128,0.25);
+    background: linear-gradient(180deg, #050f1a 0%, #0a1f2a 100%);
+}
+
+/* Анимация качалки-балансира */
+@keyframes pump-rock {
+    0%   { transform: rotate(-14deg); }
+    50%  { transform: rotate(14deg); }
+    100% { transform: rotate(-14deg); }
+}
+#pumpBeam {
+    animation: pump-rock 2.2s ease-in-out infinite;
+    transform-origin: 120px 82px;
+}
+/* Капли нефти */
+@keyframes oil-drip {
+    0%   { transform: translateY(0); opacity:0.9; }
+    80%  { opacity:0.5; }
+    100% { transform: translateY(18px); opacity:0; }
+}
+.oil-drop  { animation: oil-drip 1.6s ease-in infinite; }
+.oil-drop2 { animation: oil-drip 1.6s ease-in 0.7s infinite; }
+
+/* Анимация факела */
+@keyframes flame-flicker {
+    0%,100% { transform: scaleY(1) scaleX(1); opacity:0.9; }
+    25%      { transform: scaleY(1.2) scaleX(0.85); opacity:1; }
+    75%      { transform: scaleY(0.85) scaleX(1.1); opacity:0.8; }
+}
+#gasFlameTip {
+    animation: flame-flicker 0.55s ease-in-out infinite;
+    transform-origin: 157px 58px;
+}
+/* Волны моря */
+@keyframes sea-wave {
+    0%,100% { d: path("M0,118 Q20,114 40,118 Q60,122 80,118 Q100,114 120,118 Q140,122 160,118 Q180,114 200,118 Q220,122 240,118 Q250,116 260,118"); }
+    50%      { d: path("M0,120 Q20,116 40,120 Q60,124 80,120 Q100,116 120,120 Q140,124 160,120 Q180,116 200,120 Q220,124 240,120 Q250,118 260,120"); }
+}
+#seaWave1 { animation: sea-wave 3s ease-in-out infinite; }
+/* Дельфины */
+@keyframes dolphin-swim {
+    0%,100% { transform: translateX(0px) translateY(0px); }
+    50%      { transform: translateX(8px) translateY(-4px); }
+}
+#dolphin1 { animation: dolphin-swim 4s ease-in-out infinite; }
+#dolphin2 { animation: dolphin-swim 4s ease-in-out 2s infinite; }
+/* Пузырьки газа */
+@keyframes bubble-rise {
+    0%   { transform: translateY(0); opacity:0.4; }
+    100% { transform: translateY(-35px); opacity:0; }
+}
+.gas-bubble:nth-child(1) { animation: bubble-rise 2.2s ease-in infinite; }
+.gas-bubble:nth-child(2) { animation: bubble-rise 2.8s ease-in 0.6s infinite; }
+.gas-bubble:nth-child(3) { animation: bubble-rise 2s ease-in 1.2s infinite; }
+
+.rig-status-badge {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    background: rgba(255,100,0,0.15);
+    color: #FF8C00;
+    border: 1px solid rgba(255,100,0,0.3);
+}
+.gas-badge {
+    background: rgba(74,222,128,0.12);
+    color: #4ade80;
+    border-color: rgba(74,222,128,0.3);
+}
+
+/* ===== SVG TANK ===== */
+.svg-tank-wrap {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 14px;
+    margin-bottom: 12px;
+}
+.svg-tank-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #666;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+.svg-tank-container {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+.svg-tank {
+    width: 100px;
+    height: auto;
+    flex-shrink: 0;
+    filter: drop-shadow(0 4px 14px rgba(255,100,0,0.18));
+}
+.svg-tank-info { flex: 1; }
+.svg-tank-pct {
+    font-size: 34px;
+    font-weight: 900;
+    color: #FF8C00;
+    line-height: 1;
+    margin-bottom: 4px;
+}
+.svg-tank-stored {
+    font-size: 14px;
+    font-weight: 700;
+    color: #ccc;
+    margin-bottom: 2px;
+}
+.svg-tank-cap { font-size: 11px; color: #555; }
+
+/* ===== COMPARE CARD ===== */
+.compare-card {
+    background: var(--bg2);
+    border: 1px solid rgba(255,100,0,0.2);
+    border-radius: var(--radius-lg);
+    padding: 14px;
+    margin-bottom: 12px;
+}
+.compare-card.gas-compare { border-color: rgba(74,222,128,0.2); }
+.compare-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: #666;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+}
+.compare-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+.compare-item {
+    background: var(--bg3);
+    border-radius: 10px;
+    padding: 10px 6px;
+    text-align: center;
+    border: 1px solid var(--border);
+}
+.compare-label { font-size: 10px; color: #555; margin-bottom: 4px; text-transform: uppercase; }
+.compare-val   { font-size: 13px; font-weight: 800; color: #ccc; margin-bottom: 2px; }
+.compare-delta { font-size: 11px; font-weight: 700; color: #4ade80; }
+.compare-delta.neg { color: #f87171; }
+
+/* ===== MINE BUTTONS ===== */
+.mine-btn-oil {
+    background: linear-gradient(135deg, #FF4500, #FF8C00, #FFD700);
+    background-size: 200% auto;
+    color: #000;
+}
+.mine-btn-gas {
+    background: linear-gradient(135deg, #0d3a1a, #4ade80, #a7f3d0);
+    background-size: 200% auto;
+    color: #000;
+}
