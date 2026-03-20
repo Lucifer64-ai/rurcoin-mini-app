@@ -1195,3 +1195,15 @@ body {
     background-size: 200% auto;
     color: #000;
 }
+
+@keyframes rainbow-shift{0%{background-position:0% 50%}100%{background-position:200% 50%}}
+@keyframes wave-move{0%{transform:translateX(0) scaleY(1)}50%{transform:translateX(-25%) scaleY(1.05)}100%{transform:translateX(-50%) scaleY(1)}}
+@keyframes pump-rock{0%{transform:rotate(-18deg)}50%{transform:rotate(18deg)}100%{transform:rotate(-18deg)}}
+@keyframes pipe-flow{0%{stroke-dashoffset:40}100%{stroke-dashoffset:0}}
+.tank-fill{position:relative;overflow:hidden;transition:height .8s ease}
+.tank-fill::after{content:'';position:absolute;top:-6px;left:0;width:200%;height:14px;border-radius:50%;animation:wave-move 2s ease-in-out infinite}
+.oil-fill::after{background:rgba(255,200,100,.3)}
+.gas-fill::after{background:rgba(100,255,150,.3)}
+.pump-arm{transform-origin:50% 80%;animation:pump-rock 1.8s ease-in-out infinite;display:inline-block}
+.pump-arm.slow{animation-duration:3s}
+.pump-arm.fast{animation-duration:1s}
