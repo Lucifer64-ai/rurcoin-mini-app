@@ -51,6 +51,15 @@ const MULTI_WALLET_CONFIG = {
             apiBase: 'https://api.bscscan.com/api',
             decimals: 18
         },
+        XRP: {
+            name: 'Ripple (XRP)',
+            icon: '🔷',
+            color: '#346AA9',
+            prefix: ['r'],
+            explorer: 'https://xrpscan.com/account/',
+            apiBase: 'https://xrplcluster.com',
+            decimals: 6
+        },
         TRX: {
             name: 'TRON',
             icon: '🔴',
@@ -70,7 +79,8 @@ const MULTI_WALLET_CONFIG = {
         { id: 'coinbase',    name: 'Coinbase Wallet',icon: '🔵', networks: ['ETH','SOL','BTC'], type: 'injected',    key: 'coinbaseWalletExtension' },
         { id: 'mytonwallet', name: 'MyTonWallet',   icon: '💙', networks: ['TON'],             type: 'tonconnect'  },
         { id: 'okx',         name: 'OKX Wallet',    icon: '⚫', networks: ['ETH','BNB','BTC','SOL'], type: 'injected', key: 'okxwallet' },
-        { id: 'manual',      name: 'Ввести адрес',  icon: '✍️', networks: ['TON','ETH','BTC','SOL','BNB','TRX'], type: 'manual' }
+        { id: 'xumm',        name: 'Xaman (XUMM)',  icon: '🔷', networks: ['XRP'],             type: 'xumm'       },
+        { id: 'manual',      name: 'Ввести адрес',  icon: '✍️', networks: ['TON','ETH','BTC','SOL','BNB','TRX','XRP'], type: 'manual' }
     ]
 };
 
@@ -99,6 +109,7 @@ function detectNetwork(address) {
     if (/^(1|3)[A-Za-z0-9]{25,34}$/.test(addr) || /^bc1[a-z0-9]{39,59}$/.test(addr)) return 'BTC';
     if (/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(addr)) return 'SOL';
     if (/^T[A-Za-z0-9]{33}$/.test(addr)) return 'TRX';
+    if (/^r[1-9A-HJ-NP-Za-km-z]{24,34}$/.test(addr)) return 'XRP';
 
     return null;
 }
@@ -274,6 +285,31 @@ async function loadMultiBalance(address, network) {
             const d = await r.json();
             if (d.result) balance = (d.result.value / 1e9).toFixed(4) + ' SOL';
 
+
+        } else if (network === 'XRP') {
+            try {
+                // XRPL публичный API
+                const r = await fetch('https://xrplcluster.com', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        method: 'account_info',
+                        params: [{ account: address, ledger_index: 'current' }]
+                    })
+                });
+                const d = await r.json();
+                if (d.result && d.result.account_data) {
+                    const drops = parseInt(d.result.account_data.Balance);
+                    balance = (drops / 1e6).toFixed(4) + ' XRP';
+                } else {
+                    // Fallback: xrpscan API
+                    const r2 = await fetch(`https://api.xrpscan.com/api/v1/account/${address}`);
+                    const d2 = await r2.json();
+                    if (d2.xrpBalance) balance = parseFloat(d2.xrpBalance).toFixed(4) + ' XRP';
+                }
+            } catch(e2) {
+                balance = 'Ошибка загрузки';
+            }
         } else if (network === 'TRX') {
             const r = await fetch(`https://apilist.tronscan.org/api/account?address=${address}`);
             const d = await r.json();
@@ -508,6 +544,35 @@ function selectNetwork(networkId) {
     if (list) list.innerHTML = renderWalletApps(networkId);
 }
 
+
+// ============================================================
+//  Подключение Xaman (XUMM) — Ripple кошелёк
+// ============================================================
+async function connectXUMM() {
+    // Проверяем наличие XUMM SDK
+    if (window.xumm) {
+        try {
+            const xumm = new window.xumm.Xumm('YOUR_XUMM_API_KEY');
+            await xumm.authorize();
+            const account = await xumm.user.account;
+            if (account) {
+                onMultiWalletConnected(account, 'XRP', 'xumm');
+                return;
+            }
+        } catch(e) {
+            console.warn('XUMM SDK error:', e);
+        }
+    }
+
+    // Fallback: ручной ввод XRP-адреса
+    showWalletMsg('💡 Введи XRP-адрес вручную (начинается с r...)', 'info');
+    const input = document.getElementById('manualAddrInput');
+    if (input) {
+        input.placeholder = 'XRP: rN7n3473SaZBCG4dFL83w7PB5AMgDn9rB...';
+        input.focus();
+    }
+}
+
 // ============================================================
 //  Диспетчер подключения
 // ============================================================
@@ -534,6 +599,10 @@ async function handleWalletConnect(walletId) {
 
         case 'tonconnect':
             await connectTONWallet(walletId);
+            break;
+
+        case 'xumm':
+            await connectXUMM();
             break;
     }
 }
@@ -630,3 +699,4 @@ window.disconnectMultiWallet = disconnectMultiWallet;
 window.copyMWAddress = copyMWAddress;
 window.selectNetwork = selectNetwork;
 window.savePlayerProgress = savePlayerProgress;
+window.connectXUMM = connectXUMM;
