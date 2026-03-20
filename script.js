@@ -279,14 +279,14 @@ document.addEventListener('DOMContentLoaded', function() {
         tabBtns.forEach(b => b.classList.remove('active'));
         tabContents.forEach(c => {
             c.classList.remove('active');
-            c.style.display = 'none';
+            c.style.display = '';  // сбрасываем inline стиль — CSS управляет
         });
         const activeBtn = document.querySelector('.tab-btn[data-tab="' + tabId + '"]');
         const activeContent = document.getElementById(tabId);
         if (activeBtn) activeBtn.classList.add('active');
         if (activeContent) {
             activeContent.classList.add('active');
-            activeContent.style.display = 'block';
+            // НЕ трогаем style.display — CSS .tab-content.active { display:block } сам справится
         }
     }
 
