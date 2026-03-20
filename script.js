@@ -268,6 +268,8 @@ class RURCoinMiner {
         this.startGameLoop();
         this.startHalvingTimer();
         this.loadTransactionHistory();
+        // Инициализируем глобальную статистику
+        if (window.initGlobalStats) initGlobalStats();
     }
 
     initTelegram() {
@@ -385,6 +387,11 @@ class RURCoinMiner {
             }
         }
 
+        // Добавляем добытое в глобальный резервуар
+        if (window.addToGlobalReserve) {
+            addToGlobalReserve(oilPerSec, gasPerSec);
+        }
+
         this.saveData();
     }
 
@@ -395,6 +402,7 @@ class RURCoinMiner {
         this.balance += earned;
         if (!silent) this.showMessage(`💰 Продано ${this.oilStored.toFixed(1)} барр. нефти за ${earned.toFixed(2)} RURC (${price.toFixed(2)} RURC/барр.)`);
         this.oilStored = 0;
+        if (window.subtractFromGlobalReserve) subtractFromGlobalReserve(sold, 0);
         this.saveData(); this.render();
     }
 
@@ -405,6 +413,7 @@ class RURCoinMiner {
         this.balance += earned;
         if (!silent) this.showMessage(`💰 Продано ${this.gasStored.toFixed(0)} м³ газа за ${earned.toFixed(2)} RURC (${price.toFixed(2)} RURC/м³)`);
         this.gasStored = 0;
+        if (window.subtractFromGlobalReserve) subtractFromGlobalReserve(0, sold);
         this.saveData(); this.render();
     }
 
@@ -473,7 +482,10 @@ class RURCoinMiner {
         if (el('gasBar')) el('gasBar').style.width = Math.min(100, (this.gasStored / this.gasCapacity) * 100) + '%';
     }
 
-    renderMiningData() { this.render(); }
+    renderMiningData() {
+        this.render();
+        if (window.renderGlobalStats) renderGlobalStats();
+    }
 
     renderEquipmentData() {
         const container = document.getElementById('equipmentList');
@@ -650,6 +662,7 @@ class RURCoinMiner {
             this.render();
             if (this.currentTab === 'storage') this.renderStorageData();
             if (this.currentTab === 'upgrades') this.renderUpgradesTab();
+            if (this.currentTab === 'mining' && window.renderGlobalStats) renderGlobalStats();
         }, 1000);
     }
 
