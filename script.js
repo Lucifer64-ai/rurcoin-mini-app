@@ -222,13 +222,17 @@ class RURCoinMiner {
     getOilSellPrice() {
         const cfg = this.getUpgradeConfig();
         const refinery = cfg.refinery.effect(this.upgrades.refinery);
-        return 5 * refinery;
+        // Реальная цена нефти Brent (USD/барр.) × коэффициент НПЗ
+        const basePrice = window.getOilPriceRURC ? getOilPriceRURC() : 75.0;
+        return basePrice * refinery;
     }
 
     getGasSellPrice() {
         const cfg = this.getUpgradeConfig();
         const filter = cfg.gasTowerFilter.effect(this.upgrades.gasTowerFilter);
-        return 0.3 * filter;
+        // Реальная цена газа (USD/м³) × коэффициент фильтра
+        const basePrice = window.getGasPriceRURC ? getGasPriceRURC() : 0.13;
+        return basePrice * filter;
     }
 
     // ============================================================
@@ -270,6 +274,8 @@ class RURCoinMiner {
         this.loadTransactionHistory();
         // Инициализируем глобальную статистику
         if (window.initGlobalStats) initGlobalStats();
+        // Инициализируем реальные цены
+        if (window.initPriceFeed) initPriceFeed();
     }
 
     initTelegram() {
@@ -716,5 +722,13 @@ document.addEventListener('DOMContentLoaded', function() {
     if (allElementsExist) {
         window.rurcoinApp = new RURCoinMiner();
         console.log('RURCoin Oil & Gas запущено!');
+    }
+});
+
+// Обновляем UI при изменении цен
+window.addEventListener('priceUpdate', () => {
+    if (window.game) {
+        window.game.render();
+        if (window.renderPriceTicker) renderPriceTicker();
     }
 });
