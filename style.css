@@ -1390,3 +1390,335 @@ body {
     box-shadow: 0 0 16px #f0fa;
 }
 .tier-ss .upgrade-maxed { color: #fff; }
+
+
+/* ══════════════════════════════════════════════════════════════
+   ISOMETRIC THEME — RURCoin Oil & Gas
+   Изометрический стиль поверх базовых стилей
+══════════════════════════════════════════════════════════════ */
+
+/* ── ПЕРЕМЕННЫЕ ИЗОМЕТРИИ ── */
+:root {
+  --iso-ground:   #0a0a14;
+  --iso-face-top: #1a1a2e;
+  --iso-face-l:   #12122a;
+  --iso-face-r:   #0d0d20;
+  --iso-oil-top:  #3d1a00;
+  --iso-oil-l:    #2a1200;
+  --iso-oil-r:    #1f0d00;
+  --iso-gas-top:  #003d1a;
+  --iso-gas-l:    #002a12;
+  --iso-gas-r:    #001f0d;
+  --iso-accent:   #FF6000;
+  --iso-gas-acc:  #00e676;
+  --iso-shadow:   rgba(0,0,0,0.6);
+  --iso-depth:    4px;
+}
+
+/* ── ФОНОВАЯ СЕТКА (изометрическая) ── */
+body {
+  background-color: #06060f;
+  background-image:
+    linear-gradient(rgba(255,96,0,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,96,0,.04) 1px, transparent 1px),
+    linear-gradient(rgba(255,96,0,.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,96,0,.02) 1px, transparent 1px);
+  background-size: 60px 60px, 60px 60px, 12px 12px, 12px 12px;
+  background-position: -1px -1px, -1px -1px, -1px -1px, -1px -1px;
+}
+
+/* ── ХЕДЕР — изометрическая панель ── */
+.app-header {
+  background: linear-gradient(180deg, #12080a 0%, #0a0510 100%);
+  border-bottom: 2px solid var(--iso-accent);
+  box-shadow:
+    0 4px 0 #3d1200,
+    0 8px 0 #1f0900,
+    0 12px 24px rgba(0,0,0,.8);
+  position: relative;
+}
+.app-header::before {
+  content: '';
+  position: absolute;
+  bottom: -6px; left: 0; right: 0;
+  height: 6px;
+  background: linear-gradient(180deg, #3d1200, #1f0900);
+  clip-path: polygon(0 0, 100% 0, 98% 100%, 2% 100%);
+}
+
+/* ── КАРТОЧКИ — изометрические блоки ── */
+.price-card,
+.global-card,
+.stat-card,
+.equipment-card,
+.storage-card,
+.wallet-card,
+.staking-card,
+.halving-card,
+.exchange-card,
+.community-card {
+  position: relative;
+  border-radius: 4px !important;
+  transform: perspective(600px) rotateX(2deg);
+  transform-origin: top center;
+  transition: transform .2s, box-shadow .2s;
+  box-shadow:
+    4px 4px 0 rgba(0,0,0,.5),
+    8px 8px 0 rgba(0,0,0,.3),
+    0 16px 32px rgba(0,0,0,.6);
+}
+.price-card:hover,
+.global-card:hover,
+.equipment-card:hover {
+  transform: perspective(600px) rotateX(1deg) translateY(-2px);
+  box-shadow:
+    6px 6px 0 rgba(0,0,0,.5),
+    12px 12px 0 rgba(0,0,0,.3),
+    0 24px 48px rgba(0,0,0,.7);
+}
+
+/* ── ИЗОМЕТРИЧЕСКИЕ БЛОКИ СТАТИСТИКИ ── */
+.stat-item {
+  position: relative;
+  background: linear-gradient(145deg, #1a1a2e, #0d0d20) !important;
+  border: 1px solid rgba(255,96,0,.25) !important;
+  border-radius: 4px !important;
+  box-shadow:
+    3px 3px 0 #0a0a14,
+    6px 6px 0 rgba(0,0,0,.4);
+  transform: perspective(400px) rotateX(3deg) rotateY(-1deg);
+  transition: transform .2s;
+}
+.stat-item:hover {
+  transform: perspective(400px) rotateX(1deg) rotateY(0deg) translateY(-2px);
+}
+
+/* ── КНОПКИ — изометрические ── */
+button,
+.mine-btn,
+.buy-btn,
+.sell-btn,
+.upgrade-btn,
+.tab-btn {
+  position: relative !important;
+  border-radius: 4px !important;
+  transition: transform .1s, box-shadow .1s !important;
+}
+
+/* Нажатие — эффект "вдавливания" */
+button:active,
+.mine-btn:active,
+.buy-btn:active,
+.upgrade-btn:active {
+  transform: translate(3px, 3px) !important;
+  box-shadow: 1px 1px 0 rgba(0,0,0,.5) !important;
+}
+
+/* ── КНОПКИ ДОБЫЧИ ── */
+.mine-btn {
+  box-shadow:
+    0 4px 0 #7a2d00,
+    0 8px 0 #3d1600,
+    0 12px 20px rgba(255,96,0,.3) !important;
+}
+.mine-btn:not(:active) {
+  transform: translateY(-2px) !important;
+}
+
+/* ── ТАБЫ — изометрическая полоса ── */
+.tabs-wrap {
+  background: linear-gradient(180deg, #0e0e1e, #080814);
+  border-bottom: 2px solid rgba(255,96,0,.3);
+  box-shadow: 0 4px 0 #0a0a14, 0 8px 16px rgba(0,0,0,.5);
+  position: relative;
+}
+.tab-btn {
+  border-radius: 4px 4px 0 0 !important;
+  position: relative;
+  transition: background .2s, color .2s, transform .1s !important;
+}
+.tab-btn.active {
+  background: linear-gradient(180deg, #2a1200, #1a0900) !important;
+  border-top: 2px solid var(--iso-accent) !important;
+  border-left: 1px solid rgba(255,96,0,.4) !important;
+  border-right: 1px solid rgba(255,96,0,.4) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,150,0,.2),
+    0 -2px 8px rgba(255,96,0,.3) !important;
+}
+
+/* ── SVG ЦИСТЕРНЫ — изометрический вид ── */
+.svg-tank-wrap {
+  position: relative;
+}
+.svg-tank-container {
+  filter:
+    drop-shadow(4px 4px 0 rgba(0,0,0,.6))
+    drop-shadow(8px 8px 12px rgba(0,0,0,.4));
+  transform: perspective(500px) rotateX(8deg) rotateY(-5deg) scale(1.02);
+  transition: transform .3s;
+}
+.svg-tank-container:hover {
+  transform: perspective(500px) rotateX(5deg) rotateY(-3deg) scale(1.05);
+}
+
+/* ── ИЗОМЕТРИЧЕСКИЕ БЛОКИ ОБОРУДОВАНИЯ ── */
+.equip-item,
+.equip-card {
+  position: relative;
+  border-radius: 6px !important;
+  box-shadow:
+    4px 4px 0 rgba(0,0,0,.5),
+    8px 8px 0 rgba(0,0,0,.3),
+    0 12px 24px rgba(0,0,0,.5);
+  transform: perspective(500px) rotateX(2deg);
+  transition: transform .2s, box-shadow .2s;
+}
+.equip-item:hover,
+.equip-card:hover {
+  transform: perspective(500px) rotateX(0deg) translateY(-3px);
+  box-shadow:
+    6px 6px 0 rgba(0,0,0,.5),
+    12px 12px 0 rgba(0,0,0,.3),
+    0 20px 40px rgba(0,0,0,.6);
+}
+
+/* ── ИЗОМЕТРИЧЕСКИЕ КАРТОЧКИ УЛУЧШЕНИЙ ── */
+.upgrade-card {
+  border-radius: 6px !important;
+  box-shadow:
+    4px 4px 0 rgba(0,0,0,.6),
+    8px 8px 0 rgba(0,0,0,.3) !important;
+  transform: perspective(600px) rotateX(2deg);
+  transition: transform .2s, box-shadow .2s !important;
+}
+.upgrade-card:hover {
+  transform: perspective(600px) rotateX(0deg) translateY(-3px) !important;
+  box-shadow:
+    6px 6px 0 rgba(0,0,0,.6),
+    12px 12px 0 rgba(0,0,0,.3) !important;
+}
+
+/* ── ИЗОМЕТРИЧЕСКИЙ ПРОГРЕСС-БАР ── */
+.upgrade-bar-wrap {
+  border-radius: 2px !important;
+  box-shadow: inset 2px 2px 4px rgba(0,0,0,.5), 1px 1px 0 rgba(0,0,0,.3);
+}
+.upgrade-bar {
+  border-radius: 2px !important;
+  box-shadow: 0 0 6px currentColor, inset 0 1px 0 rgba(255,255,255,.2);
+}
+
+/* ── КНОПКА УЛУЧШЕНИЯ ── */
+.upgrade-btn {
+  box-shadow:
+    0 4px 0 rgba(0,0,0,.5),
+    0 6px 0 rgba(0,0,0,.3) !important;
+}
+.upgrade-btn:not(:disabled):not(:active) {
+  transform: translateY(-2px) !important;
+}
+.upgrade-btn:not(:disabled):active {
+  transform: translateY(2px) !important;
+  box-shadow: 0 1px 0 rgba(0,0,0,.5) !important;
+}
+
+/* ── ИЗОМЕТРИЧЕСКИЕ БЛОКИ БАЛАНСА ── */
+.balance-chip {
+  border-radius: 4px !important;
+  box-shadow:
+    2px 2px 0 rgba(0,0,0,.5),
+    4px 4px 0 rgba(0,0,0,.3) !important;
+}
+
+/* ── ИЗОМЕТРИЧЕСКИЕ ИКОНКИ НАСОСА ── */
+.pump-arm {
+  filter: drop-shadow(2px 4px 4px rgba(0,0,0,.6));
+}
+
+/* ── ИЗОМЕТРИЧЕСКАЯ СЕТКА ЦЕН ── */
+.price-item,
+.global-item {
+  border-radius: 4px !important;
+  box-shadow:
+    3px 3px 0 rgba(0,0,0,.4),
+    6px 6px 0 rgba(0,0,0,.2);
+  transform: perspective(300px) rotateX(3deg);
+  transition: transform .2s, box-shadow .2s;
+}
+.price-item:hover,
+.global-item:hover {
+  transform: perspective(300px) rotateX(0deg) translateY(-2px) scale(1.03) !important;
+  box-shadow:
+    5px 5px 0 rgba(0,0,0,.4),
+    10px 10px 0 rgba(0,0,0,.2) !important;
+}
+
+/* ── ИЗОМЕТРИЧЕСКИЕ ТЕНИ ТЕКСТА ── */
+.app-logo-text h1 {
+  text-shadow: 2px 2px 0 rgba(0,0,0,.5), 4px 4px 8px rgba(255,96,0,.3);
+}
+
+/* ── ИЗОМЕТРИЧЕСКИЙ FAB ── */
+.topup-fab {
+  border-radius: 4px !important;
+  box-shadow:
+    0 6px 0 #7a2d00,
+    0 10px 0 #3d1600,
+    0 14px 28px rgba(255,96,0,.4) !important;
+  transform: translateY(-3px) !important;
+}
+.topup-fab:active {
+  transform: translateY(3px) !important;
+  box-shadow:
+    0 2px 0 #7a2d00,
+    0 4px 0 #3d1600,
+    0 6px 12px rgba(255,96,0,.3) !important;
+}
+
+/* ── ИЗОМЕТРИЧЕСКИЕ НОТИФИКАЦИИ ── */
+.notification {
+  border-radius: 4px !important;
+  box-shadow:
+    4px 4px 0 rgba(0,0,0,.5),
+    8px 8px 16px rgba(0,0,0,.4) !important;
+  transform: perspective(400px) rotateX(2deg);
+}
+
+/* ── ИЗОМЕТРИЧЕСКИЙ СКРОЛЛБАР ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #0a0a14; }
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--iso-accent), #7a2d00);
+  border-radius: 2px;
+  box-shadow: 2px 0 0 rgba(0,0,0,.5);
+}
+
+/* ── ИЗОМЕТРИЧЕСКИЕ РАЗДЕЛИТЕЛИ ── */
+.stats-bar {
+  box-shadow:
+    0 4px 0 #0a0a14,
+    0 8px 0 rgba(0,0,0,.3),
+    0 12px 24px rgba(0,0,0,.5);
+}
+
+/* ── АНИМАЦИЯ ПОЯВЛЕНИЯ КАРТОЧЕК ── */
+.tab-content.active > * {
+  animation: iso-slide-in .3s ease both;
+}
+.tab-content.active > *:nth-child(1) { animation-delay: .0s; }
+.tab-content.active > *:nth-child(2) { animation-delay: .05s; }
+.tab-content.active > *:nth-child(3) { animation-delay: .10s; }
+.tab-content.active > *:nth-child(4) { animation-delay: .15s; }
+.tab-content.active > *:nth-child(5) { animation-delay: .20s; }
+
+@keyframes iso-slide-in {
+  from {
+    opacity: 0;
+    transform: perspective(600px) rotateX(8deg) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: perspective(600px) rotateX(2deg) translateY(0);
+  }
+}
