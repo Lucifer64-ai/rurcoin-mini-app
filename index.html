@@ -1280,129 +1280,183 @@ button:active {
 
             <!-- SVG Морская газовая платформа -->
             <div class="rig-visual-wrap gas-rig-wrap">
-                <svg viewBox="0 0 260 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;display:block;margin:0 auto;">
-                    <defs>
-                        <linearGradient id="skyGasGrad" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stop-color="#050f1a"/>
-                            <stop offset="60%" stop-color="#0a1f2a"/>
-                            <stop offset="100%" stop-color="#0d2a1a"/>
-                        </linearGradient>
-                        <linearGradient id="seaGrad" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stop-color="#0a2a3a"/>
-                            <stop offset="100%" stop-color="#051520"/>
-                        </linearGradient>
-                        <linearGradient id="deepSeaGrad" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stop-color="#051520"/>
-                            <stop offset="100%" stop-color="#020a10"/>
-                        </linearGradient>
-                        <clipPath id="seaClip">
-                            <rect x="0" y="118" width="260" height="82" rx="0"/>
-                        </clipPath>
-                    </defs>
+                <svg viewBox="0 0 300 220" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:320px;display:block;margin:0 auto;">
+  <defs>
+    <filter id="gGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2.5" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="gGlowS" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="5" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
 
-                    <!-- Фон небо -->
-                    <rect width="260" height="200" fill="url(#skyGasGrad)" rx="12"/>
+  <!-- Фон -->
+  <rect width="300" height="220" fill="#060c14" rx="14"/>
 
-                    <!-- Звёзды -->
-                    <circle cx="20" cy="15" r="1" fill="white" opacity="0.6"/>
-                    <circle cx="60" cy="8" r="1.5" fill="white" opacity="0.5"/>
-                    <circle cx="110" cy="20" r="1" fill="white" opacity="0.4"/>
-                    <circle cx="200" cy="10" r="1" fill="white" opacity="0.7"/>
-                    <circle cx="240" cy="25" r="1" fill="white" opacity="0.4"/>
-                    <circle cx="170" cy="5" r="1.5" fill="white" opacity="0.5"/>
+  <!-- Звёзды -->
+  <circle cx="18" cy="14" r="1" fill="white" opacity="0.5"/>
+  <circle cx="55" cy="8" r="1.2" fill="white" opacity="0.4"/>
+  <circle cx="100" cy="20" r="0.8" fill="white" opacity="0.5"/>
+  <circle cx="220" cy="10" r="1" fill="white" opacity="0.6"/>
+  <circle cx="270" cy="22" r="1" fill="white" opacity="0.3"/>
+  <circle cx="180" cy="6" r="1.3" fill="white" opacity="0.4"/>
+  <circle cx="245" cy="16" r="0.8" fill="white" opacity="0.5"/>
+  <circle cx="30" cy="35" r="0.8" fill="white" opacity="0.3"/>
 
-                    <!-- Луна -->
-                    <circle cx="220" cy="22" r="10" fill="#c8d8e8" opacity="0.7"/>
-                    <circle cx="224" cy="19" r="8" fill="url(#skyGasGrad)" opacity="0.9"/>
+  <!-- Луна -->
+  <circle cx="255" cy="26" r="12" fill="#c8dde8" opacity="0.6"/>
+  <circle cx="260" cy="22" r="10" fill="#060c14" opacity="0.9"/>
 
-                    <!-- МОРЕ -->
-                    <rect x="0" y="118" width="260" height="82" fill="url(#seaGrad)" rx="0 0 12 12"/>
-                    <!-- Волны на поверхности -->
-                    <path d="M0,118 Q20,114 40,118 Q60,122 80,118 Q100,114 120,118 Q140,122 160,118 Q180,114 200,118 Q220,122 240,118 Q250,116 260,118" stroke="#1a4a5a" stroke-width="2" fill="none" opacity="0.8" id="seaWave1"/>
-                    <path d="M0,122 Q30,119 60,122 Q90,125 120,122 Q150,119 180,122 Q210,125 240,122 Q250,121 260,122" stroke="#0d3a4a" stroke-width="1.5" fill="none" opacity="0.5"/>
+  <!-- ===== ИЗОМЕТРИЧЕСКОЕ МОРЕ (геометрические многоугольники) ===== -->
+  <!-- Основная поверхность воды — изометрическая сетка -->
+  <!-- Горизонт воды -->
+  <polygon points="0,130 150,100 300,130 300,220 0,220" fill="#040e1a"/>
 
-                    <!-- Подводная часть (трубы, сваи) -->
-                    <g clip-path="url(#seaClip)">
-                        <!-- Сваи платформы уходят в глубину -->
-                        <rect x="68" y="118" width="10" height="70" rx="3" fill="#1a2a3a"/>
-                        <rect x="98" y="118" width="10" height="70" rx="3" fill="#1a2a3a"/>
-                        <rect x="152" y="118" width="10" height="70" rx="3" fill="#1a2a3a"/>
-                        <rect x="182" y="118" width="10" height="70" rx="3" fill="#1a2a3a"/>
-                        <!-- Подводный трубопровод -->
-                        <path d="M103 175 Q130 180 157 175" stroke="#4ade80" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.6"/>
-                        <path d="M157 175 Q200 170 230 165" stroke="#4ade80" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.5"/>
-                        <!-- Дельфины -->
-                        <g id="dolphin1" style="transform:translateX(0px);">
-                            <path d="M30,148 Q45,140 55,148 Q50,155 40,155 Q30,155 30,148 Z" fill="#2a4a6a" opacity="0.7"/>
-                            <path d="M55,148 Q62,145 65,150" stroke="#2a4a6a" stroke-width="2" fill="none" opacity="0.7"/>
-                            <path d="M38,140 Q42,135 46,140" fill="#2a4a6a" opacity="0.5"/>
-                        </g>
-                        <g id="dolphin2" style="transform:translateX(0px);">
-                            <path d="M195,158 Q210,150 220,158 Q215,165 205,165 Q195,165 195,158 Z" fill="#2a4a6a" opacity="0.6"/>
-                            <path d="M220,158 Q227,155 230,160" stroke="#2a4a6a" stroke-width="2" fill="none" opacity="0.6"/>
-                            <path d="M203,150 Q207,145 211,150" fill="#2a4a6a" opacity="0.4"/>
-                        </g>
-                        <!-- Пузырьки газа из скважины -->
-                        <circle class="gas-bubble" cx="130" cy="185" r="3" fill="#4ade80" opacity="0.3"/>
-                        <circle class="gas-bubble" cx="125" cy="175" r="2" fill="#4ade80" opacity="0.25"/>
-                        <circle class="gas-bubble" cx="135" cy="168" r="2.5" fill="#4ade80" opacity="0.2"/>
-                    </g>
+  <!-- Геометрические ячейки моря (изометрия) -->
+  <!-- Ряд 1 (ближний) -->
+  <polygon points="0,160 50,145 100,160 50,175" fill="none" stroke="#00ccaa" stroke-width="0.6" opacity="0.35"/>
+  <polygon points="50,145 100,130 150,145 100,160" fill="none" stroke="#00ccaa" stroke-width="0.6" opacity="0.35"/>
+  <polygon points="100,160 150,145 200,160 150,175" fill="none" stroke="#00ccaa" stroke-width="0.6" opacity="0.35"/>
+  <polygon points="150,145 200,130 250,145 200,160" fill="none" stroke="#00ccaa" stroke-width="0.6" opacity="0.35"/>
+  <polygon points="200,160 250,145 300,160 250,175" fill="none" stroke="#00ccaa" stroke-width="0.6" opacity="0.35"/>
+  <!-- Ряд 2 -->
+  <polygon points="0,175 50,160 100,175 50,190" fill="none" stroke="#00ccaa" stroke-width="0.5" opacity="0.25"/>
+  <polygon points="50,160 100,145 150,160 100,175" fill="none" stroke="#00ccaa" stroke-width="0.5" opacity="0.25"/>
+  <polygon points="100,175 150,160 200,175 150,190" fill="none" stroke="#00ccaa" stroke-width="0.5" opacity="0.25"/>
+  <polygon points="150,160 200,145 250,160 200,175" fill="none" stroke="#00ccaa" stroke-width="0.5" opacity="0.25"/>
+  <polygon points="200,175 250,160 300,175 250,190" fill="none" stroke="#00ccaa" stroke-width="0.5" opacity="0.25"/>
+  <!-- Ряд 3 (дальний) -->
+  <polygon points="0,130 50,115 100,130 50,145" fill="none" stroke="#00ccaa" stroke-width="0.4" opacity="0.2"/>
+  <polygon points="50,115 100,100 150,115 100,130" fill="none" stroke="#00ccaa" stroke-width="0.4" opacity="0.2"/>
+  <polygon points="100,130 150,115 200,130 150,145" fill="none" stroke="#00ccaa" stroke-width="0.4" opacity="0.2"/>
+  <polygon points="150,115 200,100 250,115 200,130" fill="none" stroke="#00ccaa" stroke-width="0.4" opacity="0.2"/>
+  <polygon points="200,130 250,115 300,130 250,145" fill="none" stroke="#00ccaa" stroke-width="0.4" opacity="0.2"/>
 
-                    <!-- ПЛАТФОРМА (палуба) -->
-                    <!-- Основная палуба -->
-                    <rect x="60" y="95" width="140" height="26" rx="4" fill="#1a2a3a" stroke="#2a4a5a" stroke-width="1.5"/>
-                    <!-- Перила -->
-                    <rect x="60" y="93" width="140" height="4" rx="2" fill="#2a4a5a"/>
-                    <line x1="70" y1="93" x2="70" y2="100" stroke="#2a4a5a" stroke-width="1"/>
-                    <line x1="90" y1="93" x2="90" y2="100" stroke="#2a4a5a" stroke-width="1"/>
-                    <line x1="170" y1="93" x2="170" y2="100" stroke="#2a4a5a" stroke-width="1"/>
-                    <line x1="190" y1="93" x2="190" y2="100" stroke="#2a4a5a" stroke-width="1"/>
+  <!-- Неоновая линия горизонта воды -->
+  <path d="M0,130 L150,100 L300,130" stroke="#00ffcc" stroke-width="1" fill="none" filter="url(#gGlow)" opacity="0.5"/>
 
-                    <!-- Жилой модуль -->
-                    <rect x="65" y="72" width="55" height="25" rx="3" fill="#1e3040" stroke="#2a4a5a" stroke-width="1"/>
-                    <!-- Окна модуля -->
-                    <rect x="72" y="77" width="8" height="6" rx="1" fill="#4ade80" opacity="0.4"/>
-                    <rect x="84" y="77" width="8" height="6" rx="1" fill="#4ade80" opacity="0.3"/>
-                    <rect x="96" y="77" width="8" height="6" rx="1" fill="#60a5fa" opacity="0.3"/>
-                    <rect x="72" y="86" width="8" height="5" rx="1" fill="#60a5fa" opacity="0.2"/>
-                    <rect x="84" y="86" width="8" height="5" rx="1" fill="#4ade80" opacity="0.2"/>
+  <!-- ===== ПЛАТФОРМА (изометрия сверху) ===== -->
+  <!-- Основная палуба — изометрический ромб -->
+  <polygon points="150,95 220,115 190,145 120,125" fill="#0a1e2e" stroke="#00ffcc" stroke-width="1.5"/>
+  <!-- Неоновый контур палубы -->
+  <polygon points="150,95 220,115 190,145 120,125" fill="none" stroke="#00ffcc" stroke-width="1.5" filter="url(#gGlow)" opacity="0.8"/>
 
-                    <!-- Кран -->
-                    <rect x="185" y="75" width="5" height="22" rx="2" fill="#2a4a5a"/>
-                    <rect x="175" y="75" width="15" height="4" rx="2" fill="#3a5a6a"/>
-                    <line x1="182" y1="75" x2="175" y2="85" stroke="#3a5a6a" stroke-width="1.5"/>
+  <!-- Боковые грани платформы (опускаются вниз) -->
+  <polygon points="120,125 190,145 190,158 120,138" fill="#061420" stroke="#00ccaa" stroke-width="0.8" opacity="0.9"/>
+  <polygon points="190,145 220,115 220,128 190,158" fill="#040f18" stroke="#00ccaa" stroke-width="0.8" opacity="0.9"/>
 
-                    <!-- Буровая вышка -->
-                    <polygon points="130,20 122,95 138,95" fill="#1e3040" stroke="#2a4a5a" stroke-width="1.5"/>
-                    <!-- Распорки вышки -->
-                    <line x1="122" y1="75" x2="138" y2="75" stroke="#2a4a5a" stroke-width="1.5"/>
-                    <line x1="123" y1="55" x2="137" y2="55" stroke="#2a4a5a" stroke-width="1.5"/>
-                    <line x1="125" y1="38" x2="135" y2="38" stroke="#2a4a5a" stroke-width="1"/>
-                    <!-- Диагонали -->
-                    <line x1="122" y1="75" x2="138" y2="55" stroke="#1a3a4a" stroke-width="1"/>
-                    <line x1="138" y1="75" x2="122" y2="55" stroke="#1a3a4a" stroke-width="1"/>
-                    <!-- Буровая штанга вниз -->
-                    <line x1="130" y1="95" x2="130" y2="185" stroke="#2a4a5a" stroke-width="2" stroke-dasharray="4,3" opacity="0.6"/>
+  <!-- Опоры платформы -->
+  <line x1="125" y1="135" x2="118" y2="165" stroke="#00ccaa" stroke-width="2" stroke-linecap="round"/>
+  <line x1="125" y1="135" x2="118" y2="165" stroke="#00ffcc" stroke-width="0.8" filter="url(#gGlow)" opacity="0.6"/>
+  <line x1="185" y1="150" x2="178" y2="180" stroke="#00ccaa" stroke-width="2" stroke-linecap="round"/>
+  <line x1="185" y1="150" x2="178" y2="180" stroke="#00ffcc" stroke-width="0.8" filter="url(#gGlow)" opacity="0.6"/>
+  <line x1="215" y1="120" x2="222" y2="150" stroke="#00ccaa" stroke-width="2" stroke-linecap="round"/>
+  <line x1="215" y1="120" x2="222" y2="150" stroke="#00ffcc" stroke-width="0.8" filter="url(#gGlow)" opacity="0.6"/>
+  <line x1="155" y1="100" x2="148" y2="130" stroke="#00ccaa" stroke-width="2" stroke-linecap="round"/>
+  <line x1="155" y1="100" x2="148" y2="130" stroke="#00ffcc" stroke-width="0.8" filter="url(#gGlow)" opacity="0.6"/>
 
-                    <!-- ФАКЕЛ (flare) -->
-                    <rect x="155" y="60" width="4" height="36" rx="2" fill="#2a4a5a"/>
-                    <!-- Пламя факела -->
-                    <g id="gasFlameTip" style="transform-origin:157px 58px;">
-                        <ellipse cx="157" cy="54" rx="7" ry="12" fill="#FFD700" opacity="0.9"/>
-                        <ellipse cx="157" cy="52" rx="5" ry="9" fill="#FF6600" opacity="0.85"/>
-                        <ellipse cx="157" cy="50" rx="3" ry="6" fill="#FF4500" opacity="0.8"/>
-                        <ellipse cx="157" cy="48" rx="2" ry="4" fill="white" opacity="0.5"/>
-                        <!-- Свечение -->
-                        <ellipse cx="157" cy="54" rx="12" ry="16" fill="#FF8C00" opacity="0.1"/>
-                    </g>
+  <!-- ===== БУРОВАЯ ВЫШКА (центр платформы, изометрия) ===== -->
+  <!-- Основание вышки -->
+  <polygon points="158,118 170,122 165,132 153,128" fill="#0d2030" stroke="#00ffcc" stroke-width="1"/>
+  <!-- Левая нога вышки -->
+  <line x1="155" y1="128" x2="158" y2="80" stroke="#1a4a5a" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="155" y1="128" x2="158" y2="80" stroke="#00ffcc" stroke-width="1" filter="url(#gGlow)" opacity="0.7"/>
+  <!-- Правая нога вышки -->
+  <line x1="168" y1="132" x2="165" y2="80" stroke="#1a4a5a" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="168" y1="132" x2="165" y2="80" stroke="#00ffcc" stroke-width="1" filter="url(#gGlow)" opacity="0.7"/>
+  <!-- Перекладины -->
+  <line x1="156" y1="115" x2="166" y2="118" stroke="#00ccaa" stroke-width="1.5" opacity="0.8"/>
+  <line x1="157" y1="103" x2="165" y2="106" stroke="#00ccaa" stroke-width="1.2" opacity="0.7"/>
+  <line x1="157.5" y1="92" x2="164.5" y2="94" stroke="#00ccaa" stroke-width="1" opacity="0.6"/>
+  <!-- Верхушка вышки -->
+  <polygon points="158,80 165,80 161.5,70" fill="#0d2030" stroke="#00ffcc" stroke-width="1.2"/>
+  <!-- Факел (огонь) -->
+  <circle cx="161" cy="68" r="5" fill="#ff8c00" filter="url(#gGlowS)" opacity="0.9">
+    <animate attributeName="r" values="4;6;4" dur="0.7s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.7;1;0.7" dur="0.7s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="161" cy="64" r="3" fill="#ffdd00" filter="url(#gGlow)" opacity="0.8">
+    <animate attributeName="r" values="2;4;2" dur="0.7s" repeatCount="indefinite"/>
+  </circle>
 
-                    <!-- Трубопровод на палубе -->
-                    <path d="M130 110 Q145 112 155 110 Q160 108 163 100" stroke="#4ade80" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <!-- ===== ВЕРТОЛЁТНАЯ ПЛОЩАДКА (шестиугольник) ===== -->
+  <polygon points="128,108 140,103 152,108 152,118 140,123 128,118" fill="#081828" stroke="#00ffcc" stroke-width="1.3"/>
+  <!-- Неоновый контур -->
+  <polygon points="128,108 140,103 152,108 152,118 140,123 128,118" fill="none" stroke="#00ffcc" stroke-width="1.3" filter="url(#gGlow)" opacity="0.8"/>
+  <!-- Крест H -->
+  <line x1="128" y1="113" x2="152" y2="113" stroke="#00ffcc" stroke-width="0.8" opacity="0.6"/>
+  <line x1="140" y1="103" x2="140" y2="123" stroke="#00ffcc" stroke-width="0.8" opacity="0.6"/>
+  <text x="140" y="116" text-anchor="middle" font-size="7" fill="#00ffcc" opacity="0.9" font-family="monospace" font-weight="bold">H</text>
 
-                    <!-- Статус -->
-                    <text x="130" y="14" text-anchor="middle" fill="#4ade80" font-size="11" font-family="monospace" font-weight="bold" id="gasRigStatusText">⏸ Остановлено</text>
-                    <text x="130" y="190" text-anchor="middle" fill="#666" font-size="10" font-family="monospace" id="gasRateText">0 м³/ч</text>
-                </svg>
+  <!-- ===== ТЕХНИЧЕСКИЕ БЛОКИ ===== -->
+  <!-- Блок 1 (правый) -->
+  <polygon points="195,118 210,123 207,133 192,128" fill="#0a1e2e" stroke="#00ccaa" stroke-width="0.9"/>
+  <polygon points="195,118 210,123 207,133 192,128" fill="none" stroke="#ff8c00" stroke-width="0.7" opacity="0.6"/>
+  <!-- Блок 2 (маленький) -->
+  <polygon points="178,128 188,132 186,139 176,135" fill="#0a1e2e" stroke="#00ccaa" stroke-width="0.8"/>
+
+  <!-- Трубы на платформе -->
+  <line x1="170" y1="125" x2="192" y2="130" stroke="#1a4a5a" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="170" y1="125" x2="192" y2="130" stroke="#00ccaa" stroke-width="0.8" filter="url(#gGlow)" opacity="0.5"/>
+  <line x1="152" y1="115" x2="165" y2="120" stroke="#1a4a5a" stroke-width="2" stroke-linecap="round"/>
+  <line x1="152" y1="115" x2="165" y2="120" stroke="#00ccaa" stroke-width="0.7" filter="url(#gGlow)" opacity="0.5"/>
+
+  <!-- Резервуары (цилиндры изометрические) -->
+  <ellipse cx="205" cy="130" rx="8" ry="4" fill="#0a1e2e" stroke="#ff8c00" stroke-width="0.9"/>
+  <rect x="197" y="126" width="16" height="4" fill="#0a1e2e" stroke="#ff8c00" stroke-width="0.9"/>
+  <ellipse cx="205" cy="126" rx="8" ry="4" fill="#0d2030" stroke="#ff8c00" stroke-width="1"/>
+
+  <!-- ===== ЦИФРОВЫЕ ЛИНИИ ДАННЫХ (телеметрия) ===== -->
+  <!-- Правые -->
+  <g filter="url(#gGlow)" opacity="0.8">
+    <line x1="235" y1="75" x2="275" y2="75" stroke="#00ffcc" stroke-width="1"/>
+    <circle cx="275" cy="75" r="2.5" fill="#00ffcc"/>
+    <line x1="235" y1="90" x2="280" y2="90" stroke="#00ffcc" stroke-width="1"/>
+    <circle cx="280" cy="90" r="2.5" fill="#00ffcc"/>
+    <line x1="235" y1="105" x2="268" y2="105" stroke="#00ffcc" stroke-width="1"/>
+    <circle cx="268" cy="105" r="2.5" fill="#00ffcc"/>
+    <line x1="235" y1="73" x2="235" y2="107" stroke="#00ffcc" stroke-width="0.8"/>
+    <circle cx="235" cy="75" r="1.5" fill="#00ffcc"/>
+    <circle cx="235" cy="90" r="1.5" fill="#00ffcc"/>
+    <circle cx="235" cy="105" r="1.5" fill="#00ffcc"/>
+  </g>
+
+  <!-- Левые -->
+  <g filter="url(#gGlow)" opacity="0.55">
+    <line x1="12" y1="85" x2="50" y2="85" stroke="#00ccff" stroke-width="1"/>
+    <circle cx="12" cy="85" r="2" fill="#00ccff"/>
+    <line x1="12" y1="100" x2="55" y2="100" stroke="#00ccff" stroke-width="1"/>
+    <circle cx="12" cy="100" r="2" fill="#00ccff"/>
+    <line x1="12" y1="115" x2="45" y2="115" stroke="#00ccff" stroke-width="1"/>
+    <circle cx="12" cy="115" r="2" fill="#00ccff"/>
+    <line x1="12" y1="83" x2="12" y2="117" stroke="#00ccff" stroke-width="0.8"/>
+  </g>
+
+  <!-- Нижние линии данных -->
+  <g filter="url(#gGlow)" opacity="0.45">
+    <line x1="20" y1="185" x2="20" y2="155" stroke="#00ccaa" stroke-width="1"/>
+    <circle cx="20" cy="155" r="2" fill="#00ccaa"/>
+    <line x1="35" y1="190" x2="35" y2="162" stroke="#00ccaa" stroke-width="1"/>
+    <circle cx="35" cy="162" r="2" fill="#00ccaa"/>
+    <line x1="18" y1="185" x2="37" y2="185" stroke="#00ccaa" stroke-width="0.8"/>
+  </g>
+
+  <!-- Пузырьки газа из воды -->
+  <circle cx="110" cy="155" r="2.5" fill="none" stroke="#00ffcc" stroke-width="0.8" opacity="0">
+    <animate attributeName="cy" values="175;128" dur="2.8s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0;0.6;0" dur="2.8s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="200" cy="165" r="1.8" fill="none" stroke="#00ffcc" stroke-width="0.8" opacity="0">
+    <animate attributeName="cy" values="180;128" dur="3.2s" begin="1.2s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0;0.5;0" dur="3.2s" begin="1.2s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="240" cy="158" r="1.5" fill="none" stroke="#00ccaa" stroke-width="0.7" opacity="0">
+    <animate attributeName="cy" values="172;128" dur="2.5s" begin="0.6s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0;0.4;0" dur="2.5s" begin="0.6s" repeatCount="indefinite"/>
+  </circle>
+</svg>
                 <div class="rig-status-badge gas-badge" id="gasRigStatus">Добыча остановлена</div>
             </div>
 
