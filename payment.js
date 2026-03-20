@@ -1,10 +1,14 @@
-// Модуль пополнения баланса RURC через ЮKassa
+// Модуль пополнения баланса RURC через ЮKassa и WebMoney
 // Поддерживаемые банки: Сбербанк, Тинькофф, Альфа-Банк, Газпромбанк, ВТБ, Россельхозбанк
 
 const PAYMENT_CONFIG = {
     // Настройки ЮKassa (нужно заменить на реальные)
     shopId: 'YOUR_SHOP_ID',
     secretKey: 'YOUR_SECRET_KEY',
+
+    // Настройки WebMoney
+    webmoneyPurse: 'YOUR_PURSE',
+    webmoneySecretKey: 'YOUR_SECRET_KEY',
 
     // Минимальная и максимальная сумма пополнения (в рублях)
     minAmount: 100,
@@ -17,16 +21,20 @@ const PAYMENT_CONFIG = {
     rate: 1
 };
 
-// Поддерживаемые банки и методы оплаты
+// Поддерживаемые способы оплаты
 const SUPPORTED_PAYMENTS = [
+    // Банки
     { id: 'sberbank', name: 'Сбербанк', icon: '🏦', group: 'bank' },
     { id: 'tinkoff_bank', name: 'Тинькофф', icon: '🏦', group: 'bank' },
     { id: 'alfabank', name: 'Альфа-Банк', icon: '🏦', group: 'bank' },
     { id: 'gazprom_bank', name: 'Газпромбанк', icon: '🏦', group: 'bank' },
     { id: 'vtb', name: 'ВТБ', icon: '🏦', group: 'bank' },
     { id: 'rosselhozbank', name: 'Россельхозбанк', icon: '🏦', group: 'bank' },
+    // Электронные кошельки
     { id: 'qiwi_wallet', name: 'QIWI Кошелёк', icon: '💳', group: 'wallet' },
     { id: 'yoomoney_wallet', name: 'ЮMoney', icon: '💳', group: 'wallet' },
+    { id: 'webmoney_wm', name: 'WebMoney', icon: '💸', group: 'wallet' },
+    // Карты
     { id: 'bank_card', name: 'Любая карта', icon: '💳', group: 'card' }
 ];
 
@@ -47,7 +55,7 @@ function showTopUpModal() {
     modal.innerHTML = `
         <div class="modal-content">
             <div class="modal-header">
-                <h2>💰 Пополнение через ЮKassa</h2>
+                <h2>💰 Пополнение баланса</h2>
                 <button class="close-btn" onclick="closeTopUpModal()">×</button>
             </div>
 
@@ -83,12 +91,15 @@ function showTopUpModal() {
                     </div>
                 </div>
 
-                <div class="yookassa-info">
-                    <div class="yookassa-logo">
+                <div class="payment-gateways">
+                    <div class="gateway-info" id="yookassaInfo">
                         <span>🔒 Безопасная оплата через</span>
                         <strong>ЮKassa</strong>
                     </div>
-                    <p class="security-note">🔐 Ваши платежи защищены по стандарту PCI DSS</p>
+                    <div class="gateway-info" id="webmoneyInfo" style="display: none;">
+                        <span>💸 Оплата через</span>
+                        <strong>WebMoney</strong>
+                    </div>
                 </div>
 
                 <div class="summary-section">
@@ -116,8 +127,8 @@ function showTopUpModal() {
 
             <div class="modal-footer">
                 <button class="btn-cancel" onclick="closeTopUpModal()">Отмена</button>
-                <button class="btn-pay" id="payBtn" onclick="processYookassaPayment()" disabled>
-                    Оплатить через ЮKassa
+                <button class="btn-pay" id="payBtn" onclick="processPayment()" disabled>
+                    Оплатить
                 </button>
             </div>
         </div>
@@ -148,6 +159,20 @@ function selectPaymentMethod(methodId) {
     }
 
     paymentState.paymentMethod = methodId;
+
+    // Показываем соответствующий шлюз
+    const isWebMoney = methodId === 'webmoney_wm';
+    document.getElementById('yookassaInfo').style.display = isWebMoney ? 'none' : 'block';
+    document.getElementById('webmoneyInfo').style.display = isWebMoney ? 'block' : 'none';
+
+    // Обновляем текст кнопки
+    const payBtn = document.getElementById('payBtn');
+    if (isWebMoney) {
+        payBtn.textContent = 'Оплатить через WebMoney';
+    } else {
+        payBtn.textContent = 'Оплатить через ЮKassa';
+    }
+
     validateForm();
 }
 
@@ -192,15 +217,76 @@ function validateForm() {
     payBtn.disabled = !(isValidAmount && hasMethod);
 }
 
-// Создать платёж в ЮKassa
+// Определить тип платежа
+function getPaymentGateway() {
+    if (paymentState.paymentMethod === 'webmoney_wm') {
+        return 'webmoney';
+    }
+    return 'yookassa';
+}
+
+// Обработать платёж
+async function processPayment() {
+    const gateway = getPaymentGateway();
+
+    if (gateway === 'webmoney') {
+        await processWebMoneyPayment();
+    } else {
+        await processYookassaPayment();
+    }
+}
+
+// ============ ЮKassa ============
+async function processYookassaPayment() {
+    const amount = paymentState.amount;
+    const rurcAmount = Math.floor(amount * PAYMENT_CONFIG.rate);
+
+    const statusEl = document.getElementById('paymentStatus');
+    statusEl.style.display = 'block';
+    statusEl.className = 'payment-status processing';
+
+    const payBtn = document.getElementById('payBtn');
+    payBtn.disabled = true;
+
+    try {
+        statusEl.innerHTML = `
+            <div class="status-content">
+                <span class="status-icon">🔄</span>
+                <span class="status-text">Создание платежа в ЮKassa...</span>
+            </div>
+        `;
+
+        const payment = await createYookassaPayment();
+
+        if (payment.confirmation && payment.confirmation.confirmation_url) {
+            if (payment.confirmation.confirmation_url !== '#demo') {
+                window.location.href = payment.confirmation.confirmation_url;
+            } else {
+                await simulatePayment(rurcAmount);
+            }
+        } else if (payment.status === 'succeeded') {
+            await handlePaymentSuccess(rurcAmount);
+        }
+
+    } catch (error) {
+        statusEl.className = 'payment-status error';
+        statusEl.innerHTML = `
+            <div class="status-content">
+                <span class="status-icon">❌</span>
+                <span class="status-text">Ошибка платежа</span>
+                <span class="status-error">${error.message}</span>
+            </div>
+        `;
+        payBtn.disabled = false;
+    }
+}
+
 async function createYookassaPayment() {
     const amount = paymentState.amount;
     const paymentMethod = paymentState.paymentMethod;
 
-    // Создаём уникальный ID платежа
     const paymentId = 'rurc_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
 
-    // Подготовка данных платежа
     const paymentData = {
         amount: {
             value: amount.toFixed(2),
@@ -220,7 +306,7 @@ async function createYookassaPayment() {
         }
     };
 
-    // Для демо режима - симуляция
+    // Демо режим
     if (PAYMENT_CONFIG.shopId === 'YOUR_SHOP_ID') {
         return {
             id: paymentId,
@@ -231,7 +317,6 @@ async function createYookassaPayment() {
         };
     }
 
-    // Реальный запрос к ЮKassa API
     const response = await fetch('https://payment.yookassa.ru/v3/payments', {
         method: 'POST',
         headers: {
@@ -247,8 +332,8 @@ async function createYookassaPayment() {
     return await response.json();
 }
 
-// Обработать платёж
-async function processYookassaPayment() {
+// ============ WebMoney ============
+async function processWebMoneyPayment() {
     const amount = paymentState.amount;
     const rurcAmount = Math.floor(amount * PAYMENT_CONFIG.rate);
 
@@ -260,27 +345,22 @@ async function processYookassaPayment() {
     payBtn.disabled = true;
 
     try {
-        // Создаём платёж
         statusEl.innerHTML = `
             <div class="status-content">
-                <span class="status-icon">🔄</span>
-                <span class="status-text">Создание платежа в ЮKassa...</span>
+                <span class="status-icon">💸</span>
+                <span class="status-text">Подготовка платежа WebMoney...</span>
             </div>
         `;
 
-        const payment = await createYookassaPayment();
+        // Создаём URL для оплаты WebMoney
+        const paymentUrl = await createWebMoneyPaymentUrl(amount, rurcAmount);
 
-        if (payment.confirmation && payment.confirmation.confirmation_url) {
-            // Перенаправляем на оплату
-            if (payment.confirmation.confirmation_url !== '#demo') {
-                window.location.href = payment.confirmation.confirmation_url;
-            } else {
-                // Демо режим - симуляция успеха
-                await simulatePayment();
-            }
-        } else if (payment.status === 'succeeded') {
-            // Платёж уже успешен
-            await handlePaymentSuccess(rurcAmount);
+        if (paymentUrl) {
+            // Перенаправляем на WebMoney
+            window.location.href = paymentUrl;
+        } else {
+            // Демо режим
+            await simulatePayment(rurcAmount);
         }
 
     } catch (error) {
@@ -296,12 +376,49 @@ async function processYookassaPayment() {
     }
 }
 
-// Симуляция платежа (для демо)
-async function simulatePayment() {
-    const statusEl = document.getElementById('paymentStatus');
-    const rurcAmount = Math.floor(paymentState.amount * PAYMENT_CONFIG.rate);
+async function createWebMoneyPaymentUrl(amount, rurcAmount) {
+    const purse = PAYMENT_CONFIG.webmoneyPurse;
 
-    // Имитация обработки
+    // Демо режим
+    if (purse === 'YOUR_PURSE' || !purse) {
+        return null;
+    }
+
+    // Создаём URL для Merchant WebMoney
+    const desc = encodeURIComponent(`Пополнение баланса RURC на ${amount} ₽`);
+    const paymentUrl = `https://merchant.webmoney.ru/conf/pay.asp?purse=${purse}&amount=${amount}&desc=${desc}&signature=${generateWebMoneySignature(amount)}`;
+
+    return paymentUrl;
+}
+
+function generateWebMoneySignature(amount) {
+    // Генерация подписи для WebMoney
+    // В реальном приложении используйте реальный секретный ключ
+    const { webmoneySecretKey } = PAYMENT_CONFIG;
+    const { webmoneyPurse } = PAYMENT_CONFIG;
+
+    if (!webmoneySecretKey || webmoneySecretKey === 'YOUR_SECRET_KEY') {
+        return '';
+    }
+
+    // Формирование подписи: LMI_PAYEE_PURSE + LMI_PAYMENT_AMOUNT + LMI_PAYMENT_NO + SecretKey
+    const signature = `${webmoneyPurse}${amount}${Date.now()}${webmoneySecretKey}`;
+
+    // Используем SHA-256 для подписи
+    let hash = 0;
+    for (let i = 0; i < signature.length; i++) {
+        const char = signature.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash;
+    }
+
+    return Math.abs(hash).toString(16);
+}
+
+// ============ Общие функции ============
+async function simulatePayment(rurcAmount) {
+    const statusEl = document.getElementById('paymentStatus');
+
     await new Promise(resolve => setTimeout(resolve, 1500));
 
     statusEl.className = 'payment-status success';
@@ -313,37 +430,18 @@ async function simulatePayment() {
         </div>
     `;
 
-    // Начисляем токены
     await handlePaymentSuccess(rurcAmount);
 }
 
-// Обработка успешного платежа
 async function handlePaymentSuccess(rurcAmount) {
-    // Начисляем RURC через mint
     if (window.mintWithUI) {
         await window.mintWithUI(rurcAmount);
     }
 
-    // Закрываем через 3 секунды
     setTimeout(() => {
         closeTopUpModal();
         showNotification(`Баланс пополнен на ${rurcAmount} RURC`, 'success');
     }, 3000);
-}
-
-// Проверка статуса платежа (webhook handler)
-async function checkPaymentStatus(paymentId) {
-    if (PAYMENT_CONFIG.shopId === 'YOUR_SHOP_ID') {
-        return { status: 'succeeded' };
-    }
-
-    const response = await fetch(`https://payment.yookassa.ru/v3/payments/${paymentId}`, {
-        headers: {
-            'Idempotence-Key': paymentId
-        }
-    });
-
-    return await response.json();
 }
 
 // Обработка webhook от ЮKassa
@@ -358,6 +456,21 @@ function handleYookassaWebhook(event) {
     }
 }
 
+// Обработка результата WebMoney (callback)
+function handleWebMoneyCallback(params) {
+    const { payment_no, amount, hash } = params;
+
+    // Проверка подписи
+    const expectedHash = generateWebMoneySignature(amount);
+
+    if (hash === expectedHash) {
+        const rurcAmount = Math.floor(amount * PAYMENT_CONFIG.rate);
+        if (window.mintWithUI) {
+            window.mintWithUI(rurcAmount);
+        }
+    }
+}
+
 // Экспорт функций
 window.showTopUpModal = showTopUpModal;
 window.closeTopUpModal = closeTopUpModal;
@@ -366,9 +479,11 @@ window.adjustAmount = adjustAmount;
 window.setQuickAmount = setQuickAmount;
 window.calculateRURC = calculateRURC;
 window.validateForm = validateForm;
+window.processPayment = processPayment;
 window.processYookassaPayment = processYookassaPayment;
-window.createYookassaPayment = createYookassaPayment;
+window.processWebMoneyPayment = processWebMoneyPayment;
 window.handleYookassaWebhook = handleYookassaWebhook;
+window.handleWebMoneyCallback = handleWebMoneyCallback;
 
 // Конфигурация
 window.PAYMENT_CONFIG = PAYMENT_CONFIG;
@@ -513,30 +628,34 @@ const topUpStyles = `
         font-size: 13px;
     }
 
-    .yookassa-info {
+    .payment-gateways {
+        margin-bottom: 20px;
+    }
+
+    .gateway-info {
         background: #252540;
         border-radius: 10px;
         padding: 15px;
-        margin-bottom: 20px;
         text-align: center;
     }
 
-    .yookassa-logo {
+    .gateway-info span {
         color: #aaa;
         font-size: 14px;
     }
 
-    .yookassa-logo strong {
-        color: #FF4800;
-        font-size: 18px;
+    .gateway-info strong {
         display: block;
+        font-size: 18px;
         margin-top: 5px;
     }
 
-    .security-note {
-        color: #666;
-        font-size: 12px;
-        margin-top: 10px;
+    #yookassaInfo strong {
+        color: #FF4800;
+    }
+
+    #webmoneyInfo strong {
+        color: #0085CF;
     }
 
     .summary-section {
