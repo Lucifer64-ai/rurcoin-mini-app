@@ -1,36 +1,26 @@
 // Service Worker для RURCoin Mini App
-const CACHE_NAME = 'rurcoin-v5';
-const ASSETS = [
-    '/',
-    '/index.html',
+const CACHE_NAME = 'rurcoin-v6';
+const STATIC_ASSETS = [
     '/style.css',
     '/script.js',
     '/contracts.js',
     '/manifest.json'
 ];
 
-// Установка Service Worker
 self.addEventListener('install', (event) => {
-    console.log('📦 RURCoin Service Worker: Установка...');
     event.waitUntil(
         caches.open(CACHE_NAME)
-            .then((cache) => {
-                console.log('📦 Кэширование assets...');
-                return cache.addAll(ASSETS);
-            })
+            .then((cache) => cache.addAll(STATIC_ASSETS))
             .then(() => self.skipWaiting())
     );
 });
 
-// Активация Service Worker
 self.addEventListener('activate', (event) => {
-    console.log('🎉 RURCoin Service Worker: Активация...');
     event.waitUntil(
         caches.keys().then((cacheNames) => {
             return Promise.all(
                 cacheNames.map((cacheName) => {
                     if (cacheName !== CACHE_NAME) {
-                        console.log('🗑️ Удаление старого кэша:', cacheName);
                         return caches.delete(cacheName);
                     }
                 })
@@ -39,20 +29,25 @@ self.addEventListener('activate', (event) => {
     );
 });
 
-// Перехват запросов
 self.addEventListener('fetch', (event) => {
+    const url = new URL(event.request.url);
+
+    // HTML — всегда с сети (network-first), без кэша
+    if (event.request.destination === 'document' || url.pathname.endsWith('.html') || url.pathname === '/') {
+        event.respondWith(
+            fetch(event.request).catch(() => caches.match(event.request))
+        );
+        return;
+    }
+
+    // Всё остальное — cache-first
     event.respondWith(
-        caches.match(event.request)
-            .then((response) => {
-                if (response) {
-                    return response;
-                }
-                return fetch(event.request);
-            })
+        caches.match(event.request).then((response) => {
+            return response || fetch(event.request);
+        })
     );
 });
 
-// Обработка сообщений от приложения
 self.addEventListener('message', (event) => {
     if (event.data && event.data.type === 'SKIP_WAITING') {
         self.skipWaiting();
