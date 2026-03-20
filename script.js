@@ -467,15 +467,20 @@ class RURCoinMiner {
         const item = prices[type];
         if (!item) return;
         if (this.tonBalance < item.cost) { this.showMessage(`Недостаточно TON. Нужно ${item.cost} TON`); return; }
-        this.tonBalance -= item.cost;
-        switch(type) {
-            case 'oilPump':  this.oilPumps++; break;
-            case 'gasTower': this.gasTowers++; break;
-            case 'oilTank':  this.oilTanks++; this.oilCapacity += 200; break;
-            case 'gasTank':  this.gasTanks++; this.gasCapacity += 2000; break;
-        }
-        this.showMessage(`✅ Куплено: ${item.label}`);
-        this.saveData(); this.render(); this.renderEquipmentData();
+
+        // Отправляем TON на кошелёк команды разработчиков
+        sendTonToDevWallet(item.cost, item.label, () => {
+            // Только после подтверждения транзакции — зачисляем оборудование
+            this.tonBalance -= item.cost;
+            switch(type) {
+                case 'oilPump':  this.oilPumps++; break;
+                case 'gasTower': this.gasTowers++; break;
+                case 'oilTank':  this.oilTanks++; this.oilCapacity += 200; break;
+                case 'gasTank':  this.gasTanks++; this.gasCapacity += 2000; break;
+            }
+            this.showMessage(`✅ Куплено: ${item.label}`);
+            this.saveData(); this.render(); this.renderEquipmentData();
+        });
     }
 
     render() {
