@@ -1,5 +1,5 @@
 // Service Worker для RURCoin Mini App
-const CACHE_NAME = 'rurcoin-v1';
+const CACHE_NAME = 'rurcoin-v5';
 const ASSETS = [
     '/',
     '/index.html',
