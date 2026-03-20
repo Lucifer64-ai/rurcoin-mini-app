@@ -69,7 +69,7 @@ class RURCoinMiner {
                 name: 'Скорость насоса',
                 desc: (lvl) => `+${lvl * 30}% скорость добычи нефти`,
                 maxLevel: 10,
-                cost: (lvl) => (lvl + 1) * 1.5,   // TON
+                cost: (lvl) => (lvl + 1) * 3.0,   // TON
                 effect: (lvl) => 1 + lvl * 0.30,   // множитель
             },
             oilPumpEff: {
@@ -77,7 +77,7 @@ class RURCoinMiner {
                 name: 'КПД насоса',
                 desc: (lvl) => `+${lvl * 15}% эффективность (меньше потерь)`,
                 maxLevel: 10,
-                cost: (lvl) => (lvl + 1) * 2,
+                cost: (lvl) => (lvl + 1) * 4,
                 effect: (lvl) => 1 + lvl * 0.15,
             },
             oilPumpAuto: {
@@ -85,7 +85,7 @@ class RURCoinMiner {
                 name: 'Автонасос',
                 desc: (lvl) => lvl === 0 ? 'Насос работает без нажатий' : `Уровень ${lvl}: +${lvl * 20}% авто-добыча`,
                 maxLevel: 5,
-                cost: (lvl) => (lvl + 1) * 3,
+                cost: (lvl) => (lvl + 1) * 6,
                 effect: (lvl) => lvl * 0.20,
             },
             oilPumpDeep: {
@@ -93,7 +93,7 @@ class RURCoinMiner {
                 name: 'Глубокое бурение',
                 desc: (lvl) => `Доступ к пластам +${lvl * 50}% нефти`,
                 maxLevel: 8,
-                cost: (lvl) => (lvl + 1) * 2.5,
+                cost: (lvl) => (lvl + 1) * 5.0,
                 effect: (lvl) => 1 + lvl * 0.50,
             },
             oilPumpTurbo: {
@@ -101,7 +101,7 @@ class RURCoinMiner {
                 name: 'Турбонасос',
                 desc: (lvl) => `x${(1 + lvl * 0.5).toFixed(1)} производительность`,
                 maxLevel: 5,
-                cost: (lvl) => (lvl + 1) * 5,
+                cost: (lvl) => (lvl + 1) * 10,
                 effect: (lvl) => 1 + lvl * 0.50,
             },
 
@@ -153,7 +153,7 @@ class RURCoinMiner {
                 name: 'Нефтезавод',
                 desc: (lvl) => `+${lvl * 40}% цена нефти при продаже`,
                 maxLevel: 5,
-                cost: (lvl) => (lvl + 1) * 8,
+                cost: (lvl) => (lvl + 1) * 12,
                 effect: (lvl) => 1 + lvl * 0.40,
             },
             pipeline: {
@@ -384,7 +384,7 @@ class RURCoinMiner {
         if (this.gasStored < this.gasCapacity)
             this.gasStored = Math.min(this.gasCapacity, this.gasStored + gasPerSec);
 
-        const rurcPerSec = (oilPerSec * 3600 * 0.5 + gasPerSec * 3600 * 0.3) / 3600;
+        const rurcPerSec = (oilPerSec * 3600 * 2.0 + gasPerSec * 3600 * 0.15) / 3600;
         this.balance += rurcPerSec;
         this.miningSessionCoins += rurcPerSec;
 
@@ -459,10 +459,10 @@ class RURCoinMiner {
 
     buyEquipment(type) {
         const prices = {
-            oilPump:  { cost: 2, currency: 'TON', label: 'Нефтяной насос' },
-            gasTower: { cost: 3, currency: 'TON', label: 'Газовая вышка' },
-            oilTank:  { cost: 1, currency: 'TON', label: 'Цистерна для нефти' },
-            gasTank:  { cost: 1, currency: 'TON', label: 'Цистерна для газа' }
+            oilPump:  { cost: 5,   currency: 'TON', label: 'Нефтяной насос' },
+            gasTower: { cost: 2,   currency: 'TON', label: 'Газовая вышка' },
+            oilTank:  { cost: 3,   currency: 'TON', label: 'Цистерна для нефти' },
+            gasTank:  { cost: 1.5, currency: 'TON', label: 'Цистерна для газа' }
         };
         const item = prices[type];
         if (!item) return;
