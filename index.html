@@ -388,7 +388,12 @@
 
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
         .mining-active .rig-emoji { animation: pulse 1.5s infinite; }
-    </style>
+    
+        /* ===== EXCHANGE TAB ===== */
+        #exchangeTab input[type=number]::-webkit-inner-spin-button,
+        #exchangeTab input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
+        #exchangeTab input[type=number] { -moz-appearance: textfield; }
+</style>
 </head>
 <body>
 
@@ -447,6 +452,7 @@
         <button class="tab-btn" data-tab="staking">💎 Стейкинг</button>
         <button class="tab-btn" data-tab="transactions">📋 Транзакции</button>
         <button class="tab-btn" data-tab="halving">⏳ Халвинг</button>
+        <button class="tab-btn" data-tab="exchange">🔄 Обменник</button>
     </div>
 </div>
 
@@ -615,6 +621,14 @@
         </div>
     </div>
 
+
+    <!-- ОБМЕННИК RURC ↔ TON -->
+    <div class="tab-content" id="exchange">
+        <div id="exchangeTab">
+            <div style="text-align:center;color:#555;padding:40px 0;">Загрузка...</div>
+        </div>
+    </div>
+
 </div>
 
 <!-- FAB -->
@@ -627,6 +641,7 @@ function switchToWalletTab() {
 </script>
 
 <script src="contracts.js"></script>
+<script src="exchange.js"></script>
 <script src="payment.js"></script>
 <script src="wallet.js"></script>
 <script src="price_feed.js"></script>
