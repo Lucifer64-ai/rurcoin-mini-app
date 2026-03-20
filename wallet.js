@@ -51,6 +51,15 @@ const MULTI_WALLET_CONFIG = {
             apiBase: 'https://api.bscscan.com/api',
             decimals: 18
         },
+        DOT: {
+            name: 'Polkadot',
+            icon: '⚫',
+            color: '#E6007A',
+            prefix: ['1', '5'],
+            explorer: 'https://polkadot.subscan.io/account/',
+            apiBase: 'https://polkadot.api.subscan.io',
+            decimals: 10
+        },
         XRP: {
             name: 'Ripple (XRP)',
             icon: '🔷',
@@ -79,8 +88,11 @@ const MULTI_WALLET_CONFIG = {
         { id: 'coinbase',    name: 'Coinbase Wallet',icon: '🔵', networks: ['ETH','SOL','BTC'], type: 'injected',    key: 'coinbaseWalletExtension' },
         { id: 'mytonwallet', name: 'MyTonWallet',   icon: '💙', networks: ['TON'],             type: 'tonconnect'  },
         { id: 'okx',         name: 'OKX Wallet',    icon: '⚫', networks: ['ETH','BNB','BTC','SOL'], type: 'injected', key: 'okxwallet' },
+        { id: 'polkadotjs', name: 'Polkadot.js',   icon: '⚫', networks: ['DOT'],             type: 'polkadotjs' },
+        { id: 'talisman',   name: 'Talisman',      icon: '🔮', networks: ['DOT'],             type: 'polkadotjs' },
+        { id: 'subwallet',  name: 'SubWallet',     icon: '🟣', networks: ['DOT'],             type: 'polkadotjs' },
         { id: 'xumm',        name: 'Xaman (XUMM)',  icon: '🔷', networks: ['XRP'],             type: 'xumm'       },
-        { id: 'manual',      name: 'Ввести адрес',  icon: '✍️', networks: ['TON','ETH','BTC','SOL','BNB','TRX','XRP'], type: 'manual' }
+        { id: 'manual',      name: 'Ввести адрес',  icon: '✍️', networks: ['TON','ETH','BTC','SOL','BNB','TRX','XRP','DOT'], type: 'manual' }
     ]
 };
 
@@ -110,6 +122,7 @@ function detectNetwork(address) {
     if (/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(addr)) return 'SOL';
     if (/^T[A-Za-z0-9]{33}$/.test(addr)) return 'TRX';
     if (/^r[1-9A-HJ-NP-Za-km-z]{24,34}$/.test(addr)) return 'XRP';
+    if (/^1[A-Za-z0-9]{46,47}$/.test(addr) || /^5[A-Za-z0-9]{47}$/.test(addr)) return 'DOT';
 
     return null;
 }
@@ -286,6 +299,34 @@ async function loadMultiBalance(address, network) {
             if (d.result) balance = (d.result.value / 1e9).toFixed(4) + ' SOL';
 
 
+        } else if (network === 'DOT') {
+            try {
+                // Subscan публичный API
+                const r = await fetch('https://polkadot.api.subscan.io/api/v2/scan/search', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-API-Key': 'anonymous' },
+                    body: JSON.stringify({ key: address })
+                });
+                const d = await r.json();
+                if (d.data && d.data.account) {
+                    const planck = parseInt(d.data.account.balance || 0);
+                    balance = (planck / 1e10).toFixed(4) + ' DOT';
+                } else {
+                    // Fallback: Polkadot RPC
+                    const r2 = await fetch('https://rpc.polkadot.io', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            jsonrpc: '2.0', id: 1,
+                            method: 'system_accountNextIndex',
+                            params: [address]
+                        })
+                    });
+                    balance = 'DOT (подключён)';
+                }
+            } catch(e2) {
+                balance = 'Ошибка загрузки';
+            }
         } else if (network === 'XRP') {
             try {
                 // XRPL публичный API
@@ -545,6 +586,98 @@ function selectNetwork(networkId) {
 }
 
 
+
+// ============================================================
+//  Подключение Polkadot.js / Talisman / SubWallet
+// ============================================================
+async function connectPolkadotJS(walletId) {
+    // Проверяем наличие расширения
+    const injected = window.injectedWeb3;
+
+    if (!injected || Object.keys(injected).length === 0) {
+        showWalletMsg('❌ Polkadot-кошелёк не найден. Установи Polkadot.js, Talisman или SubWallet.', 'error');
+        // Показываем ссылки на установку
+        const container = document.getElementById('walletMsg');
+        if (container) {
+            setTimeout(() => {
+                container.innerHTML = `
+                    <div style="font-size:12px;line-height:1.8;">
+                        Установи кошелёк:<br>
+                        <a href="https://polkadot.js.org/extension/" target="_blank" style="color:#E6007A;">⚫ Polkadot.js</a> &nbsp;|&nbsp;
+                        <a href="https://talisman.xyz/" target="_blank" style="color:#E6007A;">🔮 Talisman</a> &nbsp;|&nbsp;
+                        <a href="https://subwallet.app/" target="_blank" style="color:#E6007A;">🟣 SubWallet</a>
+                    </div>`;
+            }, 100);
+        }
+        return;
+    }
+
+    try {
+        // Определяем какое расширение использовать
+        let extensionKey = Object.keys(injected)[0];
+        if (walletId === 'talisman' && injected['talisman']) extensionKey = 'talisman';
+        if (walletId === 'subwallet' && injected['subwallet-js']) extensionKey = 'subwallet-js';
+        if (walletId === 'polkadotjs' && injected['polkadot-js']) extensionKey = 'polkadot-js';
+
+        const extension = await injected[extensionKey].enable('RURCoin Mining App');
+        const accounts = await extension.accounts.get();
+
+        if (!accounts || accounts.length === 0) {
+            showWalletMsg('❌ Нет аккаунтов в кошельке. Создай аккаунт Polkadot.', 'error');
+            return;
+        }
+
+        // Если несколько аккаунтов — показываем выбор
+        if (accounts.length === 1) {
+            onMultiWalletConnected(accounts[0].address, 'DOT', walletId);
+        } else {
+            showDOTAccountSelector(accounts, walletId);
+        }
+
+    } catch (e) {
+        if (e.message && e.message.includes('not allowed')) {
+            showWalletMsg('❌ Доступ отклонён. Разреши доступ в расширении.', 'error');
+        } else {
+            showWalletMsg('❌ Ошибка: ' + e.message, 'error');
+        }
+    }
+}
+
+function showDOTAccountSelector(accounts, walletId) {
+    const existing = document.getElementById('dotAccountModal');
+    if (existing) existing.remove();
+
+    const modal = document.createElement('div');
+    modal.id = 'dotAccountModal';
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:1000;display:flex;align-items:center;justify-content:center;';
+    modal.innerHTML = `
+        <div style="background:#111122;border:1px solid #E6007A;border-radius:16px;padding:24px;max-width:320px;width:90%;">
+            <div style="font-size:16px;font-weight:700;margin-bottom:16px;color:#E6007A;">⚫ Выбери аккаунт</div>
+            ${accounts.map((acc, i) => `
+                <button onclick="selectDOTAccount('${acc.address}','${acc.name || 'Account ' + i}','${walletId}')"
+                    style="display:block;width:100%;padding:12px;margin-bottom:8px;background:#1a1a2e;
+                           border:1px solid #333;border-radius:10px;color:#fff;cursor:pointer;text-align:left;">
+                    <div style="font-size:13px;font-weight:600;">${acc.name || 'Account ' + i}</div>
+                    <div style="font-size:10px;color:#888;font-family:monospace;margin-top:4px;">
+                        ${acc.address.slice(0,12)}...${acc.address.slice(-8)}
+                    </div>
+                </button>
+            `).join('')}
+            <button onclick="document.getElementById('dotAccountModal').remove()"
+                style="width:100%;padding:10px;background:#333;border:none;border-radius:8px;color:#fff;cursor:pointer;margin-top:4px;">
+                Отмена
+            </button>
+        </div>
+    `;
+    document.body.appendChild(modal);
+}
+
+function selectDOTAccount(address, name, walletId) {
+    const modal = document.getElementById('dotAccountModal');
+    if (modal) modal.remove();
+    onMultiWalletConnected(address, 'DOT', walletId + ' (' + name + ')');
+}
+
 // ============================================================
 //  Подключение Xaman (XUMM) — Ripple кошелёк
 // ============================================================
@@ -599,6 +732,10 @@ async function handleWalletConnect(walletId) {
 
         case 'tonconnect':
             await connectTONWallet(walletId);
+            break;
+
+        case 'polkadotjs':
+            await connectPolkadotJS(walletId);
             break;
 
         case 'xumm':
@@ -700,3 +837,6 @@ window.copyMWAddress = copyMWAddress;
 window.selectNetwork = selectNetwork;
 window.savePlayerProgress = savePlayerProgress;
 window.connectXUMM = connectXUMM;
+window.connectPolkadotJS = connectPolkadotJS;
+window.selectDOTAccount = selectDOTAccount;
+window.showDOTAccountSelector = showDOTAccountSelector;
