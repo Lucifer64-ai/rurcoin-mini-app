@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>RURCoin — Панель управления</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#06060f;color:#ccc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh}
+
+/* ── LOGIN ── */
+#loginScreen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px}
+.login-box{background:linear-gradient(135deg,#0d0d1a,#120800);border:1px solid #2a1500;border-radius:24px;padding:36px 28px;width:100%;max-width:380px;text-align:center}
+.login-logo{font-size:56px;margin-bottom:16px;animation:float 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.login-title{font-size:22px;font-weight:800;color:#FF8C00;margin-bottom:6px}
+.login-sub{font-size:13px;color:#555;margin-bottom:28px}
+.login-input{width:100%;background:#0a0a14;border:1px solid #2a1500;border-radius:12px;padding:14px 16px;color:#ccc;font-size:15px;outline:none;transition:border-color .3s;margin-bottom:12px;letter-spacing:2px}
+.login-input:focus{border-color:#FF6000;box-shadow:0 0 0 3px rgba(255,96,0,.15)}
+.login-btn{width:100%;background:linear-gradient(135deg,#FF4500,#FF8C00);border:none;border-radius:14px;padding:15px;color:#000;font-size:16px;font-weight:800;cursor:pointer;letter-spacing:.5px;transition:transform .15s,filter .2s}
+.login-btn:active{transform:scale(.96);filter:brightness(.9)}
+.login-error{color:#f44336;font-size:13px;margin-top:10px;min-height:20px;transition:opacity .3s}
+.login-hint{font-size:11px;color:#333;margin-top:20px;line-height:1.6}
+
+/* ── PANEL ── */
+#adminPanel{display:none;padding:16px;max-width:600px;margin:0 auto}
+.panel-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:rgba(0,200,83,.07);border:1px solid rgba(0,200,83,.2);border-radius:16px;margin-bottom:16px}
+.panel-header-left{display:flex;align-items:center;gap:10px}
+.panel-title{font-size:18px;font-weight:800;color:#FF8C00}
+.panel-badge{font-size:11px;color:#00e676;background:rgba(0,230,118,.1);border:1px solid rgba(0,230,118,.3);padding:3px 10px;border-radius:20px}
+.logout-btn{background:rgba(244,67,54,.1);border:1px solid rgba(244,67,54,.3);color:#f44336;padding:8px 14px;border-radius:10px;cursor:pointer;font-size:12px;font-weight:700}
+
+/* ── SECTIONS ── */
+.cp-section{background:linear-gradient(135deg,#0d0d1a,#120800);border:1px solid #2a1500;border-radius:20px;padding:18px;margin-bottom:14px;animation:slideUp .35s ease;transition:border-color .3s}
+.cp-section:hover{border-color:#FF6000}
+@keyframes slideUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.cp-section-title{font-size:15px;font-weight:800;color:#FF8C00;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.cp-section-title::before{content:'';width:3px;height:18px;background:linear-gradient(180deg,#FF6000,#FFD700);border-radius:2px;display:inline-block;box-shadow:0 0 6px #FF6000}
+
+/* ── STATS ── */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat-card{background:rgba(255,96,0,.07);border:1px solid rgba(255,96,0,.18);border-radius:14px;padding:14px;text-align:center;transition:border-color .3s,transform .2s}
+.stat-card:hover{border-color:#FF6000;transform:scale(1.03)}
+.stat-icon{font-size:24px;animation:bounce 2.5s ease-in-out infinite}
+@keyframes bounce{0%,100%{transform:translateY(0) scale(1)}40%{transform:translateY(-5px) scale(1.1)}60%{transform:translateY(-2px) scale(1.05)}}
+.stat-val{font-size:16px;font-weight:700;color:#FF8C00;margin-top:4px}
+.stat-lbl{font-size:10px;color:#555;margin-top:2px}
+
+/* ── BARS ── */
+.bar-row{margin:8px 0}
+.bar-label{display:flex;justify-content:space-between;font-size:11px;color:#666;margin-bottom:4px}
+.bar-wrap{background:#0a0a14;border-radius:8px;height:12px;overflow:hidden;border:1px solid #1a1a2e;position:relative}
+.bar-fill{height:100%;border-radius:8px;transition:width 1s cubic-bezier(.4,0,.2,1);position:relative;overflow:hidden}
+.bar-fill::after{content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);animation:shine 2s ease-in-out infinite}
+@keyframes shine{0%{left:-100%}100%{left:200%}}
+.bar-oil{background:linear-gradient(90deg,#8B4513,#FF6000,#FFD700)}
+.bar-gas{background:linear-gradient(90deg,#004d40,#00c853,#69f0ae)}
+
+/* ── MINING BADGE ── */
+.mining-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 14px;border-radius:20px;font-size:12px;font-weight:700;margin-bottom:14px}
+.mining-badge.active{background:rgba(0,200,83,.12);border:1px solid rgba(0,200,83,.4);color:#00e676}
+.mining-badge.stopped{background:rgba(244,67,54,.1);border:1px solid rgba(244,67,54,.3);color:#f44336}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+.dot.green{background:#00e676;animation:pulse 1.5s ease-in-out infinite;box-shadow:0 0 6px #00e676}
+.dot.red{background:#f44336;animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.7);opacity:.5}}
+
+/* ── BUTTONS ── */
+.btn-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cp-btn{padding:14px 12px;border:none;border-radius:16px;font-size:13px;font-weight:800;cursor:pointer;position:relative;overflow:hidden;transition:transform .15s,filter .2s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center}
+.cp-btn:active{transform:scale(.93)!important;filter:brightness(.9)}
+.cp-btn-icon{font-size:26px;display:inline-block;animation:bounce 2.5s ease-in-out infinite;line-height:1}
+.cp-btn-label{font-size:11px;font-weight:700;line-height:1.2}
+@keyframes shimmer{0%{background-position:-300% center}100%{background-position:300% center}}
+@keyframes glowOrange{0%,100%{box-shadow:0 0 10px #FF6000,0 0 24px rgba(255,96,0,.5)}50%{box-shadow:0 0 20px #FF8C00,0 0 48px rgba(255,140,0,.7)}}
+@keyframes glowGreen{0%,100%{box-shadow:0 0 10px #00c853,0 0 24px rgba(0,200,83,.4)}50%{box-shadow:0 0 20px #00e676,0 0 48px rgba(0,230,118,.6)}}
+@keyframes glowBlue{0%,100%{box-shadow:0 0 10px #60a5fa,0 0 24px rgba(96,165,250,.4)}50%{box-shadow:0 0 20px #93c5fd,0 0 48px rgba(147,197,253,.6)}}
+@keyframes glowPurple{0%,100%{box-shadow:0 0 10px #ab47bc,0 0 24px rgba(171,71,188,.4)}50%{box-shadow:0 0 20px #ce93d8,0 0 48px rgba(206,147,216,.6)}}
+@keyframes glowRed{0%,100%{box-shadow:0 0 8px rgba(244,67,54,.4)}50%{box-shadow:0 0 16px rgba(244,67,54,.7)}}
+.btn-orange{background:linear-gradient(135deg,#FF2200,#FF6000,#FF8C00,#FF6000,#FF2200);background-size:300% auto;color:#000;animation:shimmer 3s linear infinite,glowOrange 2.5s ease-in-out infinite}
+.btn-green{background:linear-gradient(135deg,#00695c,#00c853,#69f0ae,#00c853,#00695c);background-size:300% auto;color:#000;animation:shimmer 3s linear infinite,glowGreen 2.5s ease-in-out infinite}
+.btn-blue{background:linear-gradient(135deg,#0d47a1,#1976d2,#60a5fa,#1976d2,#0d47a1);background-size:300% auto;color:#fff;animation:shimmer 3s linear infinite,glowBlue 2.5s ease-in-out infinite}
+.btn-purple{background:linear-gradient(135deg,#4a148c,#7b1fa2,#ce93d8,#7b1fa2,#4a148c);background-size:300% auto;color:#fff;animation:shimmer 3s linear infinite,glowPurple 2.5s ease-in-out infinite}
+.btn-yellow{background:linear-gradient(135deg,#e65100,#FF8C00,#FFD700,#FF8C00,#e65100);background-size:300% auto;color:#000;animation:shimmer 3s linear infinite,glowOrange 2.5s ease-in-out infinite}
+.btn-red{background:rgba(244,67,54,.1);border:2px solid rgba(244,67,54,.5);color:#f44336;animation:glowRed 2.5s ease-in-out infinite;padding:14px}
+.btn-full{grid-column:1/-1;flex-direction:row;gap:10px;padding:16px}
+.btn-full .cp-btn-icon{font-size:22px;animation:none}
+.btn-full .cp-btn-label{font-size:14px}
+
+/* ── TOGGLES ── */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid #1a1a2e}
+.toggle-row:last-child{border-bottom:none}
+.toggle-left{display:flex;align-items:center;gap:10px}
+.toggle-emoji{font-size:22px}
+.toggle-label{font-size:13px;color:#ccc;font-weight:600}
+.toggle-sub{font-size:10px;color:#555;margin-top:2px}
+.toggle{position:relative;width:48px;height:26px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0}
+.toggle-slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:#1a1a2e;border:1px solid #2a2a4a;border-radius:26px;transition:.3s}
+.toggle-slider::before{content:'';position:absolute;width:20px;height:20px;left:2px;bottom:2px;background:#555;border-radius:50%;transition:.3s;box-shadow:0 2px 4px rgba(0,0,0,.4)}
+.toggle input:checked+.toggle-slider{background:#FF6000;border-color:#FF8C00;box-shadow:0 0 8px rgba(255,96,0,.5)}
+.toggle input:checked+.toggle-slider::before{transform:translateX(22px);background:#fff}
+
+/* ── SLIDERS ── */
+.slider-wrap{margin:12px 0}
+.slider-label{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#888;margin-bottom:8px}
+.slider-label span{color:#FF8C00;font-weight:700;font-size:13px}
+input[type=range]{width:100%;-webkit-appearance:none;height:8px;border-radius:4px;background:linear-gradient(90deg,#FF6000,#2a1500);outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#FF4500,#FFD700);box-shadow:0 0 8px rgba(255,96,0,.6),0 2px 6px rgba(0,0,0,.4);cursor:pointer;transition:transform .15s;border:2px solid rgba(255,255,255,.2)}
+
+/* ── LOG ── */
+.cp-log{background:#050508;border:1px solid #1a1a2e;border-radius:12px;padding:10px 12px;max-height:150px;overflow-y:auto;font-size:11px;font-family:monospace;color:#4ade80;scrollbar-width:thin}
+.log-entry{margin-bottom:4px;line-height:1.4}
+.log-entry.warn{color:#FFD700}
+.log-entry.err{color:#f44336}
+.log-entry.info{color:#60a5fa}
+
+/* ── EXPORT ── */
+.export-box{background:#050508;border:1px solid #1a1a2e;border-radius:12px;padding:12px;font-size:11px;font-family:monospace;color:#60a5fa;word-break:break-all;max-height:120px;overflow-y:auto;margin-top:10px;outline:none;transition:border-color .3s}
+.divider{height:1px;background:linear-gradient(90deg,transparent,#2a1500,transparent);margin:14px 0}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#1a1a2e;border:1px solid #FF6000;border-radius:14px;padding:12px 20px;font-size:13px;font-weight:600;color:#FF8C00;z-index:9999;transition:transform .3s cubic-bezier(.34,1.56,.64,1),opacity .3s;opacity:0;white-space:nowrap}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+.toast.success{border-color:#00c853;color:#00e676;background:rgba(0,200,83,.1)}
+.toast.error{border-color:#f44336;color:#f44336;background:rgba(244,67,54,.1)}
+.toast.warn{border-color:#FFD700;color:#FFD700;background:rgba(255,215,0,.08)}
+
+/* ── LINK BACK ── */
+.back-link{display:block;text-align:center;color:#444;font-size:12px;margin-top:20px;margin-bottom:30px;text-decoration:none;transition:color .2s}
+.back-link:hover{color:#FF8C00}
+</style>
+</head>
+<body>
+
+<!-- ── ЭКРАН ВХОДА ── -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">🛢️</div>
+    <div class="login-title">Панель управления</div>
+    <div class="login-sub">RURCoin Oil &amp; Gas Platform</div>
+    <input id="secretInput" class="login-input" type="password" placeholder="Секретный ключ" 
+           onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="login-btn" onclick="doLogin()">&#128273; Войти</button>
+    <div class="login-error" id="loginError"></div>
+    <div class="login-hint">
+      Доступ только для администратора.<br>
+      Данные хранятся локально в браузере.
+    </div>
+  </div>
+</div>
+
+<!-- ── ПАНЕЛЬ УПРАВЛЕНИЯ ── -->
+<div id="adminPanel">
+
+  <!-- Шапка -->
+  <div class="panel-header">
+    <div class="panel-header-left">
+      <span style="font-size:22px">🛢️</span>
+      <div>
+        <div class="panel-title">Управление</div>
+        <div class="panel-badge">✅ Авторизован</div>
+      </div>
+    </div>
+    <button class="logout-btn" onclick="doLogout()">🔒 Выйти</button>
+  </div>
+
+  <!-- Статистика -->
+  <div class="cp-section">
+    <div class="cp-section-title">📊 Статистика</div>
+    <div id="miningBadge" class="mining-badge stopped">
+      <span class="dot red"></span> Добыча остановлена
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-icon">₽</div><div class="stat-val" id="sBalance">—</div><div class="stat-lbl">Баланс RURC</div></div>
+      <div class="stat-card"><div class="stat-icon">💎</div><div class="stat-val" id="sTon">—</div><div class="stat-lbl">Баланс TON</div></div>
+      <div class="stat-card"><div class="stat-icon">🛢️</div><div class="stat-val" id="sOil">—</div><div class="stat-lbl">Нефть (барр.)</div></div>
+      <div class="stat-card"><div class="stat-icon">🔥</div><div class="stat-val" id="sGas">—</div><div class="stat-lbl">Газ (м³)</div></div>
+      <div class="stat-card"><div class="stat-icon">🔒</div><div class="stat-val" id="sStaked">—</div><div class="stat-lbl">Застейкано</div></div>
+      <div class="stat-card"><div class="stat-icon">🎁</div><div class="stat-val" id="sRewards">—</div><div class="stat-lbl">Награды</div></div>
+      <div class="stat-card"><div class="stat-icon">⚙️</div><div class="stat-val" id="sPumps">—</div><div class="stat-lbl">Насосы</div></div>
+      <div class="stat-card"><div class="stat-icon">🏗️</div><div class="stat-val" id="sTowers">—</div><div class="stat-lbl">Вышки</div></div>
+    </div>
+    <div style="margin-top:14px">
+      <div class="bar-row">
+        <div class="bar-label"><span>🛢️ Нефть</span><span id="oilPct">0%</span></div>
+        <div class="bar-wrap"><div class="bar-fill bar-oil" id="oilBar" style="width:0%"></div></div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label"><span>🔥 Газ</span><span id="gasPct">0%</span></div>
+        <div class="bar-wrap"><div class="bar-fill bar-gas" id="gasBar" style="width:0%"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Быстрые действия -->
+  <div class="cp-section">
+    <div class="cp-section-title">⚡ Быстрые действия</div>
+    <div class="btn-grid" style="margin-bottom:10px">
+      <button class="cp-btn btn-orange" onclick="sellOil()"><span class="cp-btn-icon">🛢️</span><span class="cp-btn-label">Продать<br>нефть</span></button>
+      <button class="cp-btn btn-green" onclick="sellGas()"><span class="cp-btn-icon">🔥</span><span class="cp-btn-label">Продать<br>газ</span></button>
+    </div>
+    <button class="cp-btn btn-yellow btn-full" onclick="sellAll()" style="margin-bottom:10px">
+      <span class="cp-btn-icon">💰</span><span class="cp-btn-label">Продать всё сразу</span>
+    </button>
+    <div class="btn-grid">
+      <button class="cp-btn btn-blue" onclick="addBalance()"><span class="cp-btn-icon">➕</span><span class="cp-btn-label">+1000<br>RURC</span></button>
+      <button class="cp-btn btn-purple" onclick="stakeAll()"><span class="cp-btn-icon">🔒</span><span class="cp-btn-label">Стейк<br>всего</span></button>
+    </div>
+    <button class="cp-btn btn-green btn-full" onclick="unstakeAll()" style="margin-top:10px">
+      <span class="cp-btn-icon">🔓</span><span class="cp-btn-label">Вывести стейк + награды</span>
+    </button>
+  </div>
+
+  <!-- Редактор данных -->
+  <div class="cp-section">
+    <div class="cp-section-title">✏️ Редактор данных</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+      <div>
+        <div style="font-size:11px;color:#555;margin-bottom:4px">RURC баланс</div>
+        <input id="editBalance" type="number" style="width:100%;background:#0a0a14;border:1px solid #2a1500;border-radius:8px;padding:8px 10px;color:#FF8C00;font-size:14px;font-weight:700;outline:none">
+      </div>
+      <div>
+        <div style="font-size:11px;color:#555;margin-bottom:4px">TON баланс</div>
+        <input id="editTon" type="number" step="0.001" style="width:100%;background:#0a0a14;border:1px solid #2a1500;border-radius:8px;padding:8px 10px;color:#60a5fa;font-size:14px;font-weight:700;outline:none">
+      </div>
+      <div>
+        <div style="font-size:11px;color:#555;margin-bottom:4px">Нефть (барр.)</div>
+        <input id="editOil" type="number" step="0.1" style="width:100%;background:#0a0a14;border:1px solid #2a1500;border-radius:8px;padding:8px 10px;color:#FF6000;font-size:14px;font-weight:700;outline:none">
+      </div>
+      <div>
+        <div style="font-size:11px;color:#555;margin-bottom:4px">Газ (м³)</div>
+        <input id="editGas" type="number" style="width:100%;background:#0a0a14;border:1px solid #2a1500;border-radius:8px;padding:8px 10px;color:#00e676;font-size:14px;font-weight:700;outline:none">
+      </div>
+    </div>
+    <button class="cp-btn btn-yellow btn-full" onclick="saveEdits()">
+      <span class="cp-btn-icon">💾</span><span class="cp-btn-label">Сохранить изменения</span>
+    </button>
+  </div>
+
+  <!-- Автоматизация -->
+  <div class="cp-section">
+    <div class="cp-section-title">🤖 Автоматизация</div>
+    <div class="toggle-row">
+      <div class="toggle-left"><span class="toggle-emoji">🛢️</span><div><div class="toggle-label">Авто-продажа нефти</div><div class="toggle-sub">При заполнении цистерны</div></div></div>
+      <label class="toggle"><input type="checkbox" id="autoOil"><span class="toggle-slider"></span></label>
+    </div>
+    <div class="toggle-row">
+      <div class="toggle-left"><span class="toggle-emoji">🔥</span><div><div class="toggle-label">Авто-продажа газа</div><div class="toggle-sub">При заполнении цистерны</div></div></div>
+      <label class="toggle"><input type="checkbox" id="autoGas"><span class="toggle-slider"></span></label>
+    </div>
+    <div class="toggle-row">
+      <div class="toggle-left"><span class="toggle-emoji">🔒</span><div><div class="toggle-label">Авто-стейкинг</div><div class="toggle-sub">50% при достижении порога</div></div></div>
+      <label class="toggle"><input type="checkbox" id="autoStake"><span class="toggle-slider"></span></label>
+    </div>
+    <div class="divider"></div>
+    <div class="slider-wrap">
+      <div class="slider-label">Порог авто-продажи (% цистерны)<span id="sellThreshVal">80%</span></div>
+      <input type="range" min="10" max="100" value="80" oninput="document.getElementById('sellThreshVal').textContent=this.value+'%';settings.sellThreshold=+this.value">
+    </div>
+    <div class="slider-wrap">
+      <div class="slider-label">Порог авто-стейка (RURC)<span id="stakeThreshVal">100 RURC</span></div>
+      <input type="range" min="10" max="1000" value="100" step="10" oninput="document.getElementById('stakeThreshVal').textContent=this.value+' RURC';settings.stakeThreshold=+this.value">
+    </div>
+  </div>
+
+  <!-- Лог -->
+  <div class="cp-section">
+    <div class="cp-section-title">📋 Лог событий</div>
+    <div class="cp-log" id="cpLog">
+      <div class="log-entry info">[--:--:--] Панель управления загружена ✅</div>
+    </div>
+  </div>
+
+  <!-- Экспорт / Импорт -->
+  <div class="cp-section">
+    <div class="cp-section-title">💾 Экспорт / Импорт</div>
+    <div class="btn-grid">
+      <button class="cp-btn btn-blue" onclick="exportData()"><span class="cp-btn-icon">📤</span><span class="cp-btn-label">Экспорт</span></button>
+      <button class="cp-btn btn-green" onclick="importData()"><span class="cp-btn-icon">📥</span><span class="cp-btn-label">Импорт</span></button>
+    </div>
+    <div class="export-box" id="exportBox" contenteditable="true">Нажми «Экспорт» для получения данных...</div>
+  </div>
+
+  <!-- Опасная зона -->
+  <div class="cp-section" style="border-color:rgba(244,67,54,.3)">
+    <div class="cp-section-title" style="color:#f44336">
+      <span style="width:3px;height:18px;background:linear-gradient(180deg,#f44336,#ff8a80);border-radius:2px;display:inline-block;box-shadow:0 0 6px #f44336"></span>
+      ⚠️ Опасная зона
+    </div>
+    <button class="cp-btn btn-red btn-full" onclick="resetProgress()">
+      <span style="font-size:22px">🗑️</span><span style="font-size:14px;font-weight:800">Сбросить весь прогресс</span>
+    </button>
+  </div>
+
+  <a href="index.html" class="back-link">← Вернуться в приложение</a>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+const SECRET = 'rurc_admin_2024';
+const LS_KEY = 'rurcoin_data';
+const AUTH_KEY = 'rurcoin_admin_auth';
+const settings = { autoSellOil: false, autoSellGas: false, autoStake: false, sellThreshold: 80, stakeThreshold: 100 };
+
+const logEntries = [];
+function cpLog(msg, type) {
+    const now = new Date().toLocaleTimeString('ru-RU');
+    logEntries.unshift({ msg, type: type || 'ok', time: now });
+    if (logEntries.length > 80) logEntries.pop();
+    const el = document.getElementById('cpLog');
+    if (el) el.innerHTML = logEntries.map(e =>
+        `<div class="log-entry ${e.type === 'ok' ? '' : e.type}">[${e.time}] ${e.msg}</div>`
+    ).join('');
+}
+
+function toast(msg, type) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast show ' + (type || '');
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => t.className = 'toast', 2800);
+}
+
+function loadData() {
+    try { return JSON.parse(localStorage.getItem(LS_KEY) || '{}'); } catch { return {}; }
+}
+function saveData(d) { localStorage.setItem(LS_KEY, JSON.stringify(d)); }
+
+function doLogin() {
+    const val = document.getElementById('secretInput').value.trim();
+    const errEl = document.getElementById('loginError');
+    if (val === SECRET) {
+        sessionStorage.setItem(AUTH_KEY, '1');
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('adminPanel').style.display = 'block';
+        initPanel();
+        cpLog('\ud83d\udd13 Успешный вход', 'ok');
+    } else {
+        errEl.textContent = '\u274c Неверный ключ';
+        document.getElementById('secretInput').style.borderColor = '#f44336';
+        setTimeout(() => { errEl.textContent = ''; document.getElementById('secretInput').style.borderColor = ''; }, 2000);
+    }
+}
+function doLogout() {
+    if (!confirm('Выйти из панели управления?')) return;
+    sessionStorage.removeItem(AUTH_KEY);
+    document.getElementById('adminPanel').style.display = 'none';
+    document.getElementById('loginScreen').style.display = 'flex';
+    document.getElementById('secretInput').value = '';
+}
+
+function initPanel() {
+    updateStats(); fillEditors();
+    setInterval(() => { updateStats(); autoActions(); }, 3000);
+}
+
+function updateStats() {
+    const d = loadData();
+    const set = (id, val) => { const e = document.getElementById(id); if (e) e.textContent = val; };
+    set('sBalance', (d.balance||0).toFixed(2));
+    set('sTon', (d.tonBalance||0).toFixed(3));
+    set('sOil', (d.oilStored||0).toFixed(1));
+    set('sGas', Math.floor(d.gasStored||0));
+    set('sStaked', (d.stakedBalance||0).toFixed(2));
+    set('sRewards', (d.stakingRewards||0).toFixed(4));
+    set('sPumps', d.oilPumps||0);
+    set('sTowers', d.gasTowers||0);
+    const oilPct = Math.min(100,((d.oilStored||0)/(d.oilCapacity||100))*100);
+    const gasPct = Math.min(100,((d.gasStored||0)/(d.gasCapacity||1000))*100);
+    set('oilPct', oilPct.toFixed(1)+'%');
+    set('gasPct', gasPct.toFixed(1)+'%');
+    const ob=document.getElementById('oilBar'); if(ob) ob.style.width=oilPct+'%';
+    const gb=document.getElementById('gasBar'); if(gb) gb.style.width=gasPct+'%';
+    const badge=document.getElementById('miningBadge');
+    if(badge){
+        if(d.isMining){badge.className='mining-badge active';badge.innerHTML='<span class="dot green"></span> Добыча активна';}
+        else{badge.className='mining-badge stopped';badge.innerHTML='<span class="dot red"></span> Добыча остановлена';}
+    }
+}
+function fillEditors() {
+    const d = loadData();
+    const set = (id,val) => { const e=document.getElementById(id); if(e) e.value=val; };
+    set('editBalance',(d.balance||0).toFixed(2));
+    set('editTon',(d.tonBalance||0).toFixed(3));
+    set('editOil',(d.oilStored||0).toFixed(1));
+    set('editGas',Math.floor(d.gasStored||0));
+}
+function getOilPrice(){return 2.5;}
+function getGasPrice(){return 0.8;}
+function sellOil(){const d=loadData();if(!d.oilStored||d.oilStored<=0){toast('\u26a0\ufe0f Нефть не накоплена','warn');return;}const e=d.oilStored*getOilPrice();d.balance=(d.balance||0)+e;d.oilStored=0;saveData(d);updateStats();fillEditors();cpLog('\ud83d\udee2\ufe0f Продана нефть: +'+e.toFixed(2)+' RURC','ok');toast('\ud83d\udee2\ufe0f Продано! +'+e.toFixed(2)+' RURC','success');}
+function sellGas(){const d=loadData();if(!d.gasStored||d.gasStored<=0){toast('\u26a0\ufe0f Газ не накоплен','warn');return;}const e=d.gasStored*getGasPrice();d.balance=(d.balance||0)+e;d.gasStored=0;saveData(d);updateStats();fillEditors();cpLog('\ud83d\udd25 Продан газ: +'+e.toFixed(2)+' RURC','ok');toast('\ud83d\udd25 Продано! +'+e.toFixed(2)+' RURC','success');}
+function sellAll(){const d=loadData();let t=0;if(d.oilStored>0){t+=d.oilStored*getOilPrice();d.oilStored=0;}if(d.gasStored>0){t+=d.gasStored*getGasPrice();d.gasStored=0;}if(t<=0){toast('\u26a0\ufe0f Нечего продавать','warn');return;}d.balance=(d.balance||0)+t;saveData(d);updateStats();fillEditors();cpLog('\ud83d\udcb0 Продано всё: +'+t.toFixed(2)+' RURC','ok');toast('\ud83d\udcb0 Продано всё! +'+t.toFixed(2)+' RURC','success');}
+function addBalance(){const d=loadData();d.balance=(d.balance||0)+1000;saveData(d);updateStats();fillEditors();cpLog('\u2795 Добавлено 1000 RURC','ok');toast('\u2795 +1000 RURC','success');}
+function stakeAll(){const d=loadData();if(!d.balance||d.balance<=0){toast('\u26a0\ufe0f Нет RURC для стейка','warn');return;}const a=Math.floor(d.balance);d.stakedBalance=(d.stakedBalance||0)+a;d.balance-=a;saveData(d);updateStats();fillEditors();cpLog('\ud83d\udd12 Застейкано '+a+' RURC','info');toast('\ud83d\udd12 Застейкано '+a+' RURC','success');}
+function unstakeAll(){const d=loadData();if(!d.stakedBalance||d.stakedBalance<=0){toast('\u26a0\ufe0f Нет застейканных средств','warn');return;}const t=(d.stakedBalance||0)+(d.stakingRewards||0);d.balance=(d.balance||0)+t;d.stakedBalance=0;d.stakingRewards=0;saveData(d);updateStats();fillEditors();cpLog('\ud83d\udd13 Выведено '+t.toFixed(2)+' RURC','ok');toast('\ud83d\udd13 Выведено '+t.toFixed(2)+' RURC','success');}
+function saveEdits(){const d=loadData();const get=id=>parseFloat(document.getElementById(id).value)||0;d.balance=get('editBalance');d.tonBalance=get('editTon');d.oilStored=get('editOil');d.gasStored=get('editGas');saveData(d);updateStats();cpLog('\ud83d\udcbe Данные сохранены вручную','info');toast('\ud83d\udcbe Сохранено!','success');}
+function exportData(){const d=loadData();const j=JSON.stringify(d,null,2);const b=document.getElementById('exportBox');if(b)b.textContent=j;if(navigator.clipboard)navigator.clipboard.writeText(j).then(()=>toast('\ud83d\udccb Скопировано!','success'));cpLog('\ud83d\udce4 Данные экспортированы','info');}
+function importData(){const b=document.getElementById('exportBox');if(!b||!b.textContent.trim()||b.textContent.includes('\u041dажми')){toast('\u26a0\ufe0f Вставьте JSON в поле','warn');return;}try{const d=JSON.parse(b.textContent);saveData(d);updateStats();fillEditors();cpLog('\ud83d\udce5 Данные импортированы','ok');toast('\u2705 Импорт успешен!','success');}catch(e){toast('\u274c Ошибка формата JSON','error');cpLog('\u274c Ошибка импорта: '+e.message,'err');}}
+function resetProgress(){if(!confirm('\u26a0\ufe0f Сбросить ВЕСЬ прогресс?\nЭто действие необратимо!'))return;const f={balance:0,tonBalance:5,oilStored:0,gasStored:0,oilPumps:0,gasTowers:0,oilTanks:0,gasTanks:0,oilCapacity:100,gasCapacity:1000,stakedBalance:0,stakingRewards:0,totalMined:0,isMining:false,transactions:[]};saveData(f);updateStats();fillEditors();cpLog('\ud83d\udd04 Прогресс сброшен','warn');toast('\ud83d\udd04 Прогресс сброшен','warn');}
+function autoActions(){const d=loadData();let ch=false;const op=((d.oilStored||0)/(d.oilCapacity||100))*100;const gp=((d.gasStored||0)/(d.gasCapacity||1000))*100;if(document.getElementById('autoOil').checked&&op>=settings.sellThreshold&&d.oilStored>0){const e=d.oilStored*getOilPrice();d.balance=(d.balance||0)+e;d.oilStored=0;ch=true;cpLog('\ud83d\udee2\ufe0f Авто-продажа нефти: +'+e.toFixed(2)+' RURC','ok');}if(document.getElementById('autoGas').checked&&gp>=settings.sellThreshold&&d.gasStored>0){const e=d.gasStored*getGasPrice();d.balance=(d.balance||0)+e;d.gasStored=0;ch=true;cpLog('\ud83d\udd25 Авто-продажа газа: +'+e.toFixed(2)+' RURC','ok');}if(document.getElementById('autoStake').checked&&(d.balance||0)>=settings.stakeThreshold){const a=Math.floor(d.balance/2);d.stakedBalance=(d.stakedBalance||0)+a;d.balance-=a;ch=true;cpLog('\ud83d\udd12 Авто-стейк: '+a+' RURC','info');}if(ch){saveData(d);updateStats();fillEditors();}}
+window.addEventListener('DOMContentLoaded',()=>{
+    if(sessionStorage.getItem(AUTH_KEY)==='1'){document.getElementById('loginScreen').style.display='none';document.getElementById('adminPanel').style.display='block';initPanel();cpLog('\ud83d\udd13 Сессия восстановлена','info');return;}
+    const p=new URLSearchParams(window.location.search);
+    if(p.get('key')===SECRET){sessionStorage.setItem(AUTH_KEY,'1');document.getElementById('loginScreen').style.display='none';document.getElementById('adminPanel').style.display='block';history.replaceState({},'',window.location.pathname);initPanel();cpLog('\ud83d\udd13 Вход по ссылке','ok');}
+});
+</script>
+</body>
+</html>
