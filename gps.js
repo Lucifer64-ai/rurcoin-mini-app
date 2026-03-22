@@ -33,6 +33,267 @@ const GPS = (function () {
     { level: 3, radius: 200, tonCost: 1.5, label: 'Продвинутый', color: '#FFD700' },
     { level: 4, radius: 350, tonCost: 3.0, label: 'Экспертный',  color: '#FF6B00' },
     { level: 5, radius: 500, tonCost: 7.0, label: 'Легендарный', color: '#FF00FF' },
+,
+
+  // ── Городские месторождения ──────────────────────────────────────
+    { id: 'urban_москва_1', name: 'Москва-У1 (нефть)', lat: 55.7115, lon: 37.6424, type: 'oil', bonus: 1.9, icon: '🛢️', region: 'Москва (город)', reserve: 564.4, area: 237.4, depth: 2148 },
+    { id: 'urban_москва_2', name: 'Москва-У2 (газ)', lat: 55.8171, lon: 37.7013, type: 'gas', bonus: 1.5, icon: '⛽', region: 'Москва (город)', reserve: 175.2, area: 669.2, depth: 4272 },
+    { id: 'urban_москва_3', name: 'Москва-У3 (газ)', lat: 55.8406, lon: 37.6969, type: 'gas', bonus: 3.5, icon: '⛽', region: 'Москва (город)', reserve: 239.2, area: 268.5, depth: 1160 },
+    { id: 'urban_москва_4', name: 'Москва-У4 (газ)', lat: 55.8039, lon: 37.7575, type: 'gas', bonus: 2.4, icon: '⛽', region: 'Москва (город)', reserve: 143.1, area: 62.1, depth: 1839 },
+    { id: 'urban_санктпетербург_1', name: 'Санкт-Петербург-У1 (газ)', lat: 59.855, lon: 30.2806, type: 'gas', bonus: 2.9, icon: '⛽', region: 'Санкт-Петербург (город)', reserve: 55.0, area: 672.4, depth: 1937 },
+    { id: 'urban_санктпетербург_2', name: 'Санкт-Петербург-У2 (нефть)', lat: 59.8547, lon: 30.3282, type: 'oil', bonus: 2.7, icon: '🛢️', region: 'Санкт-Петербург (город)', reserve: 498.1, area: 733.9, depth: 1072 },
+    { id: 'urban_санктпетербург_3', name: 'Санкт-Петербург-У3 (газ)', lat: 59.9954, lon: 30.3182, type: 'gas', bonus: 3.5, icon: '⛽', region: 'Санкт-Петербург (город)', reserve: 217.3, area: 426.1, depth: 3510 },
+    { id: 'urban_санктпетербург_4', name: 'Санкт-Петербург-У4 (газ)', lat: 59.8468, lon: 30.3363, type: 'gas', bonus: 2.0, icon: '⛽', region: 'Санкт-Петербург (город)', reserve: 347.9, area: 325.1, depth: 1333 },
+    { id: 'urban_новосибирск_1', name: 'Новосибирск-У1 (нефть)', lat: 54.9607, lon: 82.9264, type: 'oil', bonus: 1.6, icon: '🛢️', region: 'Новосибирск (город)', reserve: 383.2, area: 597.9, depth: 3745 },
+    { id: 'urban_новосибирск_2', name: 'Новосибирск-У2 (газ)', lat: 55.0293, lon: 82.9985, type: 'gas', bonus: 2.9, icon: '⛽', region: 'Новосибирск (город)', reserve: 43.0, area: 379.9, depth: 979 },
+    { id: 'urban_новосибирск_3', name: 'Новосибирск-У3 (нефть)', lat: 55.0172, lon: 82.9583, type: 'oil', bonus: 3.2, icon: '🛢️', region: 'Новосибирск (город)', reserve: 550.0, area: 739.3, depth: 3603 },
+    { id: 'urban_екатеринбург_1', name: 'Екатеринбург-У1 (нефть)', lat: 56.8347, lon: 60.5907, type: 'oil', bonus: 1.8, icon: '🛢️', region: 'Екатеринбург (город)', reserve: 498.9, area: 724.4, depth: 267 },
+    { id: 'urban_екатеринбург_2', name: 'Екатеринбург-У2 (нефть)', lat: 56.8767, lon: 60.6101, type: 'oil', bonus: 1.7, icon: '🛢️', region: 'Екатеринбург (город)', reserve: 240.3, area: 383.3, depth: 1311 },
+    { id: 'urban_екатеринбург_3', name: 'Екатеринбург-У3 (нефть)', lat: 56.8551, lon: 60.6077, type: 'oil', bonus: 1.8, icon: '🛢️', region: 'Екатеринбург (город)', reserve: 98.0, area: 45.2, depth: 2111 },
+    { id: 'urban_казань_1', name: 'Казань-У1 (газ)', lat: 55.7983, lon: 49.0349, type: 'gas', bonus: 2.9, icon: '⛽', region: 'Казань (город)', reserve: 364.7, area: 394.2, depth: 2393 },
+    { id: 'urban_казань_2', name: 'Казань-У2 (нефть)', lat: 55.8065, lon: 49.0061, type: 'oil', bonus: 2.7, icon: '🛢️', region: 'Казань (город)', reserve: 184.1, area: 224.6, depth: 3917 },
+    { id: 'urban_казань_3', name: 'Казань-У3 (нефть)', lat: 55.826, lon: 49.0738, type: 'oil', bonus: 1.6, icon: '🛢️', region: 'Казань (город)', reserve: 21.1, area: 117.4, depth: 936 },
+    { id: 'urban_нижний_новгород_1', name: 'Нижний Новгород-У1 (нефть)', lat: 56.2882, lon: 43.9265, type: 'oil', bonus: 2.9, icon: '🛢️', region: 'Нижний Новгород (город)', reserve: 469.6, area: 136.5, depth: 3348 },
+    { id: 'urban_нижний_новгород_2', name: 'Нижний Новгород-У2 (газ)', lat: 56.3365, lon: 43.9205, type: 'gas', bonus: 2.9, icon: '⛽', region: 'Нижний Новгород (город)', reserve: 463.3, area: 159.2, depth: 3707 },
+    { id: 'urban_нижний_новгород_3', name: 'Нижний Новгород-У3 (нефть)', lat: 56.2825, lon: 43.9533, type: 'oil', bonus: 3.2, icon: '🛢️', region: 'Нижний Новгород (город)', reserve: 200.8, area: 731.5, depth: 2502 },
+    { id: 'urban_челябинск_1', name: 'Челябинск-У1 (газ)', lat: 55.1577, lon: 61.4987, type: 'gas', bonus: 2.5, icon: '⛽', region: 'Челябинск (город)', reserve: 452.1, area: 626.0, depth: 4496 },
+    { id: 'urban_челябинск_2', name: 'Челябинск-У2 (нефть)', lat: 55.1811, lon: 61.3996, type: 'oil', bonus: 2.3, icon: '🛢️', region: 'Челябинск (город)', reserve: 450.5, area: 451.7, depth: 2732 },
+    { id: 'urban_челябинск_3', name: 'Челябинск-У3 (нефть)', lat: 55.1569, lon: 61.4626, type: 'oil', bonus: 1.8, icon: '🛢️', region: 'Челябинск (город)', reserve: 222.1, area: 626.3, depth: 601 },
+    { id: 'urban_самара_1', name: 'Самара-У1 (газ)', lat: 53.2315, lon: 50.1627, type: 'gas', bonus: 2.6, icon: '⛽', region: 'Самара (город)', reserve: 409.5, area: 50.3, depth: 381 },
+    { id: 'urban_самара_2', name: 'Самара-У2 (нефть)', lat: 53.171, lon: 50.1881, type: 'oil', bonus: 2.8, icon: '🛢️', region: 'Самара (город)', reserve: 495.7, area: 220.4, depth: 1518 },
+    { id: 'urban_уфа_1', name: 'Уфа-У1 (газ)', lat: 54.7256, lon: 55.9561, type: 'gas', bonus: 2.5, icon: '⛽', region: 'Уфа (город)', reserve: 378.1, area: 764.3, depth: 909 },
+    { id: 'urban_уфа_2', name: 'Уфа-У2 (нефть)', lat: 54.7288, lon: 55.9906, type: 'oil', bonus: 2.4, icon: '🛢️', region: 'Уфа (город)', reserve: 375.9, area: 679.8, depth: 586 },
+    { id: 'urban_ростовнадону_1', name: 'Ростов-на-Дону-У1 (нефть)', lat: 47.2459, lon: 39.6553, type: 'oil', bonus: 2.3, icon: '🛢️', region: 'Ростов-на-Дону (город)', reserve: 588.9, area: 681.1, depth: 828 },
+    { id: 'urban_ростовнадону_2', name: 'Ростов-на-Дону-У2 (нефть)', lat: 47.2392, lon: 39.6906, type: 'oil', bonus: 3.1, icon: '🛢️', region: 'Ростов-на-Дону (город)', reserve: 32.6, area: 629.0, depth: 2343 },
+    { id: 'urban_тюмень_1', name: 'Тюмень-У1 (газ)', lat: 57.1259, lon: 68.022, type: 'gas', bonus: 3.3, icon: '⛽', region: 'Тюмень (город)', reserve: 112.9, area: 713.8, depth: 919 },
+    { id: 'urban_тюмень_2', name: 'Тюмень-У2 (газ)', lat: 57.16, lon: 68.0309, type: 'gas', bonus: 2.3, icon: '⛽', region: 'Тюмень (город)', reserve: 431.7, area: 146.8, depth: 4145 },
+    { id: 'urban_сургут_1', name: 'Сургут-У1 (газ)', lat: 61.2636, lon: 73.4251, type: 'gas', bonus: 2.1, icon: '⛽', region: 'Сургут (город)', reserve: 286.6, area: 156.0, depth: 3773 },
+    { id: 'urban_когалым_1', name: 'Когалым-У1 (газ)', lat: 62.2641, lon: 74.4973, type: 'gas', bonus: 3.2, icon: '⛽', region: 'Когалым (город)', reserve: 472.4, area: 324.5, depth: 989 },
+    { id: 'urban_нефтеюганск_1', name: 'Нефтеюганск-У1 (газ)', lat: 61.1098, lon: 72.605, type: 'gas', bonus: 2.1, icon: '⛽', region: 'Нефтеюганск (город)', reserve: 404.5, area: 275.0, depth: 3716 },
+    { id: 'urban_хантымансийск_1', name: 'Ханты-Мансийск-У1 (газ)', lat: 61.0122, lon: 69.0106, type: 'gas', bonus: 1.9, icon: '⛽', region: 'Ханты-Мансийск (город)', reserve: 219.2, area: 184.5, depth: 1495 },
+    { id: 'urban_лондон_1', name: 'Лондон-У1 (нефть)', lat: 51.5308, lon: -0.1533, type: 'oil', bonus: 2.6, icon: '🛢️', region: 'Лондон (город)', reserve: 273.7, area: 245.5, depth: 2160 },
+    { id: 'urban_лондон_2', name: 'Лондон-У2 (газ)', lat: 51.4857, lon: -0.1401, type: 'gas', bonus: 2.9, icon: '⛽', region: 'Лондон (город)', reserve: 174.6, area: 142.6, depth: 275 },
+    { id: 'urban_лондон_3', name: 'Лондон-У3 (нефть)', lat: 51.4684, lon: -0.0295, type: 'oil', bonus: 2.5, icon: '🛢️', region: 'Лондон (город)', reserve: 373.9, area: 554.5, depth: 1037 },
+    { id: 'urban_лондон_4', name: 'Лондон-У4 (газ)', lat: 51.4197, lon: -0.1867, type: 'gas', bonus: 2.2, icon: '⛽', region: 'Лондон (город)', reserve: 299.2, area: 309.2, depth: 1588 },
+    { id: 'urban_париж_1', name: 'Париж-У1 (нефть)', lat: 48.9099, lon: 2.2592, type: 'oil', bonus: 2.7, icon: '🛢️', region: 'Париж (город)', reserve: 164.1, area: 774.0, depth: 2699 },
+    { id: 'urban_париж_2', name: 'Париж-У2 (нефть)', lat: 48.8414, lon: 2.4188, type: 'oil', bonus: 2.9, icon: '🛢️', region: 'Париж (город)', reserve: 22.1, area: 65.8, depth: 2908 },
+    { id: 'urban_париж_3', name: 'Париж-У3 (нефть)', lat: 48.8338, lon: 2.4041, type: 'oil', bonus: 2.7, icon: '🛢️', region: 'Париж (город)', reserve: 517.4, area: 283.4, depth: 1397 },
+    { id: 'urban_париж_4', name: 'Париж-У4 (нефть)', lat: 48.9037, lon: 2.4255, type: 'oil', bonus: 1.8, icon: '🛢️', region: 'Париж (город)', reserve: 300.8, area: 238.8, depth: 3126 },
+    { id: 'urban_берлин_1', name: 'Берлин-У1 (газ)', lat: 52.4934, lon: 13.5332, type: 'gas', bonus: 2.0, icon: '⛽', region: 'Берлин (город)', reserve: 475.6, area: 142.5, depth: 3693 },
+    { id: 'urban_берлин_2', name: 'Берлин-У2 (нефть)', lat: 52.4735, lon: 13.3787, type: 'oil', bonus: 2.5, icon: '🛢️', region: 'Берлин (город)', reserve: 264.7, area: 164.3, depth: 491 },
+    { id: 'urban_берлин_3', name: 'Берлин-У3 (нефть)', lat: 52.4876, lon: 13.5365, type: 'oil', bonus: 2.7, icon: '🛢️', region: 'Берлин (город)', reserve: 260.4, area: 22.3, depth: 445 },
+    { id: 'urban_берлин_4', name: 'Берлин-У4 (нефть)', lat: 52.5342, lon: 13.4662, type: 'oil', bonus: 2.1, icon: '🛢️', region: 'Берлин (город)', reserve: 327.3, area: 697.5, depth: 4375 },
+    { id: 'urban_мадрид_1', name: 'Мадрид-У1 (газ)', lat: 40.4355, lon: -3.7248, type: 'gas', bonus: 1.6, icon: '⛽', region: 'Мадрид (город)', reserve: 401.3, area: 463.2, depth: 1550 },
+    { id: 'urban_мадрид_2', name: 'Мадрид-У2 (нефть)', lat: 40.4591, lon: -3.6772, type: 'oil', bonus: 2.1, icon: '🛢️', region: 'Мадрид (город)', reserve: 569.4, area: 46.8, depth: 908 },
+    { id: 'urban_мадрид_3', name: 'Мадрид-У3 (нефть)', lat: 40.4122, lon: -3.7477, type: 'oil', bonus: 2.9, icon: '🛢️', region: 'Мадрид (город)', reserve: 292.8, area: 199.9, depth: 4128 },
+    { id: 'urban_мадрид_4', name: 'Мадрид-У4 (нефть)', lat: 40.4279, lon: -3.7473, type: 'oil', bonus: 2.7, icon: '🛢️', region: 'Мадрид (город)', reserve: 66.7, area: 138.6, depth: 4270 },
+    { id: 'urban_рим_1', name: 'Рим-У1 (газ)', lat: 41.966, lon: 12.5052, type: 'gas', bonus: 3.4, icon: '⛽', region: 'Рим (город)', reserve: 449.7, area: 267.2, depth: 4104 },
+    { id: 'urban_рим_2', name: 'Рим-У2 (нефть)', lat: 41.9254, lon: 12.4694, type: 'oil', bonus: 1.6, icon: '🛢️', region: 'Рим (город)', reserve: 581.0, area: 447.8, depth: 405 },
+    { id: 'urban_рим_3', name: 'Рим-У3 (нефть)', lat: 41.9098, lon: 12.4784, type: 'oil', bonus: 3.0, icon: '🛢️', region: 'Рим (город)', reserve: 408.3, area: 343.7, depth: 4188 },
+    { id: 'urban_рим_4', name: 'Рим-У4 (нефть)', lat: 41.8777, lon: 12.4889, type: 'oil', bonus: 2.0, icon: '🛢️', region: 'Рим (город)', reserve: 460.9, area: 97.8, depth: 2932 },
+    { id: 'urban_варшава_1', name: 'Варшава-У1 (нефть)', lat: 52.2324, lon: 20.9497, type: 'oil', bonus: 3.4, icon: '🛢️', region: 'Варшава (город)', reserve: 295.4, area: 330.3, depth: 1734 },
+    { id: 'urban_варшава_2', name: 'Варшава-У2 (нефть)', lat: 52.2314, lon: 21.0269, type: 'oil', bonus: 1.5, icon: '🛢️', region: 'Варшава (город)', reserve: 225.6, area: 644.8, depth: 2286 },
+    { id: 'urban_варшава_3', name: 'Варшава-У3 (нефть)', lat: 52.2169, lon: 20.9595, type: 'oil', bonus: 2.3, icon: '🛢️', region: 'Варшава (город)', reserve: 542.5, area: 438.4, depth: 4038 },
+    { id: 'urban_вена_1', name: 'Вена-У1 (нефть)', lat: 48.2213, lon: 16.4574, type: 'oil', bonus: 3.4, icon: '🛢️', region: 'Вена (город)', reserve: 118.2, area: 610.9, depth: 2406 },
+    { id: 'urban_вена_2', name: 'Вена-У2 (нефть)', lat: 48.1511, lon: 16.3768, type: 'oil', bonus: 3.4, icon: '🛢️', region: 'Вена (город)', reserve: 227.3, area: 671.1, depth: 2309 },
+    { id: 'urban_вена_3', name: 'Вена-У3 (нефть)', lat: 48.2104, lon: 16.408, type: 'oil', bonus: 1.9, icon: '🛢️', region: 'Вена (город)', reserve: 159.6, area: 275.3, depth: 254 },
+    { id: 'urban_амстердам_1', name: 'Амстердам-У1 (нефть)', lat: 52.3508, lon: 4.8288, type: 'oil', bonus: 3.2, icon: '🛢️', region: 'Амстердам (город)', reserve: 120.0, area: 646.2, depth: 465 },
+    { id: 'urban_амстердам_2', name: 'Амстердам-У2 (газ)', lat: 52.3602, lon: 4.9076, type: 'gas', bonus: 2.9, icon: '⛽', region: 'Амстердам (город)', reserve: 389.1, area: 172.9, depth: 3442 },
+    { id: 'urban_амстердам_3', name: 'Амстердам-У3 (нефть)', lat: 52.4038, lon: 4.9602, type: 'oil', bonus: 3.2, icon: '🛢️', region: 'Амстердам (город)', reserve: 552.3, area: 178.5, depth: 4010 },
+    { id: 'urban_брюссель_1', name: 'Брюссель-У1 (газ)', lat: 50.8348, lon: 4.3876, type: 'gas', bonus: 2.3, icon: '⛽', region: 'Брюссель (город)', reserve: 85.5, area: 621.3, depth: 1159 },
+    { id: 'urban_брюссель_2', name: 'Брюссель-У2 (нефть)', lat: 50.8498, lon: 4.3414, type: 'oil', bonus: 2.3, icon: '🛢️', region: 'Брюссель (город)', reserve: 275.1, area: 499.7, depth: 2166 },
+    { id: 'urban_брюссель_3', name: 'Брюссель-У3 (нефть)', lat: 50.8259, lon: 4.3341, type: 'oil', bonus: 3.1, icon: '🛢️', region: 'Брюссель (город)', reserve: 428.7, area: 484.7, depth: 4476 },
+    { id: 'urban_прага_1', name: 'Прага-У1 (нефть)', lat: 50.1151, lon: 14.4472, type: 'oil', bonus: 2.3, icon: '🛢️', region: 'Прага (город)', reserve: 244.5, area: 24.8, depth: 1912 },
+    { id: 'urban_прага_2', name: 'Прага-У2 (нефть)', lat: 50.0792, lon: 14.4621, type: 'oil', bonus: 1.7, icon: '🛢️', region: 'Прага (город)', reserve: 334.2, area: 421.5, depth: 3133 },
+    { id: 'urban_прага_3', name: 'Прага-У3 (газ)', lat: 50.0571, lon: 14.4005, type: 'gas', bonus: 3.0, icon: '⛽', region: 'Прага (город)', reserve: 100.4, area: 765.6, depth: 3911 },
+    { id: 'urban_будапест_1', name: 'Будапест-У1 (газ)', lat: 47.4517, lon: 19.0169, type: 'gas', bonus: 1.6, icon: '⛽', region: 'Будапест (город)', reserve: 10.6, area: 622.6, depth: 2396 },
+    { id: 'urban_будапест_2', name: 'Будапест-У2 (газ)', lat: 47.5061, lon: 19.0249, type: 'gas', bonus: 2.0, icon: '⛽', region: 'Будапест (город)', reserve: 541.4, area: 659.7, depth: 3553 },
+    { id: 'urban_будапест_3', name: 'Будапест-У3 (нефть)', lat: 47.4775, lon: 19.0629, type: 'oil', bonus: 2.2, icon: '🛢️', region: 'Будапест (город)', reserve: 425.2, area: 544.5, depth: 1184 },
+    { id: 'urban_бухарест_1', name: 'Бухарест-У1 (газ)', lat: 44.4357, lon: 26.104, type: 'gas', bonus: 3.1, icon: '⛽', region: 'Бухарест (город)', reserve: 595.6, area: 657.1, depth: 972 },
+    { id: 'urban_бухарест_2', name: 'Бухарест-У2 (нефть)', lat: 44.4368, lon: 26.0675, type: 'oil', bonus: 2.1, icon: '🛢️', region: 'Бухарест (город)', reserve: 552.1, area: 230.6, depth: 2795 },
+    { id: 'urban_бухарест_3', name: 'Бухарест-У3 (нефть)', lat: 44.4129, lon: 26.1227, type: 'oil', bonus: 2.1, icon: '🛢️', region: 'Бухарест (город)', reserve: 396.4, area: 289.8, depth: 1861 },
+    { id: 'urban_стокгольм_1', name: 'Стокгольм-У1 (нефть)', lat: 59.3131, lon: 18.1424, type: 'oil', bonus: 2.5, icon: '🛢️', region: 'Стокгольм (город)', reserve: 290.8, area: 554.3, depth: 3010 },
+    { id: 'urban_стокгольм_2', name: 'Стокгольм-У2 (газ)', lat: 59.2863, lon: 18.1442, type: 'gas', bonus: 1.6, icon: '⛽', region: 'Стокгольм (город)', reserve: 448.0, area: 610.3, depth: 3291 },
+    { id: 'urban_стокгольм_3', name: 'Стокгольм-У3 (газ)', lat: 59.3121, lon: 18.0886, type: 'gas', bonus: 3.2, icon: '⛽', region: 'Стокгольм (город)', reserve: 426.6, area: 466.7, depth: 307 },
+    { id: 'urban_осло_1', name: 'Осло-У1 (нефть)', lat: 59.9461, lon: 10.6731, type: 'oil', bonus: 2.4, icon: '🛢️', region: 'Осло (город)', reserve: 399.8, area: 751.9, depth: 3263 },
+    { id: 'urban_осло_2', name: 'Осло-У2 (нефть)', lat: 59.8993, lon: 10.723, type: 'oil', bonus: 3.5, icon: '🛢️', region: 'Осло (город)', reserve: 323.5, area: 697.8, depth: 3334 },
+    { id: 'urban_осло_3', name: 'Осло-У3 (нефть)', lat: 59.9128, lon: 10.7127, type: 'oil', bonus: 2.0, icon: '🛢️', region: 'Осло (город)', reserve: 228.2, area: 547.0, depth: 4416 },
+    { id: 'urban_хельсинки_1', name: 'Хельсинки-У1 (газ)', lat: 60.2048, lon: 24.8925, type: 'gas', bonus: 2.7, icon: '⛽', region: 'Хельсинки (город)', reserve: 258.2, area: 549.4, depth: 3667 },
+    { id: 'urban_хельсинки_2', name: 'Хельсинки-У2 (нефть)', lat: 60.1725, lon: 24.926, type: 'oil', bonus: 3.4, icon: '🛢️', region: 'Хельсинки (город)', reserve: 64.9, area: 381.3, depth: 1857 },
+    { id: 'urban_хельсинки_3', name: 'Хельсинки-У3 (нефть)', lat: 60.1863, lon: 24.9181, type: 'oil', bonus: 2.6, icon: '🛢️', region: 'Хельсинки (город)', reserve: 114.9, area: 777.3, depth: 3227 },
+    { id: 'urban_копенгаген_1', name: 'Копенгаген-У1 (нефть)', lat: 55.7148, lon: 12.5162, type: 'oil', bonus: 1.8, icon: '🛢️', region: 'Копенгаген (город)', reserve: 88.6, area: 307.3, depth: 3502 },
+    { id: 'urban_копенгаген_2', name: 'Копенгаген-У2 (газ)', lat: 55.7165, lon: 12.598, type: 'gas', bonus: 1.7, icon: '⛽', region: 'Копенгаген (город)', reserve: 461.0, area: 740.8, depth: 3661 },
+    { id: 'urban_копенгаген_3', name: 'Копенгаген-У3 (нефть)', lat: 55.7076, lon: 12.6175, type: 'oil', bonus: 2.7, icon: '🛢️', region: 'Копенгаген (город)', reserve: 514.4, area: 107.9, depth: 3487 },
+    { id: 'urban_лиссабон_1', name: 'Лиссабон-У1 (нефть)', lat: 38.7317, lon: -9.1266, type: 'oil', bonus: 2.9, icon: '🛢️', region: 'Лиссабон (город)', reserve: 124.8, area: 619.5, depth: 3386 },
+    { id: 'urban_лиссабон_2', name: 'Лиссабон-У2 (газ)', lat: 38.7234, lon: -9.1282, type: 'gas', bonus: 2.7, icon: '⛽', region: 'Лиссабон (город)', reserve: 417.3, area: 698.7, depth: 4439 },
+    { id: 'urban_лиссабон_3', name: 'Лиссабон-У3 (нефть)', lat: 38.7074, lon: -9.108, type: 'oil', bonus: 2.6, icon: '🛢️', region: 'Лиссабон (город)', reserve: 104.5, area: 222.5, depth: 681 },
+    { id: 'urban_афины_1', name: 'Афины-У1 (нефть)', lat: 38.0058, lon: 23.7668, type: 'oil', bonus: 2.5, icon: '🛢️', region: 'Афины (город)', reserve: 579.5, area: 295.3, depth: 966 },
+    { id: 'urban_афины_2', name: 'Афины-У2 (газ)', lat: 37.9279, lon: 23.7132, type: 'gas', bonus: 2.7, icon: '⛽', region: 'Афины (город)', reserve: 91.6, area: 92.9, depth: 3090 },
+    { id: 'urban_афины_3', name: 'Афины-У3 (нефть)', lat: 37.9723, lon: 23.7051, type: 'oil', bonus: 3.4, icon: '🛢️', region: 'Афины (город)', reserve: 197.8, area: 561.2, depth: 3921 },
+    { id: 'urban_киев_1', name: 'Киев-У1 (нефть)', lat: 50.4499, lon: 30.6286, type: 'oil', bonus: 1.8, icon: '🛢️', region: 'Киев (город)', reserve: 36.5, area: 89.0, depth: 413 },
+    { id: 'urban_киев_2', name: 'Киев-У2 (газ)', lat: 50.4801, lon: 30.5015, type: 'gas', bonus: 2.4, icon: '⛽', region: 'Киев (город)', reserve: 347.5, area: 196.1, depth: 3805 },
+    { id: 'urban_киев_3', name: 'Киев-У3 (газ)', lat: 50.4484, lon: 30.4805, type: 'gas', bonus: 3.3, icon: '⛽', region: 'Киев (город)', reserve: 449.7, area: 125.4, depth: 1711 },
+    { id: 'urban_минск_1', name: 'Минск-У1 (газ)', lat: 53.8925, lon: 27.6212, type: 'gas', bonus: 2.8, icon: '⛽', region: 'Минск (город)', reserve: 344.7, area: 768.5, depth: 3063 },
+    { id: 'urban_минск_2', name: 'Минск-У2 (газ)', lat: 53.9281, lon: 27.5748, type: 'gas', bonus: 2.1, icon: '⛽', region: 'Минск (город)', reserve: 260.2, area: 309.5, depth: 3215 },
+    { id: 'urban_минск_3', name: 'Минск-У3 (газ)', lat: 53.902, lon: 27.5827, type: 'gas', bonus: 2.6, icon: '⛽', region: 'Минск (город)', reserve: 146.8, area: 616.5, depth: 481 },
+    { id: 'urban_баку_1', name: 'Баку-У1 (нефть)', lat: 40.4, lon: 49.8961, type: 'oil', bonus: 3.1, icon: '🛢️', region: 'Баку (город)', reserve: 204.7, area: 300.1, depth: 656 },
+    { id: 'urban_баку_2', name: 'Баку-У2 (нефть)', lat: 40.421, lon: 49.9206, type: 'oil', bonus: 1.6, icon: '🛢️', region: 'Баку (город)', reserve: 333.5, area: 286.7, depth: 646 },
+    { id: 'urban_тбилиси_1', name: 'Тбилиси-У1 (нефть)', lat: 41.6865, lon: 44.8106, type: 'oil', bonus: 2.8, icon: '🛢️', region: 'Тбилиси (город)', reserve: 573.2, area: 795.5, depth: 1593 },
+    { id: 'urban_тбилиси_2', name: 'Тбилиси-У2 (нефть)', lat: 41.7114, lon: 44.8324, type: 'oil', bonus: 3.3, icon: '🛢️', region: 'Тбилиси (город)', reserve: 292.5, area: 521.7, depth: 1418 },
+    { id: 'urban_ереван_1', name: 'Ереван-У1 (нефть)', lat: 40.1573, lon: 44.4961, type: 'oil', bonus: 2.5, icon: '🛢️', region: 'Ереван (город)', reserve: 400.1, area: 729.4, depth: 4158 },
+    { id: 'urban_ереван_2', name: 'Ереван-У2 (нефть)', lat: 40.2, lon: 44.5555, type: 'oil', bonus: 3.3, icon: '🛢️', region: 'Ереван (город)', reserve: 555.3, area: 434.4, depth: 3175 },
+    { id: 'urban_токио_1', name: 'Токио-У1 (нефть)', lat: 35.7334, lon: 139.7141, type: 'oil', bonus: 3.5, icon: '🛢️', region: 'Токио (город)', reserve: 270.2, area: 537.5, depth: 4498 },
+    { id: 'urban_токио_2', name: 'Токио-У2 (нефть)', lat: 35.6637, lon: 139.6009, type: 'oil', bonus: 2.7, icon: '🛢️', region: 'Токио (город)', reserve: 543.9, area: 519.6, depth: 4077 },
+    { id: 'urban_токио_3', name: 'Токио-У3 (нефть)', lat: 35.7261, lon: 139.6199, type: 'oil', bonus: 1.8, icon: '🛢️', region: 'Токио (город)', reserve: 348.9, area: 257.2, depth: 388 },
+    { id: 'urban_токио_4', name: 'Токио-У4 (газ)', lat: 35.7352, lon: 139.7537, type: 'gas', bonus: 2.3, icon: '⛽', region: 'Токио (город)', reserve: 360.7, area: 744.8, depth: 4492 },
+    { id: 'urban_пекин_1', name: 'Пекин-У1 (нефть)', lat: 39.854, lon: 116.336, type: 'oil', bonus: 1.9, icon: '🛢️', region: 'Пекин (город)', reserve: 514.9, area: 20.3, depth: 2932 },
+    { id: 'urban_пекин_2', name: 'Пекин-У2 (нефть)', lat: 40.0238, lon: 116.4268, type: 'oil', bonus: 2.3, icon: '🛢️', region: 'Пекин (город)', reserve: 106.9, area: 295.3, depth: 1406 },
+    { id: 'urban_пекин_3', name: 'Пекин-У3 (нефть)', lat: 39.925, lon: 116.3189, type: 'oil', bonus: 1.5, icon: '🛢️', region: 'Пекин (город)', reserve: 587.8, area: 272.5, depth: 4092 },
+    { id: 'urban_пекин_4', name: 'Пекин-У4 (нефть)', lat: 39.8661, lon: 116.5364, type: 'oil', bonus: 3.0, icon: '🛢️', region: 'Пекин (город)', reserve: 310.4, area: 191.6, depth: 3701 },
+    { id: 'urban_шанхай_1', name: 'Шанхай-У1 (нефть)', lat: 31.2106, lon: 121.4873, type: 'oil', bonus: 3.1, icon: '🛢️', region: 'Шанхай (город)', reserve: 417.3, area: 633.0, depth: 4359 },
+    { id: 'urban_шанхай_2', name: 'Шанхай-У2 (нефть)', lat: 31.2395, lon: 121.4518, type: 'oil', bonus: 1.8, icon: '🛢️', region: 'Шанхай (город)', reserve: 597.0, area: 367.0, depth: 844 },
+    { id: 'urban_шанхай_3', name: 'Шанхай-У3 (нефть)', lat: 31.2433, lon: 121.4474, type: 'oil', bonus: 1.9, icon: '🛢️', region: 'Шанхай (город)', reserve: 368.0, area: 224.8, depth: 3053 },
+    { id: 'urban_шанхай_4', name: 'Шанхай-У4 (нефть)', lat: 31.3231, lon: 121.5856, type: 'oil', bonus: 3.4, icon: '🛢️', region: 'Шанхай (город)', reserve: 93.6, area: 754.0, depth: 2826 },
+    { id: 'urban_сеул_1', name: 'Сеул-У1 (нефть)', lat: 37.5506, lon: 127.033, type: 'oil', bonus: 2.4, icon: '🛢️', region: 'Сеул (город)', reserve: 415.1, area: 395.2, depth: 2359 },
+    { id: 'urban_сеул_2', name: 'Сеул-У2 (газ)', lat: 37.5525, lon: 126.9994, type: 'gas', bonus: 3.1, icon: '⛽', region: 'Сеул (город)', reserve: 184.1, area: 408.1, depth: 4308 },
+    { id: 'urban_сеул_3', name: 'Сеул-У3 (нефть)', lat: 37.4689, lon: 126.9154, type: 'oil', bonus: 3.4, icon: '🛢️', region: 'Сеул (город)', reserve: 560.4, area: 16.6, depth: 1215 },
+    { id: 'urban_сеул_4', name: 'Сеул-У4 (газ)', lat: 37.5855, lon: 126.9845, type: 'gas', bonus: 3.0, icon: '⛽', region: 'Сеул (город)', reserve: 462.4, area: 343.3, depth: 2600 },
+    { id: 'urban_мумбаи_1', name: 'Мумбаи-У1 (нефть)', lat: 19.0932, lon: 72.8248, type: 'oil', bonus: 3.3, icon: '🛢️', region: 'Мумбаи (город)', reserve: 208.6, area: 613.2, depth: 2555 },
+    { id: 'urban_мумбаи_2', name: 'Мумбаи-У2 (нефть)', lat: 19.1044, lon: 72.9014, type: 'oil', bonus: 1.8, icon: '🛢️', region: 'Мумбаи (город)', reserve: 378.1, area: 95.9, depth: 3070 },
+    { id: 'urban_мумбаи_3', name: 'Мумбаи-У3 (нефть)', lat: 19.1261, lon: 72.8088, type: 'oil', bonus: 1.9, icon: '🛢️', region: 'Мумбаи (город)', reserve: 249.8, area: 565.3, depth: 2624 },
+    { id: 'urban_мумбаи_4', name: 'Мумбаи-У4 (нефть)', lat: 19.0628, lon: 72.859, type: 'oil', bonus: 3.5, icon: '🛢️', region: 'Мумбаи (город)', reserve: 27.0, area: 243.7, depth: 561 },
+    { id: 'urban_дели_1', name: 'Дели-У1 (нефть)', lat: 28.6724, lon: 77.238, type: 'oil', bonus: 2.9, icon: '🛢️', region: 'Дели (город)', reserve: 54.6, area: 133.6, depth: 932 },
+    { id: 'urban_дели_2', name: 'Дели-У2 (нефть)', lat: 28.5415, lon: 77.1455, type: 'oil', bonus: 2.1, icon: '🛢️', region: 'Дели (город)', reserve: 264.4, area: 211.5, depth: 422 },
+    { id: 'urban_дели_3', name: 'Дели-У3 (нефть)', lat: 28.7093, lon: 77.2569, type: 'oil', bonus: 2.1, icon: '🛢️', region: 'Дели (город)', reserve: 142.4, area: 418.0, depth: 1587 },
+    { id: 'urban_дели_4', name: 'Дели-У4 (нефть)', lat: 28.5984, lon: 77.2029, type: 'oil', bonus: 2.0, icon: '🛢️', region: 'Дели (город)', reserve: 341.2, area: 206.5, depth: 3453 },
+    { id: 'urban_джакарта_1', name: 'Джакарта-У1 (газ)', lat: -6.304, lon: 106.8723, type: 'gas', bonus: 3.3, icon: '⛽', region: 'Джакарта (город)', reserve: 335.5, area: 693.2, depth: 3118 },
+    { id: 'urban_джакарта_2', name: 'Джакарта-У2 (газ)', lat: -6.2275, lon: 106.8316, type: 'gas', bonus: 2.4, icon: '⛽', region: 'Джакарта (город)', reserve: 568.3, area: 454.9, depth: 981 },
+    { id: 'urban_джакарта_3', name: 'Джакарта-У3 (нефть)', lat: -6.1078, lon: 106.8153, type: 'oil', bonus: 2.0, icon: '🛢️', region: 'Джакарта (город)', reserve: 493.9, area: 325.8, depth: 2473 },
+    { id: 'urban_джакарта_4', name: 'Джакарта-У4 (нефть)', lat: -6.1757, lon: 106.7776, type: 'oil', bonus: 1.6, icon: '🛢️', region: 'Джакарта (город)', reserve: 310.0, area: 759.0, depth: 274 },
+    { id: 'urban_бангкок_1', name: 'Бангкок-У1 (нефть)', lat: 13.6755, lon: 100.4993, type: 'oil', bonus: 3.0, icon: '🛢️', region: 'Бангкок (город)', reserve: 28.6, area: 93.6, depth: 1312 },
+    { id: 'urban_бангкок_2', name: 'Бангкок-У2 (нефть)', lat: 13.7672, lon: 100.4388, type: 'oil', bonus: 1.8, icon: '🛢️', region: 'Бангкок (город)', reserve: 132.9, area: 28.7, depth: 689 },
+    { id: 'urban_бангкок_3', name: 'Бангкок-У3 (нефть)', lat: 13.7864, lon: 100.4915, type: 'oil', bonus: 2.4, icon: '🛢️', region: 'Бангкок (город)', reserve: 366.7, area: 31.1, depth: 1219 },
+    { id: 'urban_бангкок_4', name: 'Бангкок-У4 (нефть)', lat: 13.788, lon: 100.5511, type: 'oil', bonus: 2.2, icon: '🛢️', region: 'Бангкок (город)', reserve: 209.3, area: 68.3, depth: 4353 },
+    { id: 'urban_сингапур_1', name: 'Сингапур-У1 (газ)', lat: 1.319, lon: 103.7835, type: 'gas', bonus: 1.5, icon: '⛽', region: 'Сингапур (город)', reserve: 568.0, area: 522.8, depth: 1673 },
+    { id: 'urban_сингапур_2', name: 'Сингапур-У2 (нефть)', lat: 1.3674, lon: 103.7481, type: 'oil', bonus: 2.4, icon: '🛢️', region: 'Сингапур (город)', reserve: 498.9, area: 664.5, depth: 999 },
+    { id: 'urban_сингапур_3', name: 'Сингапур-У3 (нефть)', lat: 1.3706, lon: 103.8916, type: 'oil', bonus: 1.6, icon: '🛢️', region: 'Сингапур (город)', reserve: 558.7, area: 769.5, depth: 2138 },
+    { id: 'urban_сингапур_4', name: 'Сингапур-У4 (газ)', lat: 1.3827, lon: 103.7758, type: 'gas', bonus: 2.0, icon: '⛽', region: 'Сингапур (город)', reserve: 176.9, area: 676.8, depth: 3927 },
+    { id: 'urban_куалалумпур_1', name: 'Куала-Лумпур-У1 (нефть)', lat: 3.153, lon: 101.665, type: 'oil', bonus: 3.0, icon: '🛢️', region: 'Куала-Лумпур (город)', reserve: 15.4, area: 787.2, depth: 3934 },
+    { id: 'urban_куалалумпур_2', name: 'Куала-Лумпур-У2 (нефть)', lat: 3.1308, lon: 101.6985, type: 'oil', bonus: 2.4, icon: '🛢️', region: 'Куала-Лумпур (город)', reserve: 224.9, area: 455.3, depth: 914 },
+    { id: 'urban_куалалумпур_3', name: 'Куала-Лумпур-У3 (газ)', lat: 3.1908, lon: 101.6373, type: 'gas', bonus: 2.9, icon: '⛽', region: 'Куала-Лумпур (город)', reserve: 173.3, area: 258.2, depth: 1565 },
+    { id: 'urban_манила_1', name: 'Манила-У1 (нефть)', lat: 14.5446, lon: 121.0124, type: 'oil', bonus: 2.7, icon: '🛢️', region: 'Манила (город)', reserve: 273.0, area: 495.3, depth: 3237 },
+    { id: 'urban_манила_2', name: 'Манила-У2 (газ)', lat: 14.5892, lon: 120.9884, type: 'gas', bonus: 2.0, icon: '⛽', region: 'Манила (город)', reserve: 28.9, area: 448.6, depth: 3315 },
+    { id: 'urban_манила_3', name: 'Манила-У3 (газ)', lat: 14.5886, lon: 120.9884, type: 'gas', bonus: 1.7, icon: '⛽', region: 'Манила (город)', reserve: 160.7, area: 607.7, depth: 2362 },
+    { id: 'urban_манила_4', name: 'Манила-У4 (нефть)', lat: 14.571, lon: 121.0028, type: 'oil', bonus: 3.5, icon: '🛢️', region: 'Манила (город)', reserve: 81.2, area: 442.0, depth: 1219 },
+    { id: 'urban_карачи_1', name: 'Карачи-У1 (нефть)', lat: 24.8304, lon: 67.0297, type: 'oil', bonus: 2.2, icon: '🛢️', region: 'Карачи (город)', reserve: 527.3, area: 206.4, depth: 3493 },
+    { id: 'urban_карачи_2', name: 'Карачи-У2 (газ)', lat: 24.8528, lon: 66.979, type: 'gas', bonus: 2.1, icon: '⛽', region: 'Карачи (город)', reserve: 236.6, area: 483.2, depth: 2893 },
+    { id: 'urban_карачи_3', name: 'Карачи-У3 (газ)', lat: 24.7999, lon: 67.0681, type: 'gas', bonus: 2.6, icon: '⛽', region: 'Карачи (город)', reserve: 292.3, area: 633.5, depth: 1421 },
+    { id: 'urban_карачи_4', name: 'Карачи-У4 (газ)', lat: 24.8544, lon: 66.9848, type: 'gas', bonus: 2.9, icon: '⛽', region: 'Карачи (город)', reserve: 222.5, area: 223.9, depth: 2608 },
+    { id: 'urban_тегеран_1', name: 'Тегеран-У1 (нефть)', lat: 35.7109, lon: 51.5132, type: 'oil', bonus: 1.8, icon: '🛢️', region: 'Тегеран (город)', reserve: 497.1, area: 500.3, depth: 3860 },
+    { id: 'urban_тегеран_2', name: 'Тегеран-У2 (газ)', lat: 35.5955, lon: 51.3489, type: 'gas', bonus: 2.4, icon: '⛽', region: 'Тегеран (город)', reserve: 466.5, area: 74.6, depth: 2849 },
+    { id: 'urban_тегеран_3', name: 'Тегеран-У3 (газ)', lat: 35.7052, lon: 51.4141, type: 'gas', bonus: 3.1, icon: '⛽', region: 'Тегеран (город)', reserve: 594.7, area: 684.2, depth: 294 },
+    { id: 'urban_тегеран_4', name: 'Тегеран-У4 (нефть)', lat: 35.6502, lon: 51.3302, type: 'oil', bonus: 2.5, icon: '🛢️', region: 'Тегеран (город)', reserve: 42.6, area: 554.5, depth: 2670 },
+    { id: 'urban_багдад_1', name: 'Багдад-У1 (нефть)', lat: 33.3977, lon: 44.3492, type: 'oil', bonus: 1.8, icon: '🛢️', region: 'Багдад (город)', reserve: 440.2, area: 153.9, depth: 3565 },
+    { id: 'urban_багдад_2', name: 'Багдад-У2 (нефть)', lat: 33.2878, lon: 44.3692, type: 'oil', bonus: 2.1, icon: '🛢️', region: 'Багдад (город)', reserve: 405.0, area: 270.3, depth: 2985 },
+    { id: 'urban_багдад_3', name: 'Багдад-У3 (нефть)', lat: 33.3138, lon: 44.3047, type: 'oil', bonus: 2.5, icon: '🛢️', region: 'Багдад (город)', reserve: 163.6, area: 309.4, depth: 3773 },
+    { id: 'urban_багдад_4', name: 'Багдад-У4 (газ)', lat: 33.2842, lon: 44.4348, type: 'gas', bonus: 2.0, icon: '⛽', region: 'Багдад (город)', reserve: 319.2, area: 290.5, depth: 2336 },
+    { id: 'urban_эррияд_1', name: 'Эр-Рияд-У1 (нефть)', lat: 24.6927, lon: 46.7244, type: 'oil', bonus: 1.5, icon: '🛢️', region: 'Эр-Рияд (город)', reserve: 542.7, area: 259.7, depth: 2477 },
+    { id: 'urban_эррияд_2', name: 'Эр-Рияд-У2 (нефть)', lat: 24.7261, lon: 46.6795, type: 'oil', bonus: 1.9, icon: '🛢️', region: 'Эр-Рияд (город)', reserve: 46.2, area: 496.8, depth: 2347 },
+    { id: 'urban_эррияд_3', name: 'Эр-Рияд-У3 (нефть)', lat: 24.6896, lon: 46.5789, type: 'oil', bonus: 3.1, icon: '🛢️', region: 'Эр-Рияд (город)', reserve: 268.3, area: 515.2, depth: 1484 },
+    { id: 'urban_эррияд_4', name: 'Эр-Рияд-У4 (нефть)', lat: 24.7288, lon: 46.7033, type: 'oil', bonus: 2.8, icon: '🛢️', region: 'Эр-Рияд (город)', reserve: 531.0, area: 734.0, depth: 4441 },
+    { id: 'urban_дубай_1', name: 'Дубай-У1 (газ)', lat: 25.2259, lon: 55.2706, type: 'gas', bonus: 3.2, icon: '⛽', region: 'Дубай (город)', reserve: 256.5, area: 316.6, depth: 1289 },
+    { id: 'urban_дубай_2', name: 'Дубай-У2 (газ)', lat: 25.1949, lon: 55.2531, type: 'gas', bonus: 1.7, icon: '⛽', region: 'Дубай (город)', reserve: 553.5, area: 308.3, depth: 3138 },
+    { id: 'urban_дубай_3', name: 'Дубай-У3 (нефть)', lat: 25.1822, lon: 55.253, type: 'oil', bonus: 2.9, icon: '🛢️', region: 'Дубай (город)', reserve: 588.5, area: 257.9, depth: 959 },
+    { id: 'urban_абудаби_1', name: 'Абу-Даби-У1 (нефть)', lat: 24.4662, lon: 54.3923, type: 'oil', bonus: 2.4, icon: '🛢️', region: 'Абу-Даби (город)', reserve: 245.4, area: 142.4, depth: 581 },
+    { id: 'urban_абудаби_2', name: 'Абу-Даби-У2 (нефть)', lat: 24.4577, lon: 54.3916, type: 'oil', bonus: 2.3, icon: '🛢️', region: 'Абу-Даби (город)', reserve: 527.2, area: 780.5, depth: 624 },
+    { id: 'urban_абудаби_3', name: 'Абу-Даби-У3 (газ)', lat: 24.4265, lon: 54.4226, type: 'gas', bonus: 2.6, icon: '⛽', region: 'Абу-Даби (город)', reserve: 480.9, area: 343.4, depth: 2751 },
+    { id: 'urban_доха_1', name: 'Доха-У1 (газ)', lat: 25.3024, lon: 51.5246, type: 'gas', bonus: 2.3, icon: '⛽', region: 'Доха (город)', reserve: 226.4, area: 515.9, depth: 623 },
+    { id: 'urban_доха_2', name: 'Доха-У2 (нефть)', lat: 25.2519, lon: 51.497, type: 'oil', bonus: 1.9, icon: '🛢️', region: 'Доха (город)', reserve: 581.3, area: 31.7, depth: 1359 },
+    { id: 'urban_доха_3', name: 'Доха-У3 (нефть)', lat: 25.2827, lon: 51.5621, type: 'oil', bonus: 2.2, icon: '🛢️', region: 'Доха (город)', reserve: 373.1, area: 705.9, depth: 2781 },
+    { id: 'urban_кувейт_1', name: 'Кувейт-У1 (нефть)', lat: 29.3556, lon: 47.926, type: 'oil', bonus: 2.9, icon: '🛢️', region: 'Кувейт (город)', reserve: 46.5, area: 58.4, depth: 2346 },
+    { id: 'urban_кувейт_2', name: 'Кувейт-У2 (нефть)', lat: 29.3838, lon: 48.022, type: 'oil', bonus: 2.8, icon: '🛢️', region: 'Кувейт (город)', reserve: 120.8, area: 239.5, depth: 2348 },
+    { id: 'urban_кувейт_3', name: 'Кувейт-У3 (газ)', lat: 29.3513, lon: 47.9983, type: 'gas', bonus: 2.8, icon: '⛽', region: 'Кувейт (город)', reserve: 111.2, area: 687.6, depth: 1174 },
+    { id: 'urban_стамбул_1', name: 'Стамбул-У1 (нефть)', lat: 41.0538, lon: 28.9217, type: 'oil', bonus: 3.3, icon: '🛢️', region: 'Стамбул (город)', reserve: 443.1, area: 616.1, depth: 2627 },
+    { id: 'urban_стамбул_2', name: 'Стамбул-У2 (газ)', lat: 41.0077, lon: 28.8371, type: 'gas', bonus: 2.3, icon: '⛽', region: 'Стамбул (город)', reserve: 80.4, area: 237.6, depth: 1096 },
+    { id: 'urban_стамбул_3', name: 'Стамбул-У3 (нефть)', lat: 41.0932, lon: 28.9176, type: 'oil', bonus: 2.2, icon: '🛢️', region: 'Стамбул (город)', reserve: 81.4, area: 764.2, depth: 984 },
+    { id: 'urban_стамбул_4', name: 'Стамбул-У4 (нефть)', lat: 41.0106, lon: 29.0037, type: 'oil', bonus: 2.6, icon: '🛢️', region: 'Стамбул (город)', reserve: 296.8, area: 577.4, depth: 2614 },
+    { id: 'urban_анкара_1', name: 'Анкара-У1 (нефть)', lat: 39.9234, lon: 32.8463, type: 'oil', bonus: 2.5, icon: '🛢️', region: 'Анкара (город)', reserve: 363.8, area: 669.0, depth: 484 },
+    { id: 'urban_анкара_2', name: 'Анкара-У2 (нефть)', lat: 39.9519, lon: 32.8937, type: 'oil', bonus: 1.5, icon: '🛢️', region: 'Анкара (город)', reserve: 72.9, area: 86.1, depth: 1531 },
+    { id: 'urban_анкара_3', name: 'Анкара-У3 (нефть)', lat: 39.9426, lon: 32.8658, type: 'oil', bonus: 3.3, icon: '🛢️', region: 'Анкара (город)', reserve: 353.4, area: 346.2, depth: 1856 },
+    { id: 'urban_каир_1', name: 'Каир-У1 (газ)', lat: 30.0728, lon: 31.231, type: 'gas', bonus: 3.1, icon: '⛽', region: 'Каир (город)', reserve: 400.1, area: 787.7, depth: 1518 },
+    { id: 'urban_каир_2', name: 'Каир-У2 (нефть)', lat: 30.0578, lon: 31.2271, type: 'oil', bonus: 2.5, icon: '🛢️', region: 'Каир (город)', reserve: 410.6, area: 767.1, depth: 3015 },
+    { id: 'urban_каир_3', name: 'Каир-У3 (нефть)', lat: 30.088, lon: 31.1981, type: 'oil', bonus: 2.5, icon: '🛢️', region: 'Каир (город)', reserve: 45.0, area: 154.9, depth: 4371 },
+    { id: 'urban_каир_4', name: 'Каир-У4 (газ)', lat: 29.9757, lon: 31.2694, type: 'gas', bonus: 3.3, icon: '⛽', region: 'Каир (город)', reserve: 48.6, area: 683.9, depth: 1911 },
+    { id: 'urban_лагос_1', name: 'Лагос-У1 (нефть)', lat: 6.5472, lon: 3.4065, type: 'oil', bonus: 2.6, icon: '🛢️', region: 'Лагос (город)', reserve: 229.0, area: 472.1, depth: 247 },
+    { id: 'urban_лагос_2', name: 'Лагос-У2 (нефть)', lat: 6.6057, lon: 3.3742, type: 'oil', bonus: 2.9, icon: '🛢️', region: 'Лагос (город)', reserve: 247.9, area: 74.2, depth: 1374 },
+    { id: 'urban_лагос_3', name: 'Лагос-У3 (газ)', lat: 6.4687, lon: 3.3362, type: 'gas', bonus: 1.8, icon: '⛽', region: 'Лагос (город)', reserve: 59.6, area: 468.0, depth: 2348 },
+    { id: 'urban_лагос_4', name: 'Лагос-У4 (газ)', lat: 6.4619, lon: 3.426, type: 'gas', bonus: 2.9, icon: '⛽', region: 'Лагос (город)', reserve: 292.8, area: 245.0, depth: 1751 },
+    { id: 'urban_йоханнесбург_1', name: 'Йоханнесбург-У1 (нефть)', lat: -26.226, lon: 28.0205, type: 'oil', bonus: 3.5, icon: '🛢️', region: 'Йоханнесбург (город)', reserve: 54.0, area: 540.0, depth: 4205 },
+    { id: 'urban_йоханнесбург_2', name: 'Йоханнесбург-У2 (нефть)', lat: -26.2321, lon: 28.1036, type: 'oil', bonus: 1.5, icon: '🛢️', region: 'Йоханнесбург (город)', reserve: 29.6, area: 179.0, depth: 530 },
+    { id: 'urban_йоханнесбург_3', name: 'Йоханнесбург-У3 (нефть)', lat: -26.2293, lon: 27.9693, type: 'oil', bonus: 3.2, icon: '🛢️', region: 'Йоханнесбург (город)', reserve: 170.0, area: 476.4, depth: 2029 },
+    { id: 'urban_йоханнесбург_4', name: 'Йоханнесбург-У4 (нефть)', lat: -26.2489, lon: 28.0404, type: 'oil', bonus: 1.6, icon: '🛢️', region: 'Йоханнесбург (город)', reserve: 191.1, area: 454.3, depth: 1968 },
+    { id: 'urban_найроби_1', name: 'Найроби-У1 (нефть)', lat: -1.2719, lon: 36.8209, type: 'oil', bonus: 2.0, icon: '🛢️', region: 'Найроби (город)', reserve: 234.2, area: 795.2, depth: 1029 },
+    { id: 'urban_найроби_2', name: 'Найроби-У2 (нефть)', lat: -1.3406, lon: 36.8079, type: 'oil', bonus: 2.8, icon: '🛢️', region: 'Найроби (город)', reserve: 424.6, area: 774.6, depth: 3124 },
+    { id: 'urban_найроби_3', name: 'Найроби-У3 (газ)', lat: -1.2807, lon: 36.8249, type: 'gas', bonus: 2.0, icon: '⛽', region: 'Найроби (город)', reserve: 445.7, area: 491.1, depth: 1503 },
+    { id: 'urban_ньюйорк_1', name: 'Нью-Йорк-У1 (нефть)', lat: 40.7542, lon: -73.9709, type: 'oil', bonus: 2.7, icon: '🛢️', region: 'Нью-Йорк (город)', reserve: 338.9, area: 161.5, depth: 2260 },
+    { id: 'urban_ньюйорк_2', name: 'Нью-Йорк-У2 (нефть)', lat: 40.6927, lon: -73.9318, type: 'oil', bonus: 3.0, icon: '🛢️', region: 'Нью-Йорк (город)', reserve: 243.4, area: 582.0, depth: 2028 },
+    { id: 'urban_ньюйорк_3', name: 'Нью-Йорк-У3 (нефть)', lat: 40.8073, lon: -74.1015, type: 'oil', bonus: 3.0, icon: '🛢️', region: 'Нью-Йорк (город)', reserve: 350.8, area: 587.3, depth: 2599 },
+    { id: 'urban_ньюйорк_4', name: 'Нью-Йорк-У4 (нефть)', lat: 40.6735, lon: -73.9212, type: 'oil', bonus: 1.8, icon: '🛢️', region: 'Нью-Йорк (город)', reserve: 270.6, area: 412.6, depth: 3232 },
+    { id: 'urban_лосанджелес_1', name: 'Лос-Анджелес-У1 (нефть)', lat: 34.0714, lon: -118.2453, type: 'oil', bonus: 2.9, icon: '🛢️', region: 'Лос-Анджелес (город)', reserve: 116.5, area: 85.1, depth: 2190 },
+    { id: 'urban_лосанджелес_2', name: 'Лос-Анджелес-У2 (газ)', lat: 34.1142, lon: -118.2565, type: 'gas', bonus: 2.6, icon: '⛽', region: 'Лос-Анджелес (город)', reserve: 326.3, area: 393.3, depth: 3021 },
+    { id: 'urban_лосанджелес_3', name: 'Лос-Анджелес-У3 (нефть)', lat: 34.1307, lon: -118.2817, type: 'oil', bonus: 2.6, icon: '🛢️', region: 'Лос-Анджелес (город)', reserve: 283.4, area: 606.3, depth: 1351 },
+    { id: 'urban_лосанджелес_4', name: 'Лос-Анджелес-У4 (газ)', lat: 34.0639, lon: -118.229, type: 'gas', bonus: 2.3, icon: '⛽', region: 'Лос-Анджелес (город)', reserve: 350.9, area: 517.3, depth: 2435 },
+    { id: 'urban_чикаго_1', name: 'Чикаго-У1 (газ)', lat: 41.8674, lon: -87.5675, type: 'gas', bonus: 3.4, icon: '⛽', region: 'Чикаго (город)', reserve: 550.7, area: 377.3, depth: 2170 },
+    { id: 'urban_чикаго_2', name: 'Чикаго-У2 (газ)', lat: 41.9326, lon: -87.6515, type: 'gas', bonus: 2.4, icon: '⛽', region: 'Чикаго (город)', reserve: 93.0, area: 342.6, depth: 1916 },
+    { id: 'urban_чикаго_3', name: 'Чикаго-У3 (нефть)', lat: 41.8194, lon: -87.6004, type: 'oil', bonus: 1.9, icon: '🛢️', region: 'Чикаго (город)', reserve: 99.4, area: 654.9, depth: 500 },
+    { id: 'urban_чикаго_4', name: 'Чикаго-У4 (нефть)', lat: 41.836, lon: -87.5478, type: 'oil', bonus: 2.1, icon: '🛢️', region: 'Чикаго (город)', reserve: 168.6, area: 168.9, depth: 3062 },
+    { id: 'urban_хьюстон_1', name: 'Хьюстон-У1 (нефть)', lat: 29.7028, lon: -95.4708, type: 'oil', bonus: 2.9, icon: '🛢️', region: 'Хьюстон (город)', reserve: 62.9, area: 111.5, depth: 953 },
+    { id: 'urban_хьюстон_2', name: 'Хьюстон-У2 (нефть)', lat: 29.765, lon: -95.3896, type: 'oil', bonus: 2.7, icon: '🛢️', region: 'Хьюстон (город)', reserve: 142.8, area: 83.1, depth: 4014 },
+    { id: 'urban_хьюстон_3', name: 'Хьюстон-У3 (нефть)', lat: 29.7499, lon: -95.3958, type: 'oil', bonus: 3.4, icon: '🛢️', region: 'Хьюстон (город)', reserve: 330.9, area: 729.6, depth: 1081 },
+    { id: 'urban_хьюстон_4', name: 'Хьюстон-У4 (нефть)', lat: 29.7719, lon: -95.2784, type: 'oil', bonus: 2.8, icon: '🛢️', region: 'Хьюстон (город)', reserve: 549.8, area: 212.4, depth: 2164 },
+    { id: 'urban_даллас_1', name: 'Даллас-У1 (нефть)', lat: 32.7874, lon: -96.8008, type: 'oil', bonus: 2.4, icon: '🛢️', region: 'Даллас (город)', reserve: 154.8, area: 349.5, depth: 1870 },
+    { id: 'urban_даллас_2', name: 'Даллас-У2 (газ)', lat: 32.7438, lon: -96.8003, type: 'gas', bonus: 2.4, icon: '⛽', region: 'Даллас (город)', reserve: 332.1, area: 292.6, depth: 2546 },
+    { id: 'urban_даллас_3', name: 'Даллас-У3 (газ)', lat: 32.7458, lon: -96.8951, type: 'gas', bonus: 3.4, icon: '⛽', region: 'Даллас (город)', reserve: 496.6, area: 267.9, depth: 2281 },
+    { id: 'urban_даллас_4', name: 'Даллас-У4 (газ)', lat: 32.7734, lon: -96.8854, type: 'gas', bonus: 2.5, icon: '⛽', region: 'Даллас (город)', reserve: 149.3, area: 575.7, depth: 1541 },
+    { id: 'urban_майами_1', name: 'Майами-У1 (нефть)', lat: 25.7498, lon: -80.1351, type: 'oil', bonus: 2.9, icon: '🛢️', region: 'Майами (город)', reserve: 136.9, area: 513.4, depth: 2544 },
+    { id: 'urban_майами_2', name: 'Майами-У2 (нефть)', lat: 25.749, lon: -80.178, type: 'oil', bonus: 1.5, icon: '🛢️', region: 'Майами (город)', reserve: 527.9, area: 441.7, depth: 1334 },
+    { id: 'urban_майами_3', name: 'Майами-У3 (нефть)', lat: 25.7259, lon: -80.1941, type: 'oil', bonus: 1.8, icon: '🛢️', region: 'Майами (город)', reserve: 11.8, area: 329.9, depth: 913 },
+    { id: 'urban_мехико_1', name: 'Мехико-У1 (нефть)', lat: 19.4408, lon: -99.1614, type: 'oil', bonus: 3.2, icon: '🛢️', region: 'Мехико (город)', reserve: 345.9, area: 351.1, depth: 3625 },
+    { id: 'urban_мехико_2', name: 'Мехико-У2 (нефть)', lat: 19.4434, lon: -99.0653, type: 'oil', bonus: 2.6, icon: '🛢️', region: 'Мехико (город)', reserve: 261.1, area: 741.2, depth: 1294 },
+    { id: 'urban_мехико_3', name: 'Мехико-У3 (нефть)', lat: 19.499, lon: -99.2399, type: 'oil', bonus: 2.3, icon: '🛢️', region: 'Мехико (город)', reserve: 173.1, area: 154.3, depth: 384 },
+    { id: 'urban_мехико_4', name: 'Мехико-У4 (газ)', lat: 19.44, lon: -99.2739, type: 'gas', bonus: 2.4, icon: '⛽', region: 'Мехико (город)', reserve: 329.8, area: 228.0, depth: 1242 },
+    { id: 'urban_богота_1', name: 'Богота-У1 (нефть)', lat: 4.6581, lon: -74.048, type: 'oil', bonus: 2.2, icon: '🛢️', region: 'Богота (город)', reserve: 68.3, area: 478.1, depth: 2804 },
+    { id: 'urban_богота_2', name: 'Богота-У2 (газ)', lat: 4.6925, lon: -74.1177, type: 'gas', bonus: 3.5, icon: '⛽', region: 'Богота (город)', reserve: 509.8, area: 319.2, depth: 1366 },
+    { id: 'urban_богота_3', name: 'Богота-У3 (газ)', lat: 4.7903, lon: -74.1127, type: 'gas', bonus: 3.2, icon: '⛽', region: 'Богота (город)', reserve: 233.6, area: 467.4, depth: 3116 },
+    { id: 'urban_богота_4', name: 'Богота-У4 (нефть)', lat: 4.625, lon: -74.075, type: 'oil', bonus: 2.3, icon: '🛢️', region: 'Богота (город)', reserve: 250.2, area: 229.3, depth: 4060 },
+    { id: 'urban_лима_1', name: 'Лима-У1 (нефть)', lat: -12.047, lon: -77.1202, type: 'oil', bonus: 3.3, icon: '🛢️', region: 'Лима (город)', reserve: 236.5, area: 631.4, depth: 1964 },
+    { id: 'urban_лима_2', name: 'Лима-У2 (нефть)', lat: -12.0275, lon: -76.9674, type: 'oil', bonus: 3.0, icon: '🛢️', region: 'Лима (город)', reserve: 594.0, area: 495.9, depth: 456 },
+    { id: 'urban_лима_3', name: 'Лима-У3 (нефть)', lat: -11.9859, lon: -76.9855, type: 'oil', bonus: 3.0, icon: '🛢️', region: 'Лима (город)', reserve: 92.5, area: 308.0, depth: 1756 },
+    { id: 'urban_лима_4', name: 'Лима-У4 (нефть)', lat: -12.0756, lon: -77.118, type: 'oil', bonus: 2.1, icon: '🛢️', region: 'Лима (город)', reserve: 118.2, area: 354.8, depth: 1599 },
+    { id: 'urban_буэносайрес_1', name: 'Буэнос-Айрес-У1 (нефть)', lat: -34.6669, lon: -58.2893, type: 'oil', bonus: 1.6, icon: '🛢️', region: 'Буэнос-Айрес (город)', reserve: 266.1, area: 273.6, depth: 2397 },
+    { id: 'urban_буэносайрес_2', name: 'Буэнос-Айрес-У2 (нефть)', lat: -34.6969, lon: -58.3995, type: 'oil', bonus: 3.3, icon: '🛢️', region: 'Буэнос-Айрес (город)', reserve: 540.4, area: 439.3, depth: 1500 },
+    { id: 'urban_буэносайрес_3', name: 'Буэнос-Айрес-У3 (газ)', lat: -34.6042, lon: -58.4037, type: 'gas', bonus: 1.7, icon: '⛽', region: 'Буэнос-Айрес (город)', reserve: 28.1, area: 14.3, depth: 204 },
+    { id: 'urban_буэносайрес_4', name: 'Буэнос-Айрес-У4 (нефть)', lat: -34.614, lon: -58.3506, type: 'oil', bonus: 2.0, icon: '🛢️', region: 'Буэнос-Айрес (город)', reserve: 90.3, area: 197.5, depth: 627 },
+    { id: 'urban_санпаулу_1', name: 'Сан-Паулу-У1 (нефть)', lat: -23.5534, lon: -46.6859, type: 'oil', bonus: 2.7, icon: '🛢️', region: 'Сан-Паулу (город)', reserve: 205.5, area: 413.1, depth: 4070 },
+    { id: 'urban_санпаулу_2', name: 'Сан-Паулу-У2 (газ)', lat: -23.4867, lon: -46.5229, type: 'gas', bonus: 2.4, icon: '⛽', region: 'Сан-Паулу (город)', reserve: 301.6, area: 578.6, depth: 1118 },
+    { id: 'urban_санпаулу_3', name: 'Сан-Паулу-У3 (нефть)', lat: -23.5684, lon: -46.7193, type: 'oil', bonus: 2.2, icon: '🛢️', region: 'Сан-Паулу (город)', reserve: 538.2, area: 235.0, depth: 3378 },
+    { id: 'urban_санпаулу_4', name: 'Сан-Паулу-У4 (нефть)', lat: -23.4681, lon: -46.6823, type: 'oil', bonus: 3.0, icon: '🛢️', region: 'Сан-Паулу (город)', reserve: 267.2, area: 473.0, depth: 1401 },
+    { id: 'urban_риодежанейро_1', name: 'Рио-де-Жанейро-У1 (нефть)', lat: -22.8963, lon: -43.1804, type: 'oil', bonus: 1.8, icon: '🛢️', region: 'Рио-де-Жанейро (город)', reserve: 348.4, area: 583.5, depth: 3290 },
+    { id: 'urban_риодежанейро_2', name: 'Рио-де-Жанейро-У2 (газ)', lat: -22.8202, lon: -43.1794, type: 'gas', bonus: 3.4, icon: '⛽', region: 'Рио-де-Жанейро (город)', reserve: 456.1, area: 546.5, depth: 498 },
+    { id: 'urban_риодежанейро_3', name: 'Рио-де-Жанейро-У3 (нефть)', lat: -22.8498, lon: -43.1375, type: 'oil', bonus: 3.3, icon: '🛢️', region: 'Рио-де-Жанейро (город)', reserve: 226.4, area: 233.6, depth: 4485 },
+    { id: 'urban_риодежанейро_4', name: 'Рио-де-Жанейро-У4 (нефть)', lat: -22.9347, lon: -43.2423, type: 'oil', bonus: 2.7, icon: '🛢️', region: 'Рио-де-Жанейро (город)', reserve: 315.4, area: 409.8, depth: 935 },
+    { id: 'urban_сантьяго_1', name: 'Сантьяго-У1 (нефть)', lat: -33.4806, lon: -70.7119, type: 'oil', bonus: 2.4, icon: '🛢️', region: 'Сантьяго (город)', reserve: 105.6, area: 641.5, depth: 3165 },
+    { id: 'urban_сантьяго_2', name: 'Сантьяго-У2 (газ)', lat: -33.488, lon: -70.6797, type: 'gas', bonus: 3.2, icon: '⛽', region: 'Сантьяго (город)', reserve: 392.2, area: 175.0, depth: 2745 },
+    { id: 'urban_сантьяго_3', name: 'Сантьяго-У3 (нефть)', lat: -33.4349, lon: -70.733, type: 'oil', bonus: 2.9, icon: '🛢️', region: 'Сантьяго (город)', reserve: 61.2, area: 710.0, depth: 3009 },
+    { id: 'urban_сантьяго_4', name: 'Сантьяго-У4 (нефть)', lat: -33.4402, lon: -70.612, type: 'oil', bonus: 1.9, icon: '🛢️', region: 'Сантьяго (город)', reserve: 390.8, area: 146.1, depth: 1487 },
+    { id: 'urban_сидней_1', name: 'Сидней-У1 (газ)', lat: -33.8241, lon: 151.1303, type: 'gas', bonus: 3.0, icon: '⛽', region: 'Сидней (город)', reserve: 229.5, area: 118.2, depth: 1804 },
+    { id: 'urban_сидней_2', name: 'Сидней-У2 (нефть)', lat: -33.8588, lon: 151.1931, type: 'oil', bonus: 2.7, icon: '🛢️', region: 'Сидней (город)', reserve: 417.1, area: 159.6, depth: 2028 },
+    { id: 'urban_сидней_3', name: 'Сидней-У3 (нефть)', lat: -33.8739, lon: 151.23, type: 'oil', bonus: 1.9, icon: '🛢️', region: 'Сидней (город)', reserve: 145.2, area: 708.1, depth: 1097 },
+    { id: 'urban_сидней_4', name: 'Сидней-У4 (газ)', lat: -33.8963, lon: 151.2877, type: 'gas', bonus: 2.7, icon: '⛽', region: 'Сидней (город)', reserve: 467.8, area: 260.2, depth: 3054 },
+    { id: 'urban_мельбурн_1', name: 'Мельбурн-У1 (нефть)', lat: -37.8053, lon: 144.9939, type: 'oil', bonus: 1.8, icon: '🛢️', region: 'Мельбурн (город)', reserve: 249.1, area: 678.2, depth: 3051 },
+    { id: 'urban_мельбурн_2', name: 'Мельбурн-У2 (нефть)', lat: -37.8061, lon: 144.8858, type: 'oil', bonus: 1.6, icon: '🛢️', region: 'Мельбурн (город)', reserve: 329.7, area: 499.9, depth: 3327 },
+    { id: 'urban_мельбурн_3', name: 'Мельбурн-У3 (нефть)', lat: -37.81, lon: 144.9471, type: 'oil', bonus: 1.8, icon: '🛢️', region: 'Мельбурн (город)', reserve: 29.6, area: 431.6, depth: 4349 },
+    { id: 'urban_мельбурн_4', name: 'Мельбурн-У4 (нефть)', lat: -37.8487, lon: 144.9584, type: 'oil', bonus: 2.7, icon: '🛢️', region: 'Мельбурн (город)', reserve: 375.2, area: 251.4, depth: 2621 }
   ];
 
   // ── 60 месторождений по всей планете ──────────────────────
@@ -589,6 +850,10 @@ const GPS = (function () {
     return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
   }
 
+  function isAdmin() {
+    return sessionStorage.getItem('rurcoin_admin_auth') === '1';
+  }
+
   function getPlayerId() {
     let id = localStorage.getItem('rurc_player_id');
     if (!id) { id = 'player_' + Math.random().toString(36).substr(2,9); localStorage.setItem('rurc_player_id', id); }
@@ -614,6 +879,9 @@ const GPS = (function () {
         const fog = JSON.parse(fogRaw);
         state.revealedFields = new Set(fog.revealedFields || []);
         state.radarLevel     = fog.radarLevel || 1;
+      }
+      if (isAdmin()) {
+        state.revealedFields = new Set(FIELDS.map(f => f.id));
       }
     } catch(e) { state.revealedFields = new Set(); state.radarLevel = 1; }
   }
@@ -949,7 +1217,8 @@ const GPS = (function () {
     if (!f) return;
     if (!state.lat) { notify('❌ GPS не активен', '', 'error'); return; }
     const dist = haversine(state.lat, state.lon, f.lat, f.lon);
-    if (dist > CAPTURE_RADIUS_KM) { notify('❌ Слишком далеко', 'Подойди на ' + CAPTURE_RADIUS_KM + ' км', 'error'); return; }
+    const spotR = getSpotRadius(f);
+    if (dist > spotR) { notify('❌ Вне пятна месторождения', 'Войди в зону пятна (' + spotR.toFixed(2) + ' км)', 'error'); return; }
     if (state.platforms[fieldId]) { notify('⚠️ Платформа уже есть', 'На этом месторождении уже построена платформа', 'warning'); return; }
     if (isFieldDepleted(fieldId)) { notify('💀 Месторождение истощено', f.name + ' — запасы исчерпаны, ждите восстановления', 'error'); return; }
     const blocker = getBlockingPlatform(fieldId);
@@ -1090,7 +1359,8 @@ const GPS = (function () {
     const f = FIELDS.find(f => f.id === fieldId);
     if (!f || !state.lat) return;
     const dist = haversine(state.lat, state.lon, f.lat, f.lon);
-    if (dist > CAPTURE_RADIUS_KM) { notify('❌ Слишком далеко', 'Подойди на ' + CAPTURE_RADIUS_KM + ' км', 'error'); return; }
+    const spotR = getSpotRadius(f);
+    if (dist > spotR) { notify('❌ Вне пятна месторождения', 'Войди в зону пятна (' + spotR.toFixed(2) + ' км)', 'error'); return; }
     const now = Date.now();
     const existing = state.captures[fieldId];
     if (existing && existing.owner === getPlayerId() && (now - existing.ts) < CAPTURE_TTL_MS) {
@@ -1255,6 +1525,17 @@ const GPS = (function () {
     if (state.lat !== null) updateLeafletMap(state.lat, state.lon);
   }
 
+
+  function getSpotRadius(f) {
+    const r = f.reserve || 50;
+    if (r < 30)  return 0.25;
+    if (r < 80)  return 0.45;
+    if (r < 200) return 0.75;
+    if (r < 400) return 1.2;
+    if (r < 700) return 2.0;
+    return 3.0;
+  }
+
   function addFieldToMap(f) {
     const now = Date.now();
     const color = f.type === 'oil' ? '#FF6B00' : '#00D4FF';
@@ -1270,12 +1551,31 @@ const GPS = (function () {
       fillOpacity: 0.05, weight: 1, dashArray: '4 4', opacity: 0.4
     }).addTo(map);
 
-    // Зона захвата
+    // Пятно месторождения (размер зависит от запасов)
+    const spotR = getSpotRadius(f);
+    const spotColor = f.type === 'oil' ? '#FF6B00' : '#00D4FF';
+    const spotOpacity = isMine ? 0.45 : hasPlatform ? 0.35 : 0.28;
+    const blobOffsets = [
+      [0, 0, 1.0], [0.3, 0.2, 0.7], [-0.25, 0.3, 0.65],
+      [0.2, -0.3, 0.6], [-0.15, -0.2, 0.75]
+    ];
+    if (!window._blobLayers) window._blobLayers = {};
+    window._blobLayers[f.id] = [];
+    blobOffsets.forEach(([dlat, dlon, scale]) => {
+      const latOff = f.lat + dlat * spotR / 111;
+      const lonOff = f.lon + dlon * spotR / (111 * Math.cos(f.lat * Math.PI / 180));
+      const blob = L.circle([latOff, lonOff], {
+        radius: spotR * scale * 1000,
+        color: spotColor, fillColor: spotColor,
+        fillOpacity: spotOpacity * 0.7, weight: 0, stroke: false
+      }).addTo(map);
+      window._blobLayers[f.id].push(blob);
+    });
     captureCircles[f.id] = L.circle([f.lat, f.lon], {
-      radius: CAPTURE_RADIUS_KM * 1000,
-      color: isMine ? '#FFD700' : hasPlatform ? '#9B59B6' : color,
-      fillColor: isMine ? '#FFD700' : hasPlatform ? '#9B59B6' : color,
-      fillOpacity: isMine ? 0.2 : hasPlatform ? 0.15 : 0.08, weight: 2
+      radius: spotR * 1000,
+      color: isMine ? '#FFD700' : hasPlatform ? '#9B59B6' : spotColor,
+      fillColor: isMine ? '#FFD700' : hasPlatform ? '#9B59B6' : spotColor,
+      fillOpacity: spotOpacity * 0.25, weight: 2, dashArray: isMine ? null : '5 3'
     }).addTo(map);
     if (hasPlatform) {
       const exclColor = myPlatform ? '#9B59B6' : '#FF4444';
@@ -1312,6 +1612,10 @@ const GPS = (function () {
     if (fieldMarkers[f.id]) { map.removeLayer(fieldMarkers[f.id]); delete fieldMarkers[f.id]; }
     if (fieldCircles[f.id]) { map.removeLayer(fieldCircles[f.id]); delete fieldCircles[f.id]; }
     if (captureCircles[f.id]) { map.removeLayer(captureCircles[f.id]); delete captureCircles[f.id]; }
+    if (window._blobLayers && window._blobLayers[f.id]) {
+      window._blobLayers[f.id].forEach(b => map.removeLayer(b));
+      delete window._blobLayers[f.id];
+    }
     addFieldToMap(f);
   }
 
