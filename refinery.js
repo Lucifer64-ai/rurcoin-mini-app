@@ -50,6 +50,37 @@ const REFINERY_PRODUCTS = {
         baseTimeHours: 8,
         outputAmount: 12, priceRURC: 20, totalRURC: 240,
         demand: 'medium', demandLabel: '🟡 Средний', color: '#00FF88', requiresGas: true
+    },
+    // ── Газовые заводы ──
+    lng: {
+        id: 'lng', name: 'Сжиженный газ', emoji: '🧊',
+        description: 'Сжижает природный газ. Только газ, без нефти.',
+        priceTON: 0.7,
+        oilRequired: 0, gasRequired: 12,
+        baseTimeHours: 3,
+        outputAmount: 10, priceRURC: 12, totalRURC: 120,
+        demand: 'medium', demandLabel: '🟡 Средний', color: '#00BFFF',
+        requiresGas: true, gasOnly: true
+    },
+    methanol: {
+        id: 'methanol', name: 'Метанол', emoji: '🧪',
+        description: 'Газовый синтез. Высокий выход, средняя цена.',
+        priceTON: 1.2,
+        oilRequired: 5, gasRequired: 15,
+        baseTimeHours: 6,
+        outputAmount: 18, priceRURC: 14, totalRURC: 252,
+        demand: 'medium', demandLabel: '🟡 Средний', color: '#A855F7',
+        requiresGas: true
+    },
+    ammonia: {
+        id: 'ammonia', name: 'Аммиак', emoji: '💜',
+        description: 'Премиум газовый продукт. Только для прокачанных.',
+        priceTON: 2.5,
+        oilRequired: 0, gasRequired: 30,
+        baseTimeHours: 10,
+        outputAmount: 20, priceRURC: 22, totalRURC: 440,
+        demand: 'rare', demandLabel: '💎 Редкий', color: '#C084FC',
+        requiresGas: true, gasOnly: true, premium: true
     }
 };
 
@@ -250,7 +281,7 @@ function startRefining(productId) {
     const playerOil = parseFloat(localStorage.getItem('rurc_oil') || '0');
     const playerGas = parseFloat(localStorage.getItem('rurc_gas') || '0');
 
-    if (playerOil < product.oilRequired)
+    if (!product.gasOnly && playerOil < product.oilRequired)
         return { success: false, error: `Нужно ${product.oilRequired} барр. нефти (есть: ${playerOil.toFixed(1)})` };
     if (product.requiresGas && playerGas < product.gasRequired)
         return { success: false, error: `Нужно ${product.gasRequired} ед. газа (есть: ${playerGas.toFixed(1)})` };
@@ -406,7 +437,7 @@ function renderFactoriesTab(tonBalance, playerOil, playerGas, prodCap, storedPro
             <div class="product-desc">${product.description}</div>
             <div class="product-stats">
                 <div class="stat-row"><span>💎 Цена завода</span><span class="stat-price">${product.priceTON} TON</span></div>
-                <div class="stat-row"><span>🛢 Нефть/цикл</span><span class="${isOwned && !canAffordOil ? 'stat-bad' : isOwned ? 'stat-ok' : ''}">${product.oilRequired} барр.</span></div>
+                ${!product.gasOnly ? `<div class="stat-row"><span>🛢 Нефть/цикл</span><span class="${isOwned && !canAffordOil ? 'stat-bad' : isOwned ? 'stat-ok' : ''}">${product.oilRequired} барр.</span></div>` : ''}
                 ${product.requiresGas ? `<div class="stat-row"><span>💨 Газ/цикл</span><span class="${isOwned && !canAffordGas ? 'stat-bad' : isOwned ? 'stat-ok' : ''}">${product.gasRequired} ед.</span></div>` : ''}
                 <div class="stat-row"><span>⏱ Время цикла</span><span class="stat-time">${isOwned ? timeHours : product.baseTimeHours}ч ${isOwned && factoryLvl > 1 ? '<span class="time-bonus">(-'+Math.round((1-FACTORY_UPGRADE_LEVELS[factoryLvl-1].timeMultiplier)*100)+'%)</span>' : ''}</span></div>
                 <div class="stat-row"><span>📦 Выход</span><span>${product.outputAmount} ед.</span></div>
@@ -419,13 +450,23 @@ function renderFactoriesTab(tonBalance, playerOil, playerGas, prodCap, storedPro
                         ${canRefine && !isInQueue ? '' : 'disabled'}>
                     ${isInQueue ? '⏳ В переработке' : !hasStorageSpace ? '📦 Склад полон' : canRefine ? '▶ Запустить' : '❌ Нет ресурсов'}
                 </button>
-                ${nextUpgrade ? `
+                ${nextUpgrade ? (() => {
+                    const newTime = +(product.baseTimeHours * nextUpgrade.timeMultiplier).toFixed(2);
+                    const cyclesPerDayCur = 24 / timeHours;
+                    const cyclesPerDayNew = 24 / newTime;
+                    const extraRURCPerDay = Math.round((cyclesPerDayNew - cyclesPerDayCur) * product.totalRURC);
+                    const TON_TO_RURC = 500;
+                    const upgradeCostRURC = nextUpgrade.priceTON * TON_TO_RURC;
+                    const roiDays = extraRURCPerDay > 0 ? Math.ceil(upgradeCostRURC / extraRURCPerDay) : '∞';
+                    return `
                 <button class="upgrade-factory-btn ${canUpgrade ? '' : 'btn-disabled'}"
                         onclick="upgradeFactory('${id}')"
                         ${canUpgrade ? '' : 'disabled'}>
                     ⬆️ Улучшить до ур.${nextUpgrade.level} — ${nextUpgrade.priceTON} TON
-                    <span class="upgrade-hint">время: ${timeHours}ч → ${+(product.baseTimeHours * nextUpgrade.timeMultiplier).toFixed(2)}ч</span>
-                </button>` : '<div class="max-level-badge">🏆 Максимальный уровень</div>'}
+                    <span class="upgrade-hint">⏱ ${timeHours}ч → ${newTime}ч &nbsp;|&nbsp; +${extraRURCPerDay} RURC/день</span>
+                    <span class="upgrade-roi">💰 Окупится за ~${roiDays} дн.</span>
+                </button>`;
+                })() : '<div class="max-level-badge">🏆 Максимальный уровень</div>'}
             ` : `
                 <button class="buy-refinery-btn ${canBuy ? '' : 'btn-disabled'}"
                         onclick="buyRefinery('${id}')"
