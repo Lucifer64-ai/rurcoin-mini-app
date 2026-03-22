@@ -1980,3 +1980,244 @@ input:focus, select:focus {
   box-shadow: 0 0 8px var(--c-oil-glow) !important;
   outline: none !important;
 }
+
+
+/* ═══════════════════════════════════════════════════════════
+   💳 Пополнение для россиян
+═══════════════════════════════════════════════════════════ */
+.topup-wrap {
+    padding: 4px 0 80px;
+}
+
+/* Hero */
+.topup-hero {
+    text-align: center;
+    padding: 20px 0 16px;
+    margin-bottom: 4px;
+}
+.topup-hero-icon {
+    font-size: 48px;
+    margin-bottom: 8px;
+    filter: drop-shadow(0 0 16px rgba(255,255,255,0.15));
+}
+.topup-hero-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 4px;
+}
+.topup-hero-sub {
+    font-size: 13px;
+    color: #888;
+}
+
+/* Карточка способа */
+.topup-method {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 14px;
+    margin-bottom: 12px;
+}
+.topup-method-rurc {
+    border-color: rgba(255,149,0,0.3);
+    background: rgba(255,149,0,0.04);
+}
+.topup-method-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+.topup-method-icon {
+    font-size: 28px;
+    width: 36px;
+    text-align: center;
+    flex-shrink: 0;
+}
+.topup-method-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #fff;
+}
+.topup-method-sub {
+    font-size: 12px;
+    color: #888;
+    margin-top: 2px;
+}
+
+/* Бейджи */
+.topup-badge {
+    margin-left: auto;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 20px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+.topup-badge-easy   { background: rgba(76,217,100,0.15); color: #4CD964; border: 1px solid rgba(76,217,100,0.3); }
+.topup-badge-medium { background: rgba(255,149,0,0.15);  color: #FF9500; border: 1px solid rgba(255,149,0,0.3); }
+.topup-badge-soon   { background: rgba(88,86,214,0.15);  color: #9B8FFF; border: 1px solid rgba(88,86,214,0.3); }
+
+/* Шаги */
+.topup-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+.topup-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 13px;
+    color: #ccc;
+    line-height: 1.4;
+}
+.topup-step-n {
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+/* Кнопки */
+.topup-btn {
+    display: block;
+    width: 100%;
+    padding: 11px 16px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.1s;
+    box-sizing: border-box;
+}
+.topup-btn:active { transform: scale(0.97); opacity: 0.85; }
+.topup-btn-primary  { background: linear-gradient(135deg, #0088CC, #006699); color: #fff; }
+.topup-btn-secondary { background: rgba(255,255,255,0.08); color: #fff; border: 1px solid rgba(255,255,255,0.12); }
+.topup-btn-rurc     { background: linear-gradient(135deg, #FF9500, #FF6B00); color: #fff; margin-top: 10px; }
+.topup-btn-copy     { background: rgba(255,255,255,0.06); color: #ccc; border: 1px solid rgba(255,255,255,0.1); font-size: 13px; margin-top: 8px; }
+
+.topup-exchange-btns {
+    display: flex;
+    gap: 8px;
+}
+.topup-btn-exchange {
+    flex: 1;
+    background: rgba(255,255,255,0.07);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.1);
+    font-size: 13px;
+    padding: 9px 8px;
+}
+
+/* Пакеты RURC */
+.topup-rurc-packages {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+.topup-pkg {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+    position: relative;
+    transition: border-color 0.2s, background 0.2s;
+}
+.topup-pkg:active { transform: scale(0.97); }
+.topup-pkg-selected {
+    border-color: rgba(255,149,0,0.6);
+    background: rgba(255,149,0,0.1);
+}
+.topup-pkg-rurc {
+    font-size: 15px;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 2px;
+}
+.topup-pkg-price {
+    font-size: 13px;
+    color: #FF9500;
+    font-weight: 700;
+}
+.topup-pkg-bonus {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: #4CD964;
+    color: #000;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 2px 6px;
+    border-radius: 10px;
+}
+.topup-rurc-note {
+    font-size: 11px;
+    color: #555;
+    text-align: center;
+    margin-top: 8px;
+}
+
+/* Адрес кошелька */
+.topup-address-block {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 16px;
+    padding: 14px;
+    margin-top: 4px;
+}
+.topup-address-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 2px;
+}
+.topup-address-sub {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 10px;
+}
+.topup-address-box {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 12px;
+    color: #4CD964;
+    font-family: monospace;
+    word-break: break-all;
+    cursor: pointer;
+    line-height: 1.5;
+}
+.topup-address-box:active { opacity: 0.7; }
+
+/* Coming soon msg */
+.topup-coming-soon-msg {
+    background: rgba(88,86,214,0.15);
+    border: 1px solid rgba(88,86,214,0.3);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: #9B8FFF;
+    text-align: center;
+    margin-top: 8px;
+    animation: fadeIn 0.3s ease;
+}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
