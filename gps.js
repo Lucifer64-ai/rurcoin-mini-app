@@ -11,6 +11,10 @@ const GPS = (function () {
   const FIELD_RADIUS_KM    = 80;    // зона бонуса месторождения
   const CAPTURE_RADIUS_KM  = 10;    // радиус захвата/строительства
   const PLATFORM_BUILD_SEC = 30;    // секунд на строительство платформы
+  const PLATFORM_EXCL_KM   = 150;   // радиус эксклюзивности платформы (км)
+  const FIELD_RESERVE_INIT = 1000;  // начальный запас месторождения
+  const FIELD_DRAIN_PER_SEC = 0.5;  // расход запаса в сек при активной платформе
+  const FIELD_REGEN_PER_SEC = 0.05; // восстановление без платформы
   const CAPTURE_TTL_MS     = 86400000; // 24ч — захват
   const CACHE_TTL_MS       = 300000;
   const MAX_SPEED_KMH      = 300;
@@ -148,7 +152,7 @@ const GPS = (function () {
     lastUpdate: null, lastValidPos: null,
     nearestField: null, bonus: 1.0, error: null,
     totalDistKm: 0, prevLat: null, prevLon: null, prevTime: null,
-    captures: {}, platforms: {},
+    captures: {}, platforms: {}, fieldReserves: {},
     visitedCities: new Set(), questProgress: {},
     activeBuffs: [],   // [{ type, value, expiresAt, name }]
     anomalyCount: 0,
@@ -183,21 +187,82 @@ const GPS = (function () {
   function loadWorldState() {
     try {
       const raw = localStorage.getItem(SHARED_KEY);
-      const world = raw ? JSON.parse(raw) : { platforms: {}, captures: {} };
-      state.platforms = world.platforms || {};
-      state.captures  = world.captures  || {};
-    } catch(e) { state.platforms = {}; state.captures = {}; }
+      const world = raw ? JSON.parse(raw) : { platforms: {}, captures: {}, fieldReserves: {} };
+      state.platforms     = world.platforms     || {};
+      state.captures      = world.captures      || {};
+      state.fieldReserves = world.fieldReserves || {};
+    } catch(e) { state.platforms = {}; state.captures = {}; state.fieldReserves = {}; }
   }
 
   function saveWorldState() {
     try {
       localStorage.setItem(SHARED_KEY, JSON.stringify({
-        platforms: state.platforms,
-        captures:  state.captures,
-        updatedAt: Date.now()
+        platforms:     state.platforms,
+        captures:      state.captures,
+        fieldReserves: state.fieldReserves,
+        updatedAt:     Date.now()
       }));
     } catch(e) {}
   }
+
+  // ── Запасы месторождений ───────────────────────────────────
+  function getReserve(fieldId) {
+    if (state.fieldReserves[fieldId] === undefined) state.fieldReserves[fieldId] = FIELD_RESERVE_INIT;
+    return state.fieldReserves[fieldId];
+  }
+  function setReserve(fieldId, val) {
+    state.fieldReserves[fieldId] = Math.max(0, Math.min(FIELD_RESERVE_INIT, val));
+  }
+  function isFieldDepleted(fieldId) { return getReserve(fieldId) <= 0; }
+  function reservePct(fieldId) { return Math.round((getReserve(fieldId) / FIELD_RESERVE_INIT) * 100); }
+
+  // Тик расхода/восстановления (каждую секунду)
+  function tickReserves() {
+    FIELDS.forEach(function(f) {
+      const p = state.platforms[f.id];
+      if (p) {
+        const drain = FIELD_DRAIN_PER_SEC * (1 + (p.level - 1) * 0.3);
+        const newVal = getReserve(f.id) - drain;
+        setReserve(f.id, newVal);
+        if (newVal <= 0) onFieldDepleted(f.id, f);
+      } else {
+        const cur = getReserve(f.id);
+        if (cur < FIELD_RESERVE_INIT) setReserve(f.id, cur + FIELD_REGEN_PER_SEC);
+      }
+    });
+    if (!tickReserves._cnt) tickReserves._cnt = 0;
+    tickReserves._cnt++;
+    if (tickReserves._cnt % 10 === 0) saveWorldState();
+  }
+
+  function onFieldDepleted(fieldId, field) {
+    const p = state.platforms[fieldId];
+    const wasOwner = p && p.owner === getPlayerId();
+    delete state.platforms[fieldId];
+    saveWorldState();
+    if (wasOwner) notify('⚠️ Месторождение истощено!', field.name + ' — запасы закончились, платформа демонтирована', 'warning');
+    applyPlatformBonuses();
+    if (map) updateFieldMarker(field);
+    renderPlatformsList();
+    renderScanResults();
+  }
+
+  // ── Эксклюзивная зона платформы ───────────────────────────
+  function getBlockingPlatform(fieldId) {
+    const f = FIELDS.find(f => f.id === fieldId);
+    if (!f) return null;
+    const myId = getPlayerId();
+    for (const [pid, p] of Object.entries(state.platforms)) {
+      if (pid === fieldId) continue;
+      if (p.owner === myId) continue;
+      const pf = FIELDS.find(ff => ff.id === pid);
+      if (!pf) continue;
+      const dist = haversine(f.lat, f.lon, pf.lat, pf.lon);
+      if (dist <= PLATFORM_EXCL_KM) return { platform: p, field: pf, dist: Math.round(dist) };
+    }
+    return null;
+  }
+
 
   // ── Бафы к добыче ─────────────────────────────────────────
   function addBuff(quest) {
@@ -329,16 +394,40 @@ const GPS = (function () {
         html += '<div style="font-size:12px;color:#ff4444;margin-bottom:6px;">🔒 Захвачено: ' + capture.ownerName + '</div>';
       }
 
+      // Полоса запаса
+      const rPct   = reservePct(f.id);
+      const rColor = rPct > 60 ? '#2ECC71' : rPct > 30 ? '#FFD700' : '#FF4444';
+      const depleted = isFieldDepleted(f.id);
+      html += '<div style="margin-bottom:8px;">'
+        + '<div style="display:flex;justify-content:space-between;font-size:11px;color:#888;margin-bottom:3px;">'
+        + '<span>⛽ Запас</span>'
+        + '<span style="color:' + rColor + ';">' + rPct + '%' + (depleted ? ' 💀 Истощено' : '') + '</span>'
+        + '</div>'
+        + '<div style="background:#1a1a2e;border-radius:4px;height:6px;">'
+        + '<div style="background:' + rColor + ';width:' + rPct + '%;height:100%;border-radius:4px;transition:width 2s;"></div>'
+        + '</div></div>';
+
+      // Блокировщик
+      const blocker = getBlockingPlatform(f.id);
+      if (blocker && !hasPlatform) {
+        html += '<div style="font-size:11px;color:#FF4444;margin-bottom:6px;">🚫 Зона контроля: ' + blocker.platform.ownerName + ' (' + blocker.field.name + ', ' + blocker.dist + ' км)</div>';
+      }
+
       // Кнопки действий
       if (inCapture) {
         html += '<div style="display:flex;gap:6px;flex-wrap:wrap;">';
         if (!isMine) {
           html += '<button onclick="GPS.captureField(\'' + f.id + '\')" style="flex:1;padding:6px;background:#FFD70022;border:1px solid #FFD700;border-radius:6px;color:#FFD700;font-size:12px;cursor:pointer;">🚩 Захватить</button>';
         }
-        if (!hasPlatform) {
+        if (!hasPlatform && !depleted && !blocker) {
           html += '<button onclick="GPS.buildPlatform(\'' + f.id + '\')" style="flex:1;padding:6px;background:#9B59B622;border:1px solid #9B59B6;border-radius:6px;color:#9B59B6;font-size:12px;cursor:pointer;">🏗️ Построить платформу</button>';
+        } else if (!hasPlatform && depleted) {
+          html += '<div style="flex:1;padding:6px;background:#FF444422;border:1px solid #FF4444;border-radius:6px;color:#FF4444;font-size:12px;text-align:center;">💀 Истощено</div>';
+        } else if (!hasPlatform && blocker) {
+          html += '<div style="flex:1;padding:6px;background:#FF444422;border:1px solid #FF4444;border-radius:6px;color:#FF4444;font-size:12px;text-align:center;">🚫 Заблокировано</div>';
         } else if (myPlatform) {
           html += '<button onclick="GPS.upgradePlatform(\'' + f.id + '\')" style="flex:1;padding:6px;background:#00D4FF22;border:1px solid #00D4FF;border-radius:6px;color:#00D4FF;font-size:12px;cursor:pointer;">⬆️ Улучшить</button>';
+          html += '<button onclick="GPS.dismantlePlatform(\'' + f.id + '\')" style="padding:6px 10px;background:#FF444422;border:1px solid #FF4444;border-radius:6px;color:#FF4444;font-size:12px;cursor:pointer;">🔧 Демонтаж</button>';
         }
         html += '</div>';
       } else {
@@ -357,6 +446,9 @@ const GPS = (function () {
     const dist = haversine(state.lat, state.lon, f.lat, f.lon);
     if (dist > CAPTURE_RADIUS_KM) { notify('❌ Слишком далеко', 'Подойди на ' + CAPTURE_RADIUS_KM + ' км', 'error'); return; }
     if (state.platforms[fieldId]) { notify('⚠️ Платформа уже есть', 'На этом месторождении уже построена платформа', 'warning'); return; }
+    if (isFieldDepleted(fieldId)) { notify('💀 Месторождение истощено', f.name + ' — запасы исчерпаны, ждите восстановления', 'error'); return; }
+    const blocker = getBlockingPlatform(fieldId);
+    if (blocker) { notify('🚫 Заблокировано', blocker.platform.ownerName + ' контролирует этот район (' + blocker.field.name + ', ' + blocker.dist + ' км)', 'error'); return; }
 
     notify('🏗️ Строительство начато', f.name + ' — займёт ' + PLATFORM_BUILD_SEC + ' сек', 'info');
 
@@ -426,6 +518,19 @@ const GPS = (function () {
     updateFieldMarker(f);
     notify('⬆️ Платформа улучшена!', f.name + ' — уровень ' + p.level + ' · +' + Math.round(p.bonusPct*100) + '% к добыче', 'success');
     applyPlatformBonuses();
+    renderScanResults();
+    renderPlatformsList();
+  }
+
+  function dismantlePlatform(fieldId) {
+    const p = state.platforms[fieldId];
+    const f = FIELDS.find(f => f.id === fieldId);
+    if (!p || p.owner !== getPlayerId()) { notify('❌ Не ваша платформа', '', 'error'); return; }
+    delete state.platforms[fieldId];
+    saveWorldState();
+    if (f) updateFieldMarker(f);
+    applyPlatformBonuses();
+    notify('🔧 Платформа демонтирована', (f ? f.name : fieldId), 'info');
     renderScanResults();
     renderPlatformsList();
   }
@@ -628,6 +733,14 @@ const GPS = (function () {
       fillColor: isMine ? '#FFD700' : hasPlatform ? '#9B59B6' : color,
       fillOpacity: isMine ? 0.2 : hasPlatform ? 0.15 : 0.08, weight: 2
     }).addTo(map);
+    if (hasPlatform) {
+      const exclColor = myPlatform ? '#9B59B6' : '#FF4444';
+      L.circle([f.lat, f.lon], {
+        radius: PLATFORM_EXCL_KM * 1000,
+        color: exclColor, fillColor: exclColor,
+        fillOpacity: 0.04, weight: 1, dashArray: '8 6', opacity: 0.5
+      }).addTo(map);
+    }
 
     // Иконка
     let badge = '';
@@ -663,6 +776,9 @@ const GPS = (function () {
       + '<b>' + f.icon + ' ' + f.name + '</b><br>'
       + '<span style="color:#888;font-size:11px;">' + f.region + '</span><br>'
       + '<span style="color:' + color + ';">' + (f.type==='oil'?'🛢️ Нефть':'⛽ Газ') + '</span> · Бонус: <b>×' + f.bonus + '</b><br>';
+    const rPctP = reservePct(f.id);
+    const rColorP = rPctP > 60 ? '#2ECC71' : rPctP > 30 ? '#FFD700' : '#FF4444';
+    html += '⛽ Запас: <span style="color:' + rColorP + ';">' + rPctP + '%</span><br>';
     if (platform) {
       html += '🏗️ Платформа: <b>' + platform.ownerName + '</b> (ур.' + platform.level + ') · +' + Math.round(platform.bonusPct*100) + '%<br>';
     }
@@ -794,6 +910,8 @@ const GPS = (function () {
     if (scanBtn) scanBtn.onclick = runScan;
 
     window.addEventListener('resize', function() { if (map) map.invalidateSize(); });
+    // Тик расхода запасов каждую секунду
+    setInterval(tickReserves, 1000);
     // Обновляем мировой стейт каждые 30 сек
     setInterval(function() { loadWorldState(); FIELDS.forEach(f => { if (map) updateFieldMarker(f); }); }, 30000);
     // Обновляем бафы каждую минуту
@@ -814,7 +932,7 @@ const GPS = (function () {
     });
   });
 
-  return { enable, disable, toggle, getBonus, getState, initTab, runScan, captureField, buildPlatform, upgradePlatform };
+  return { enable, disable, toggle, getBonus, getState, initTab, runScan, captureField, buildPlatform, upgradePlatform, dismantlePlatform };
 })();
 
 window.GPS = GPS;
