@@ -1074,6 +1074,7 @@ button:active {
         <button class="tab-btn" data-tab="halving">â³ Ð¥Ð°Ð»Ð²Ð¸Ð½Ð³</button>
         <button class="tab-btn" data-tab="exchange">ð ÐÐ±Ð¼ÐµÐ½Ð½Ð¸Ðº</button>
         <button class="tab-btn" data-tab="community">ð Ð¡Ð¾Ð¾Ð±ÑÐµÑÑÐ²Ð¾</button>
+        <button class="tab-btn" data-tab="gps">🛰️ GPS</button>
     </div>
 </div>
 
@@ -1502,6 +1503,104 @@ button:active {
 
 
 
+
+    <!-- GPS ВКЛАДКА -->
+    <div class="tab-content" id="gps">
+        <div style="padding:16px;max-width:520px;margin:0 auto;">
+
+            <!-- Заголовок + GPS статус -->
+            <div style="background:linear-gradient(135deg,#0d1117,#1a1a2e);border:1px solid #FF6B00;border-radius:14px;padding:16px;margin-bottom:14px;">
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+                    <span style="font-size:24px;">🛰️</span>
+                    <div>
+                        <div style="font-weight:bold;color:#FF6B00;font-size:16px;">GPS-Разведка</div>
+                        <div style="font-size:12px;color:#888;">Глобальная карта месторождений</div>
+                    </div>
+                    <button id="gpsToggleBtn" style="margin-left:auto;padding:8px 14px;background:#FF6B0022;border:1px solid #FF6B00;border-radius:8px;color:#FF6B00;font-size:13px;cursor:pointer;font-family:inherit;">▶ Включить GPS</button>
+                </div>
+                <div id="gpsStatus" style="font-size:12px;color:#888;margin-bottom:8px;">📍 GPS отключён</div>
+                <div id="gpsBonusDisplay" style="font-size:13px;color:#888;">📍 GPS-бонус не активен</div>
+            </div>
+
+            <!-- Активные бафы -->
+            <div style="background:#0d1117;border:1px solid #FFD700;border-radius:12px;padding:14px;margin-bottom:14px;">
+                <div style="font-weight:bold;color:#FFD700;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
+                    <span>⚡</span> Активные бафы к добыче
+                </div>
+                <div id="gpsActiveBuffs">
+                    <div style="color:#555;font-size:12px;">Нет активных бафов</div>
+                </div>
+            </div>
+
+            <!-- Карта -->
+            <div style="background:#0d1117;border:1px solid #1a1a2e;border-radius:12px;padding:14px;margin-bottom:14px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+                    <div style="font-weight:bold;color:#00D4FF;display:flex;align-items:center;gap:6px;">
+                        <span>🗺️</span> Карта месторождений
+                    </div>
+                    <button id="gpsScanBtn" style="padding:7px 14px;background:#00D4FF22;border:1px solid #00D4FF;border-radius:8px;color:#00D4FF;font-size:12px;cursor:pointer;font-family:inherit;">📡 Сканировать</button>
+                </div>
+                <div id="gpsMapContainer"></div>
+                <div style="display:flex;gap:12px;margin-top:8px;font-size:11px;color:#888;">
+                    <span>🛢️ <span style="color:#FF6B00;">Нефть</span></span>
+                    <span>⛽ <span style="color:#00D4FF;">Газ</span></span>
+                    <span>🚩 <span style="color:#FFD700;">Захвачено</span></span>
+                    <span>🏗️ <span style="color:#9B59B6;">Платформа</span></span>
+                </div>
+            </div>
+
+            <!-- Результаты сканера -->
+            <div style="background:#0d1117;border:1px solid #00D4FF;border-radius:12px;padding:14px;margin-bottom:14px;">
+                <div style="font-weight:bold;color:#00D4FF;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
+                    <span>📡</span> Результаты сканирования
+                </div>
+                <div id="gpsScanResults">
+                    <div style="color:#555;font-size:12px;text-align:center;padding:16px;">Нажми «Сканировать» для поиска месторождений рядом</div>
+                </div>
+            </div>
+
+            <!-- Очередь строительства -->
+            <div id="gpsBuildQueueWrap" style="background:#0d1117;border:1px solid #9B59B6;border-radius:12px;padding:14px;margin-bottom:14px;display:none;">
+                <div style="font-weight:bold;color:#9B59B6;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
+                    <span>🏗️</span> Строительство
+                </div>
+                <div id="gpsBuildQueue"></div>
+            </div>
+
+            <!-- Мои платформы -->
+            <div style="background:#0d1117;border:1px solid #9B59B6;border-radius:12px;padding:14px;margin-bottom:14px;">
+                <div style="font-weight:bold;color:#9B59B6;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
+                    <span>🏗️</span> Мои платформы
+                    <span style="font-size:11px;color:#888;margin-left:4px;">(+20% за уровень)</span>
+                </div>
+                <div id="gpsPlatformsList">
+                    <div style="color:#888;text-align:center;padding:16px;">Нет построенных платформ</div>
+                </div>
+            </div>
+
+            <!-- Захваченные месторождения -->
+            <div style="background:#0d1117;border:1px solid #FFD700;border-radius:12px;padding:14px;margin-bottom:14px;">
+                <div style="font-weight:bold;color:#FFD700;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
+                    <span>🚩</span> Захваченные месторождения
+                    <span style="font-size:11px;color:#888;margin-left:4px;">(+15% каждое)</span>
+                </div>
+                <div id="gpsCapturesList">
+                    <div style="color:#888;text-align:center;padding:16px;">Нет захваченных месторождений</div>
+                </div>
+            </div>
+
+            <!-- Квесты -->
+            <div style="background:#0d1117;border:1px solid #FF6B00;border-radius:12px;padding:14px;margin-bottom:14px;">
+                <div style="font-weight:bold;color:#FF6B00;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
+                    <span>🎯</span> GPS-квесты
+                    <span style="font-size:11px;color:#888;margin-left:4px;">(награда — бафы к добыче)</span>
+                </div>
+                <div id="gpsQuestsList"></div>
+            </div>
+
+        </div>
+    </div>
+
 <!-- FAB -->
 <button class="topup-fab" onclick="window.showTopUpModal && showTopUpModal()">ð° ÐÐ¾Ð¿Ð¾Ð»Ð½Ð¸ÑÑ</button>
 
@@ -1546,7 +1645,25 @@ function switchToWalletTab() {
 <script src="sound.js"></script>
 <script src="animations.js"></script>
 <script src="admin.js"></script>
+<script src="gps.js"></script>
 <script src="script.js"></script>
+
+
+<script>
+// GPS build queue visibility patch
+(function() {
+  var origAppendChild = Element.prototype.appendChild;
+  document.addEventListener('DOMContentLoaded', function() {
+    var queue = document.getElementById('gpsBuildQueue');
+    var wrap  = document.getElementById('gpsBuildQueueWrap');
+    if (!queue || !wrap) return;
+    var obs = new MutationObserver(function() {
+      wrap.style.display = queue.children.length > 0 ? 'block' : 'none';
+    });
+    obs.observe(queue, { childList: true });
+  });
+})();
+</script>
 
 </body>
 </html>
