@@ -56,11 +56,11 @@ const REFINERY_PRODUCTS = {
 // ─── КОНФИГ УЛУЧШЕНИЙ ЗАВОДА ─────────────────────────────
 // Каждый уровень снижает время переработки на 15%
 const FACTORY_UPGRADE_LEVELS = [
-    { level: 1, label: 'Базовый',      timeMultiplier: 1.00, priceTON: 0 },
-    { level: 2, label: 'Улучшенный',   timeMultiplier: 0.85, priceTON: 0.5 },
-    { level: 3, label: 'Продвинутый',  timeMultiplier: 0.70, priceTON: 1.0 },
-    { level: 4, label: 'Промышленный', timeMultiplier: 0.55, priceTON: 2.0 },
-    { level: 5, label: 'Мегазавод',    timeMultiplier: 0.40, priceTON: 4.0 }
+    { level: 1, label: 'Базовый',      timeMultiplier: 1.00, priceTON: 0    },
+    { level: 2, label: 'Улучшенный',   timeMultiplier: 0.85, priceTON: 0.5  },
+    { level: 3, label: 'Продвинутый',  timeMultiplier: 0.70, priceTON: 1.5  },
+    { level: 4, label: 'Промышленный', timeMultiplier: 0.55, priceTON: 4.0  },
+    { level: 5, label: 'Мегазавод',    timeMultiplier: 0.40, priceTON: 10.0 }
 ];
 
 // ─── КОНФИГ СКЛАДОВ ──────────────────────────────────────
@@ -69,11 +69,11 @@ const WAREHOUSE_CONFIG = {
         id: 'oil', name: 'Нефтехранилище', emoji: '🛢',
         description: 'Хранит сырую нефть. Без склада добыча останавливается.',
         levels: [
-            { level: 1, capacity: 50,   priceRURC: 0,    label: 'Базовый (50 барр.)' },
-            { level: 2, capacity: 150,  priceRURC: 500,  label: 'Расширенный (150 барр.)' },
-            { level: 3, capacity: 400,  priceRURC: 1500, label: 'Промышленный (400 барр.)' },
-            { level: 4, capacity: 1000, priceRURC: 4000, label: 'Мегарезервуар (1000 барр.)' },
-            { level: 5, capacity: 3000, priceRURC: 10000,label: 'Суперхранилище (3000 барр.)' }
+            { level: 1, capacity: 50,   priceRURC: 0,     label: 'Базовый (50 барр.)' },
+            { level: 2, capacity: 150,  priceRURC: 500,   label: 'Расширенный (150 барр.)' },
+            { level: 3, capacity: 400,  priceRURC: 2000,  label: 'Промышленный (400 барр.)' },
+            { level: 4, capacity: 1000, priceRURC: 6000,  label: 'Мегарезервуар (1000 барр.)' },
+            { level: 5, capacity: 3000, priceRURC: 15000, label: 'Суперхранилище (3000 барр.)' }
         ],
         color: '#8B6914', storageKey: 'rurc_oil'
     },
@@ -81,11 +81,11 @@ const WAREHOUSE_CONFIG = {
         id: 'gas', name: 'Газгольдер', emoji: '💨',
         description: 'Хранит природный газ. Нужен для химикатов.',
         levels: [
-            { level: 1, capacity: 30,   priceRURC: 0,    label: 'Базовый (30 ед.)' },
-            { level: 2, capacity: 100,  priceRURC: 400,  label: 'Расширенный (100 ед.)' },
-            { level: 3, capacity: 300,  priceRURC: 1200, label: 'Промышленный (300 ед.)' },
-            { level: 4, capacity: 800,  priceRURC: 3000, label: 'Мегагазгольдер (800 ед.)' },
-            { level: 5, capacity: 2000, priceRURC: 8000, label: 'Суперхранилище (2000 ед.)' }
+            { level: 1, capacity: 30,   priceRURC: 0,     label: 'Базовый (30 ед.)' },
+            { level: 2, capacity: 100,  priceRURC: 400,   label: 'Расширенный (100 ед.)' },
+            { level: 3, capacity: 300,  priceRURC: 1500,  label: 'Промышленный (300 ед.)' },
+            { level: 4, capacity: 800,  priceRURC: 5000,  label: 'Мегагазгольдер (800 ед.)' },
+            { level: 5, capacity: 2000, priceRURC: 12000, label: 'Суперхранилище (2000 ед.)' }
         ],
         color: '#00D4FF', storageKey: 'rurc_gas'
     },
@@ -93,11 +93,11 @@ const WAREHOUSE_CONFIG = {
         id: 'products', name: 'Склад продуктов', emoji: '📦',
         description: 'Хранит готовые продукты переработки.',
         levels: [
-            { level: 1, capacity: 100,  priceRURC: 0,    label: 'Базовый (100 ед.)' },
-            { level: 2, capacity: 300,  priceRURC: 600,  label: 'Расширенный (300 ед.)' },
-            { level: 3, capacity: 800,  priceRURC: 2000, label: 'Промышленный (800 ед.)' },
-            { level: 4, capacity: 2000, priceRURC: 5000, label: 'Мегасклад (2000 ед.)' },
-            { level: 5, capacity: 5000, priceRURC: 12000,label: 'Суперсклад (5000 ед.)' }
+            { level: 1, capacity: 100,  priceRURC: 0,     label: 'Базовый (100 ед.)' },
+            { level: 2, capacity: 300,  priceRURC: 600,   label: 'Расширенный (300 ед.)' },
+            { level: 3, capacity: 800,  priceRURC: 2500,  label: 'Промышленный (800 ед.)' },
+            { level: 4, capacity: 2000, priceRURC: 7000,  label: 'Мегасклад (2000 ед.)' },
+            { level: 5, capacity: 5000, priceRURC: 18000, label: 'Суперсклад (5000 ед.)' }
         ],
         color: '#FF6B00', storageKey: null
     }
