@@ -299,3 +299,104 @@
     padding: 2px 8px; border-radius: 20px;
     margin-bottom: 6px;
 }
+
+/* ─── Аналитика / График ─── */
+.analytics-wrap {
+    padding: 4px 0 16px;
+}
+.analytics-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+.an-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 12px;
+    text-align: center;
+}
+.an-card-burn {
+    border-color: rgba(255,68,68,0.3);
+    background: rgba(255,68,68,0.06);
+}
+.an-card-label {
+    font-size: 11px;
+    color: #888;
+    margin-bottom: 4px;
+}
+.an-card-value {
+    font-size: 20px;
+    font-weight: 800;
+    color: #fff;
+}
+.an-card-burn .an-card-value { color: #FF6666; }
+.an-unit {
+    font-size: 11px;
+    font-weight: 400;
+    color: #888;
+}
+.chart-block {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 14px;
+    padding: 12px;
+    margin-bottom: 8px;
+}
+.chart-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #ccc;
+    margin-bottom: 10px;
+}
+#earningsChart {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+.chart-labels {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 6px;
+}
+.chart-labels span {
+    font-size: 10px;
+    color: #666;
+    text-align: center;
+    flex: 1;
+}
+.prod-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+.prod-bar-emoji { font-size: 16px; width: 22px; text-align: center; }
+.prod-bar-wrap {
+    flex: 1;
+    background: rgba(255,255,255,0.06);
+    border-radius: 20px;
+    height: 8px;
+    overflow: hidden;
+}
+.prod-bar-fill {
+    height: 100%;
+    border-radius: 20px;
+    transition: width 0.6s ease;
+    opacity: 0.85;
+}
+.prod-bar-val {
+    font-size: 12px;
+    font-weight: 700;
+    color: #ccc;
+    min-width: 40px;
+    text-align: right;
+}
+.an-empty {
+    text-align: center;
+    color: #555;
+    font-size: 13px;
+    padding: 20px 0;
+}
