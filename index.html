@@ -1012,6 +1012,42 @@ button:active {
   animation: shimmer-o 3s linear infinite, neon-flicker 8s infinite;
 }
 </style>
+    <script src="i18n.js"></script>
+
+    <style>
+    /* === LANGUAGE SWITCHER === */
+    .lang-switcher {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+      margin-right: 6px;
+    }
+    .lang-btn {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,165,0,0.3);
+      color: #aaa;
+      border-radius: 6px;
+      padding: 3px 7px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.3px;
+    }
+    .lang-btn:hover {
+      background: rgba(255,165,0,0.15);
+      color: #fff;
+      border-color: var(--orange);
+    }
+    .lang-btn.active {
+      background: var(--orange);
+      color: #000;
+      border-color: var(--orange);
+      box-shadow: 0 0 8px rgba(255,165,0,0.5);
+    }
+    [dir="rtl"] .tabs { direction: rtl; }
+    [dir="rtl"] .app-header { direction: rtl; }
+    </style>
 </head>
 <body>
 
@@ -1025,6 +1061,12 @@ button:active {
         </div>
     </div>
     <div class="header-right">
+        <div class="lang-switcher">
+            <button class="lang-btn active" data-lang="ru" onclick="applyLanguage('ru')">RU</button>
+            <button class="lang-btn" data-lang="en" onclick="applyLanguage('en')">EN</button>
+            <button class="lang-btn" data-lang="zh" onclick="applyLanguage('zh')">中文</button>
+            <button class="lang-btn" data-lang="ar" onclick="applyLanguage('ar')">AR</button>
+        </div>
         <div class="header-balance">
             <div class="balance-chip rurc-chip">
                 <span class="coin-icon">₽</span>
