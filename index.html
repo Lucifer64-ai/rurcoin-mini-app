@@ -3,24 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>RURCoin — Нефть & Газ</title>
+
+    <!-- PWA manifest -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Theme color -->
+    <meta name="theme-color" content="#0d1117">
+    <meta name="msapplication-TileColor" content="#0d1117">
+
+    <!-- iOS PWA -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="RURCoin">
+    <link rel="apple-touch-icon" href="assets/icons/icon-180.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="assets/icons/icon-128.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/icon-180.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="assets/icons/icon-192.png">
+
+    <!-- iOS Splash screens -->
+    <link rel="apple-touch-startup-image" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)" href="assets/splash/splash-390x844.png">
+    <link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2)" href="assets/splash/splash-414x896.png">
+    <link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)" href="assets/splash/splash-375x812.png">
+    <link rel="apple-touch-startup-image" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2)" href="assets/splash/splash-768x1024.png">
+
+    <!-- Android -->
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <!-- Splash screen script (первым в body) -->
+    <script src="splash.js"></script>
+
+    <title>RURCoin â ÐÐµÑÑÑ & ÐÐ°Ð·</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
         <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
-/* ═══════════════════════════════════════════════════
-   RURCOIN — CYBERPUNK / SCI-FI UI
+/* âââââââââââââââââââââââââââââââââââââââââââââââââââ
+   RURCOIN â CYBERPUNK / SCI-FI UI
    Palette: #0a0a0f bg | #FF6B00 orange | #00D4FF cyan
    Font: Share Tech Mono (monospace tech)
-═══════════════════════════════════════════════════ */
+âââââââââââââââââââââââââââââââââââââââââââââââââââ */
 
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;600;700;900&display=swap');
 
-/* ── RESET ── */
+/* ââ RESET ââ */
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 
-/* ── ROOT VARS ── */
+/* ââ ROOT VARS ââ */
 :root {
   --bg:        #0a0a0f;
   --bg2:       #0f0f1a;
@@ -43,7 +72,7 @@
   --font-head: 'Orbitron', sans-serif;
 }
 
-/* ── BASE ── */
+/* ââ BASE ââ */
 html, body {
   background: var(--bg);
   color: var(--text);
@@ -54,7 +83,7 @@ html, body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* ── GRID BACKGROUND ── */
+/* ââ GRID BACKGROUND ââ */
 body::before {
   content: '';
   position: fixed;
@@ -67,7 +96,7 @@ body::before {
   z-index: 0;
 }
 
-/* ── KEYFRAMES ── */
+/* ââ KEYFRAMES ââ */
 @keyframes neon-pulse-o {
   0%,100% { box-shadow: var(--glow-o); border-color: var(--orange); }
   50%      { box-shadow: 0 0 18px #FF6B00ff, 0 0 40px #FF6B0066; border-color: var(--orange2); }
@@ -107,9 +136,9 @@ body::before {
   50%      { transform: scaleY(0.93) translateY(2px); }
 }
 
-/* ══════════════════════════════════════
+/* ââââââââââââââââââââââââââââââââââââââ
    HEADER
-══════════════════════════════════════ */
+ââââââââââââââââââââââââââââââââââââââ */
 .app-header {
   position: sticky;
   top: 0;
@@ -184,9 +213,9 @@ body::before {
   margin-top: 2px;
 }
 
-/* ══════════════════════════════════════
+/* ââââââââââââââââââââââââââââââââââââââ
    TABS
-══════════════════════════════════════ */
+ââââââââââââââââââââââââââââââââââââââ */
 .tabs-wrap {
   position: sticky;
   top: 56px;
@@ -229,9 +258,9 @@ body::before {
   text-shadow: 0 0 8px var(--orange);
 }
 
-/* ══════════════════════════════════════
+/* ââââââââââââââââââââââââââââââââââââââ
    CONTENT AREA
-══════════════════════════════════════ */
+ââââââââââââââââââââââââââââââââââââââ */
 .content {
   position: relative;
   z-index: 1;
@@ -242,9 +271,9 @@ body::before {
 .tab-content { display: none; }
 .tab-content.active { display: block; }
 
-/* ══════════════════════════════════════
+/* ââââââââââââââââââââââââââââââââââââââ
    SECTION TITLE
-══════════════════════════════════════ */
+ââââââââââââââââââââââââââââââââââââââ */
 .section-title {
   font-family: var(--font-head);
   font-size: 11px;
@@ -257,9 +286,9 @@ body::before {
   border-left: 2px solid var(--cyan);
 }
 
-/* ══════════════════════════════════════
-   RESOURCE SLIDER NAV (Нефть / Газ)
-══════════════════════════════════════ */
+/* ââââââââââââââââââââââââââââââââââââââ
+   RESOURCE SLIDER NAV (ÐÐµÑÑÑ / ÐÐ°Ð·)
+ââââââââââââââââââââââââââââââââââââââ */
 .resource-slider-nav {
   display: flex;
   gap: 8px;
@@ -292,9 +321,9 @@ body::before {
   text-shadow: 0 0 6px var(--orange);
 }
 
-/* ══════════════════════════════════════
+/* ââââââââââââââââââââââââââââââââââââââ
    CARDS / PANELS
-══════════════════════════════════════ */
+ââââââââââââââââââââââââââââââââââââââ */
 .price-card,
 .compare-card,
 .global-card,
@@ -327,7 +356,7 @@ body::before {
   box-shadow: var(--glow-o);
 }
 
-/* ── PRICE GRID ── */
+/* ââ PRICE GRID ââ */
 .price-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -352,7 +381,7 @@ body::before {
 .price-change.up   { color: var(--green); }
 .price-change.down { color: var(--red); }
 
-/* ── COMPARE GRID ── */
+/* ââ COMPARE GRID ââ */
 .compare-grid {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
@@ -371,7 +400,7 @@ body::before {
 .compare-delta { font-size: 9px; margin-top: 2px; }
 .compare-title { font-size: 10px; color: var(--text-dim); letter-spacing: 1px; margin-bottom: 4px; }
 
-/* ── GLOBAL GRID ── */
+/* ââ GLOBAL GRID ââ */
 .global-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -387,9 +416,9 @@ body::before {
 .g-val { font-size: 14px; color: var(--cyan); font-family: var(--font-head); margin-top: 2px; }
 .g-icon { font-size: 18px; margin-bottom: 4px; }
 
-/* ══════════════════════════════════════
+/* ââââââââââââââââââââââââââââââââââââââ
    RIG VISUAL
-══════════════════════════════════════ */
+ââââââââââââââââââââââââââââââââââââââ */
 .rig-visual-wrap {
   background: var(--bg2);
   border: 1px solid var(--border);
@@ -429,9 +458,9 @@ body::before {
   animation: none;
 }
 
-/* ══════════════════════════════════════
+/* ââââââââââââââââââââââââââââââââââââââ
    STATS BAR
-══════════════════════════════════════ */
+ââââââââââââââââââââââââââââââââââââââ */
 .stats-bar {
   display: flex;
   gap: 6px;
@@ -451,9 +480,9 @@ body::before {
 .stat-val  { font-family: var(--font-head); font-size: 13px; color: var(--orange2); }
 .stat-lbl  { font-size: 9px; color: var(--text-dim); letter-spacing: 1px; margin-top: 1px; }
 
-/* ══════════════════════════════════════
-   MINE BUTTONS (главные кнопки добычи)
-══════════════════════════════════════ */
+/* ââââââââââââââââââââââââââââââââââââââ
+   MINE BUTTONS (Ð³Ð»Ð°Ð²Ð½ÑÐµ ÐºÐ½Ð¾Ð¿ÐºÐ¸ Ð´Ð¾Ð±ÑÑÐ¸)
+ââââââââââââââââââââââââââââââââââââââ */
 .mine-btn {
   width: 100%;
   padding: 14px 20px;
@@ -498,9 +527,9 @@ body::before {
   box-shadow: var(--glow-g);
 }
 
-/* ══════════════════════════════════════
+/* ââââââââââââââââââââââââââââââââââââââ
    TANK / STORAGE
-══════════════════════════════════════ */
+ââââââââââââââââââââââââââââââââââââââ */
 .svg-tank-wrap {
   display: flex;
   flex-direction: column;
@@ -575,9 +604,9 @@ body::before {
   background: linear-gradient(90deg, transparent, var(--cyan), transparent);
 }
 
-/* ══════════════════════════════════════
+/* ââââââââââââââââââââââââââââââââââââââ
    GAS BUBBLE / OIL DROP
-══════════════════════════════════════ */
+ââââââââââââââââââââââââââââââââââââââ */
 .oil-drop, .oil-drop2 {
   font-size: 32px;
   animation: float-y 2.5s ease-in-out infinite;
@@ -600,9 +629,9 @@ body::before {
   text-transform: uppercase;
 }
 
-/* ══════════════════════════════════════
+/* ââââââââââââââââââââââââââââââââââââââ
    STAKING
-══════════════════════════════════════ */
+ââââââââââââââââââââââââââââââââââââââ */
 .staking-card {
   border-color: var(--border-c);
 }
@@ -658,9 +687,9 @@ body::before {
   transform: translateY(-1px);
 }
 
-/* ══════════════════════════════════════
+/* ââââââââââââââââââââââââââââââââââââââ
    HALVING
-══════════════════════════════════════ */
+ââââââââââââââââââââââââââââââââââââââ */
 .halving-card { border-color: var(--border-c); }
 .halving-timer {
   font-family: var(--font-head);
@@ -672,9 +701,9 @@ body::before {
   padding: 10px 0;
 }
 
-/* ══════════════════════════════════════
+/* ââââââââââââââââââââââââââââââââââââââ
    INPUT GROUP
-══════════════════════════════════════ */
+ââââââââââââââââââââââââââââââââââââââ */
 .input-group {
   display: flex;
   gap: 6px;
@@ -713,9 +742,9 @@ body::before {
   box-shadow: var(--glow-o);
 }
 
-/* ══════════════════════════════════════
+/* ââââââââââââââââââââââââââââââââââââââ
    TOPUP FAB
-══════════════════════════════════════ */
+ââââââââââââââââââââââââââââââââââââââ */
 .topup-fab {
   position: fixed;
   bottom: 20px;
@@ -742,9 +771,9 @@ body::before {
 }
 .topup-fab:active { transform: translateY(0); }
 
-/* ══════════════════════════════════════
+/* ââââââââââââââââââââââââââââââââââââââ
    RURC / COIN CHIPS
-══════════════════════════════════════ */
+ââââââââââââââââââââââââââââââââââââââ */
 .rurc-chip, .rurc {
   display: inline-flex;
   align-items: center;
@@ -764,9 +793,9 @@ body::before {
   font-size: 16px;
 }
 
-/* ══════════════════════════════════════
+/* ââââââââââââââââââââââââââââââââââââââ
    GAS COMPARE / GAS RIG
-══════════════════════════════════════ */
+ââââââââââââââââââââââââââââââââââââââ */
 .gas-compare { border-color: rgba(0,255,136,0.3); }
 .gas-rig-wrap {
   background: var(--bg2);
@@ -788,16 +817,16 @@ body::before {
   opacity: 0.4;
 }
 
-/* ══════════════════════════════════════
+/* ââââââââââââââââââââââââââââââââââââââ
    SCROLLBAR
-══════════════════════════════════════ */
+ââââââââââââââââââââââââââââââââââââââ */
 ::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb { background: var(--orange); border-radius: 2px; }
 
-/* ══════════════════════════════════════
+/* ââââââââââââââââââââââââââââââââââââââ
    MODALS (generic)
-══════════════════════════════════════ */
+ââââââââââââââââââââââââââââââââââââââ */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -826,17 +855,17 @@ body::before {
   text-transform: uppercase;
 }
 
-/* ══════════════════════════════════════
+/* ââââââââââââââââââââââââââââââââââââââ
    GENERIC BUTTON (fallback)
-══════════════════════════════════════ */
+ââââââââââââââââââââââââââââââââââââââ */
 button {
   font-family: var(--font-main);
   cursor: pointer;
 }
 
-/* ══════════════════════════════════════
+/* ââââââââââââââââââââââââââââââââââââââ
    UTILITY
-══════════════════════════════════════ */
+ââââââââââââââââââââââââââââââââââââââ */
 .text-orange { color: var(--orange); }
 .text-cyan   { color: var(--cyan); }
 .text-green  { color: var(--green); }
@@ -846,17 +875,17 @@ button {
 .orbitron    { font-family: var(--font-head); }
 
 
-/* ══════════════════════════════════════
+/* ââââââââââââââââââââââââââââââââââââââ
    BUTTON ANIMATIONS (cyberpunk)
-══════════════════════════════════════ */
+ââââââââââââââââââââââââââââââââââââââ */
 
-/* Ripple эффект */
+/* Ripple ÑÑÑÐµÐºÑ */
 @keyframes ripple-anim {
   0%   { transform: scale(0); opacity: 1; }
   100% { transform: scale(4); opacity: 0; }
 }
 
-/* Glitch эффект на mine-btn */
+/* Glitch ÑÑÑÐµÐºÑ Ð½Ð° mine-btn */
 @keyframes glitch-shift {
   0%,100% { clip-path: none; transform: none; }
   20%     { clip-path: polygon(0 20%, 100% 20%, 100% 40%, 0 40%); transform: translateX(-3px); }
@@ -873,7 +902,7 @@ button {
   20%,24%,55% { text-shadow: none; opacity: 0.7; }
 }
 
-/* Кнопки вкладок — hover подсветка снизу */
+/* ÐÐ½Ð¾Ð¿ÐºÐ¸ Ð²ÐºÐ»Ð°Ð´Ð¾Ðº â hover Ð¿Ð¾Ð´ÑÐ²ÐµÑÐºÐ° ÑÐ½Ð¸Ð·Ñ */
 .tab-btn {
   position: relative;
   overflow: hidden;
@@ -893,7 +922,7 @@ button {
   left: 0;
 }
 
-/* Mine btn — пульс + shimmer */
+/* Mine btn â Ð¿ÑÐ»ÑÑ + shimmer */
 .mine-btn {
   background-size: 200% auto;
   animation: shimmer-o 3s linear infinite;
@@ -906,13 +935,13 @@ button {
   box-shadow: none !important;
 }
 
-/* Все кнопки — press эффект */
+/* ÐÑÐµ ÐºÐ½Ð¾Ð¿ÐºÐ¸ â press ÑÑÑÐµÐºÑ */
 button:active {
   transform: scale(0.96);
   transition: transform 0.08s;
 }
 
-/* Scan line на кнопках при hover */
+/* Scan line Ð½Ð° ÐºÐ½Ð¾Ð¿ÐºÐ°Ñ Ð¿ÑÐ¸ hover */
 .mine-btn::after {
   content: '';
   position: absolute;
@@ -926,17 +955,17 @@ button:active {
   top: 120%;
 }
 
-/* Кнопки stake/unstake — cyan glow pulse */
+/* ÐÐ½Ð¾Ð¿ÐºÐ¸ stake/unstake â cyan glow pulse */
 .btn-stake:hover {
   animation: neon-pulse-c 1s infinite;
 }
 
-/* res-slide-btn — активная подсветка */
+/* res-slide-btn â Ð°ÐºÑÐ¸Ð²Ð½Ð°Ñ Ð¿Ð¾Ð´ÑÐ²ÐµÑÐºÐ° */
 .res-slide-btn.active {
   animation: neon-pulse-o 2s infinite;
 }
 
-/* topup-fab — bounce */
+/* topup-fab â bounce */
 @keyframes fab-bounce {
   0%,100% { transform: translateY(0) scale(1); }
   50%      { transform: translateY(-4px) scale(1.03); }
@@ -949,7 +978,7 @@ button:active {
   transform: translateY(-3px) scale(1.05);
 }
 
-/* Кнопки оборудования */
+/* ÐÐ½Ð¾Ð¿ÐºÐ¸ Ð¾Ð±Ð¾ÑÑÐ´Ð¾Ð²Ð°Ð½Ð¸Ñ */
 .eq-buy-btn {
   background: rgba(255,107,0,0.1);
   border: 1px solid var(--orange);
@@ -974,7 +1003,7 @@ button:active {
   transform: scale(0.95);
 }
 
-/* Neon flicker на заголовке логотипа */
+/* Neon flicker Ð½Ð° Ð·Ð°Ð³Ð¾Ð»Ð¾Ð²ÐºÐµ Ð»Ð¾Ð³Ð¾ÑÐ¸Ð¿Ð° */
 .app-logo-text h1 {
   animation: shimmer-o 3s linear infinite, neon-flicker 8s infinite;
 }
@@ -985,25 +1014,25 @@ button:active {
 <!-- HEADER -->
 <div class="app-header">
     <div class="app-logo">
-        <span class="app-logo-icon">🛢️</span>
+        <span class="app-logo-icon">ð¢ï¸</span>
         <div class="app-logo-text">
             <h1>RURCoin</h1>
-            <p>Нефть &amp; Газ</p>
+            <p>ÐÐµÑÑÑ &amp; ÐÐ°Ð·</p>
         </div>
     </div>
     <div class="header-right">
         <div class="header-balance">
             <div class="balance-chip rurc-chip">
-                <span class="coin-icon">₽</span>
+                <span class="coin-icon">â½</span>
                 <span id="balance">0.00</span>
             </div>
             <div class="balance-chip ton-chip">
-                <span class="coin-icon">💎</span>
+                <span class="coin-icon">ð</span>
                 <span id="tonBalance">5.00</span>
             </div>
         </div>
         <div class="header-wallet-badge" id="headerWallet" onclick="switchToWalletTab()">
-            Не подключён
+            ÐÐµ Ð¿Ð¾Ð´ÐºÐ»ÑÑÑÐ½
         </div>
     </div>
 </div>
@@ -1011,132 +1040,132 @@ button:active {
 <!-- STATS BAR -->
 <div class="stats-bar">
     <div class="stat-item">
-        <div class="stat-icon">🛢️</div>
+        <div class="stat-icon">ð¢ï¸</div>
         <div class="stat-val"><span id="oilPumpsCount">0</span></div>
-        <div class="stat-lbl">Насосы</div>
+        <div class="stat-lbl">ÐÐ°ÑÐ¾ÑÑ</div>
     </div>
     <div class="stat-item">
-        <div class="stat-icon">🏗️</div>
+        <div class="stat-icon">ðï¸</div>
         <div class="stat-val"><span id="gasTowersCount">0</span></div>
-        <div class="stat-lbl">Вышки</div>
+        <div class="stat-lbl">ÐÑÑÐºÐ¸</div>
     </div>
     <div class="stat-item">
-        <div class="stat-icon">🏭</div>
+        <div class="stat-icon">ð­</div>
         <div class="stat-val"><span id="oilTanksCount">0</span></div>
-        <div class="stat-lbl">Цистерны</div>
+        <div class="stat-lbl">Ð¦Ð¸ÑÑÐµÑÐ½Ñ</div>
     </div>
     <div class="stat-item">
-        <div class="stat-icon">⚡</div>
+        <div class="stat-icon">â¡</div>
         <div class="stat-val"><span id="hashrate">0</span></div>
-        <div class="stat-lbl">ед/ч</div>
+        <div class="stat-lbl">ÐµÐ´/Ñ</div>
     </div>
 </div>
 
 <!-- TABS -->
 <div class="tabs-wrap">
     <div class="tabs">
-        <button class="tab-btn active" data-tab="mining">⛽ Добыча</button>
-        <button class="tab-btn" data-tab="equipment">🔧 Оборудование</button>
-        <button class="tab-btn" data-tab="upgrades">⬆️ Улучшения</button>
-        <button class="tab-btn" data-tab="storage">🏭 Хранилище</button>
-        <button class="tab-btn" data-tab="wallet">🔑 Кошелёк</button>
-        <button class="tab-btn" data-tab="staking">💎 Стейкинг</button>
-        <button class="tab-btn" data-tab="transactions">📋 Транзакции</button>
-        <button class="tab-btn" data-tab="halving">⏳ Халвинг</button>
-        <button class="tab-btn" data-tab="exchange">🔄 Обменник</button>
-        <button class="tab-btn" data-tab="community">🌍 Сообщество</button>
+        <button class="tab-btn active" data-tab="mining">â½ ÐÐ¾Ð±ÑÑÐ°</button>
+        <button class="tab-btn" data-tab="equipment">ð§ ÐÐ±Ð¾ÑÑÐ´Ð¾Ð²Ð°Ð½Ð¸Ðµ</button>
+        <button class="tab-btn" data-tab="upgrades">â¬ï¸ Ð£Ð»ÑÑÑÐµÐ½Ð¸Ñ</button>
+        <button class="tab-btn" data-tab="storage">ð­ Ð¥ÑÐ°Ð½Ð¸Ð»Ð¸ÑÐµ</button>
+        <button class="tab-btn" data-tab="wallet">ð ÐÐ¾ÑÐµÐ»ÑÐº</button>
+        <button class="tab-btn" data-tab="staking">ð Ð¡ÑÐµÐ¹ÐºÐ¸Ð½Ð³</button>
+        <button class="tab-btn" data-tab="transactions">ð Ð¢ÑÐ°Ð½Ð·Ð°ÐºÑÐ¸Ð¸</button>
+        <button class="tab-btn" data-tab="halving">â³ Ð¥Ð°Ð»Ð²Ð¸Ð½Ð³</button>
+        <button class="tab-btn" data-tab="exchange">ð ÐÐ±Ð¼ÐµÐ½Ð½Ð¸Ðº</button>
+        <button class="tab-btn" data-tab="community">ð Ð¡Ð¾Ð¾Ð±ÑÐµÑÑÐ²Ð¾</button>
     </div>
 </div>
 
 <!-- CONTENT -->
 <div class="content">
 
-    <!-- ДОБЫЧА -->
+    <!-- ÐÐÐÐ«Ð§Ð -->
     <div class="tab-content active" id="mining">
 
-        <!-- Биржевые цены -->
+        <!-- ÐÐ¸ÑÐ¶ÐµÐ²ÑÐµ ÑÐµÐ½Ñ -->
         <div class="price-card">
             <div style="display:flex;align-items:center;gap:8px;">
-                <span style="font-size:18px;display:inline-block;animation:spin-slow 4s linear infinite;">📈</span>
-                <span style="font-size:13px;font-weight:700;color:#60a5fa;">Биржевые цены</span>
-                <span style="margin-left:auto;font-size:10px;color:#444;" id="priceLastUpdated">Загрузка...</span>
+                <span style="font-size:18px;display:inline-block;animation:spin-slow 4s linear infinite;">ð</span>
+                <span style="font-size:13px;font-weight:700;color:#60a5fa;">ÐÐ¸ÑÐ¶ÐµÐ²ÑÐµ ÑÐµÐ½Ñ</span>
+                <span style="margin-left:auto;font-size:10px;color:#444;" id="priceLastUpdated">ÐÐ°Ð³ÑÑÐ·ÐºÐ°...</span>
             </div>
             <div class="price-grid">
                 <div class="price-item">
-                    <div class="p-icon">🛢️</div>
-                    <div style="font-size:10px;color:#666;margin-top:4px;">Нефть Brent</div>
+                    <div class="p-icon">ð¢ï¸</div>
+                    <div style="font-size:10px;color:#666;margin-top:4px;">ÐÐµÑÑÑ Brent</div>
                     <div class="price-val" id="liveOilPrice">$75.00</div>
                     <div class="price-change" id="liveOilChange">+0.00%</div>
-                    <div class="price-unit">USD / барр.</div>
+                    <div class="price-unit">USD / Ð±Ð°ÑÑ.</div>
                 </div>
                 <div class="price-item">
-                    <div class="p-icon">🔥</div>
-                    <div style="font-size:10px;color:#666;margin-top:4px;">Природный газ</div>
+                    <div class="p-icon">ð¥</div>
+                    <div style="font-size:10px;color:#666;margin-top:4px;">ÐÑÐ¸ÑÐ¾Ð´Ð½ÑÐ¹ Ð³Ð°Ð·</div>
                     <div class="price-val" style="color:#4ade80;" id="liveGasPrice">$0.1300</div>
                     <div class="price-change" id="liveGasChange">+0.00%</div>
-                    <div class="price-unit">USD / м³</div>
+                    <div class="price-unit">USD / Ð¼Â³</div>
                 </div>
             </div>
             <div style="margin-top:10px;display:flex;justify-content:space-between;align-items:center;">
-                <span style="font-size:10px;color:#444;">Обновление каждые 5 мин</span>
+                <span style="font-size:10px;color:#444;">ÐÐ±Ð½Ð¾Ð²Ð»ÐµÐ½Ð¸Ðµ ÐºÐ°Ð¶Ð´ÑÐµ 5 Ð¼Ð¸Ð½</span>
                 <button onclick="if(window.fetchRealPrices)fetchRealPrices()"
                         style="background:#1a1a3a;border:1px solid #2d2d5a;border-radius:8px;
                                color:#60a5fa;font-size:10px;padding:4px 10px;cursor:pointer;transition:all 0.2s;">
-                    🔄 Обновить
+                    ð ÐÐ±Ð½Ð¾Ð²Ð¸ÑÑ
                 </button>
             </div>
         </div>
 
-        <!-- Мировой резервуар -->
+        <!-- ÐÐ¸ÑÐ¾Ð²Ð¾Ð¹ ÑÐµÐ·ÐµÑÐ²ÑÐ°Ñ -->
         <div class="global-card">
             <div style="display:flex;align-items:center;gap:8px;">
-                <span style="font-size:18px;display:inline-block;animation:float 3s ease-in-out infinite;">🌍</span>
-                <span style="font-size:13px;font-weight:700;color:#4ade80;">Мировой резервуар</span>
-                <span style="margin-left:auto;font-size:11px;color:#444;" id="globalTotalPlayers">0 игроков</span>
+                <span style="font-size:18px;display:inline-block;animation:float 3s ease-in-out infinite;">ð</span>
+                <span style="font-size:13px;font-weight:700;color:#4ade80;">ÐÐ¸ÑÐ¾Ð²Ð¾Ð¹ ÑÐµÐ·ÐµÑÐ²ÑÐ°Ñ</span>
+                <span style="margin-left:auto;font-size:11px;color:#444;" id="globalTotalPlayers">0 Ð¸Ð³ÑÐ¾ÐºÐ¾Ð²</span>
             </div>
             <div class="global-grid">
                 <div class="global-item">
-                    <div class="g-icon">🛢️</div>
-                    <div class="g-val" id="globalTotalOil">—</div>
-                    <div class="g-lbl">Нефть (барр.)</div>
+                    <div class="g-icon">ð¢ï¸</div>
+                    <div class="g-val" id="globalTotalOil">â</div>
+                    <div class="g-lbl">ÐÐµÑÑÑ (Ð±Ð°ÑÑ.)</div>
                 </div>
                 <div class="global-item">
-                    <div class="g-icon">🔥</div>
-                    <div class="g-val" style="color:#4ade80;" id="globalTotalGas">—</div>
-                    <div class="g-lbl">Газ (м³)</div>
+                    <div class="g-icon">ð¥</div>
+                    <div class="g-val" style="color:#4ade80;" id="globalTotalGas">â</div>
+                    <div class="g-lbl">ÐÐ°Ð· (Ð¼Â³)</div>
                 </div>
             </div>
             <div style="margin-top:10px;padding-top:10px;border-top:1px solid #1a3a1a;
                         display:flex;justify-content:space-between;align-items:center;">
-                <span style="font-size:11px;color:#444;">Всего добыто:</span>
+                <span style="font-size:11px;color:#444;">ÐÑÐµÐ³Ð¾ Ð´Ð¾Ð±ÑÑÐ¾:</span>
                 <div style="display:inline-flex;align-items:center;gap:5px;">
-                    <span class="token-icon rurc">₽</span>
-                    <span style="font-size:12px;font-weight:700;color:#FF8C00;" id="globalTotalMined">—</span>
+                    <span class="token-icon rurc">â½</span>
+                    <span style="font-size:12px;font-weight:700;color:#FF8C00;" id="globalTotalMined">â</span>
                 </div>
             </div>
         </div>
 
-        <!-- СЛАЙДЕР: Нефть / Газ -->
+        <!-- Ð¡ÐÐÐÐÐÐ : ÐÐµÑÑÑ / ÐÐ°Ð· -->
         <div class="resource-slider-nav">
             <button class="res-slide-btn active" id="slideOilBtn" onclick="switchResourceSlide('oil')">
-                🛢️ Нефть
+                ð¢ï¸ ÐÐµÑÑÑ
             </button>
             <button class="res-slide-btn" id="slideGasBtn" onclick="switchResourceSlide('gas')">
-                🔥 Газ
+                ð¥ ÐÐ°Ð·
             </button>
         </div>
 
-        <!-- ══════════ СЛАЙД: НЕФТЬ ══════════ -->
+        <!-- ââââââââââ Ð¡ÐÐÐÐ: ÐÐÐ¤Ð¢Ð¬ ââââââââââ -->
         <div class="resource-slide" id="slideOil">
 
-            <!-- SVG Качалка-балансир (Pump Jack) -->
+            <!-- SVG ÐÐ°ÑÐ°Ð»ÐºÐ°-Ð±Ð°Ð»Ð°Ð½ÑÐ¸Ñ (Pump Jack) -->
             <div class="rig-visual-wrap">
                 <div style="display:flex;flex-direction:column;gap:8px;align-items:center;width:100%;">
   <div style="width:100%;text-align:center;">
     <video autoplay loop muted playsinline style="width:100%;max-width:320px;display:block;margin:0 auto;border-radius:12px;">
       <source src="oil.gif.mp4" type="video/mp4">
     </video>
-    <div style="font-size:11px;color:#aaa;margin-top:4px;">🛢️ Качалка</div>
+    <div style="font-size:11px;color:#aaa;margin-top:4px;">ð¢ï¸ ÐÐ°ÑÐ°Ð»ÐºÐ°</div>
   </div>
   <div style="width:100%;text-align:center;position:relative;display:inline-block;">
     <div style="position:relative;display:inline-block;width:100%;max-width:320px;margin:0 auto;">
@@ -1145,34 +1174,34 @@ button:active {
       </video>
       <div id="oilBarrelOverlay" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;">
         <div id="oilBarrelPct" style="font-size:22px;font-weight:700;color:#FF8C00;text-shadow:0 0 8px #000,0 0 4px #000;">0%</div>
-        <div id="oilBarrelVal" style="font-size:13px;color:#fff;text-shadow:0 0 6px #000,0 0 3px #000;margin-top:2px;">0.0 барр.</div>
+        <div id="oilBarrelVal" style="font-size:13px;color:#fff;text-shadow:0 0 6px #000,0 0 3px #000;margin-top:2px;">0.0 Ð±Ð°ÑÑ.</div>
       </div>
     </div>
-    <div style="font-size:11px;color:#aaa;margin-top:4px;">🛢️ Резервуар</div>
+    <div style="font-size:11px;color:#aaa;margin-top:4px;">ð¢ï¸ Ð ÐµÐ·ÐµÑÐ²ÑÐ°Ñ</div>
   </div>
 </div>
-                <div class="rig-status-badge" id="oilRigStatus">Добыча остановлена</div>
+                <div class="rig-status-badge" id="oilRigStatus">ÐÐ¾Ð±ÑÑÐ° Ð¾ÑÑÐ°Ð½Ð¾Ð²Ð»ÐµÐ½Ð°</div>
             </div>
 
             <button class="mine-btn mine-btn-oil" id="mineBtnOil" onclick="if(window.game)game.toggleMining()">
-                <span id="mineBtnOilIcon">⛽</span> <span id="mineBtnOilText">Начать добычу нефти</span>
+                <span id="mineBtnOilIcon">â½</span> <span id="mineBtnOilText">ÐÐ°ÑÐ°ÑÑ Ð´Ð¾Ð±ÑÑÑ Ð½ÐµÑÑÐ¸</span>
             </button>
             <div style="text-align:center;color:#444;font-size:12px;margin-top:8px;">
-                💡 Купите насосы во вкладке «Оборудование»
+                ð¡ ÐÑÐ¿Ð¸ÑÐµ Ð½Ð°ÑÐ¾ÑÑ Ð²Ð¾ Ð²ÐºÐ»Ð°Ð´ÐºÐµ Â«ÐÐ±Ð¾ÑÑÐ´Ð¾Ð²Ð°Ð½Ð¸ÐµÂ»
             </div>
         </div>
 
-        <!-- ══════════ СЛАЙД: ГАЗ ══════════ -->
+        <!-- ââââââââââ Ð¡ÐÐÐÐ: ÐÐÐ ââââââââââ -->
         <div class="resource-slide" id="slideGas" style="display:none;">
 
-            <!-- SVG Морская газовая платформа -->
+            <!-- SVG ÐÐ¾ÑÑÐºÐ°Ñ Ð³Ð°Ð·Ð¾Ð²Ð°Ñ Ð¿Ð»Ð°ÑÑÐ¾ÑÐ¼Ð° -->
             <div class="rig-visual-wrap gas-rig-wrap">
                 <div style="display:flex;flex-direction:column;gap:8px;align-items:center;width:100%;">
   <div style="width:100%;text-align:center;">
     <video autoplay loop muted playsinline style="width:100%;max-width:320px;display:block;margin:0 auto;border-radius:12px;">
       <source src="gas.gif.mp4" type="video/mp4">
     </video>
-    <div style="font-size:11px;color:#aaa;margin-top:4px;">🔥 Платформа</div>
+    <div style="font-size:11px;color:#aaa;margin-top:4px;">ð¥ ÐÐ»Ð°ÑÑÐ¾ÑÐ¼Ð°</div>
   </div>
   <div style="width:100%;text-align:center;position:relative;display:inline-block;">
     <div style="position:relative;display:inline-block;width:100%;max-width:320px;margin:0 auto;">
@@ -1181,54 +1210,54 @@ button:active {
       </video>
       <div id="gasBarrelOverlay" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;">
         <div id="gasBarrelPct" style="font-size:22px;font-weight:700;color:#4ade80;text-shadow:0 0 8px #000,0 0 4px #000;">0%</div>
-        <div id="gasBarrelVal" style="font-size:13px;color:#fff;text-shadow:0 0 6px #000,0 0 3px #000;margin-top:2px;">0 м³</div>
+        <div id="gasBarrelVal" style="font-size:13px;color:#fff;text-shadow:0 0 6px #000,0 0 3px #000;margin-top:2px;">0 Ð¼Â³</div>
       </div>
     </div>
-    <div style="font-size:11px;color:#aaa;margin-top:4px;">🏭 Резервуар</div>
+    <div style="font-size:11px;color:#aaa;margin-top:4px;">ð­ Ð ÐµÐ·ÐµÑÐ²ÑÐ°Ñ</div>
   </div>
 </div>
-                <div class="rig-status-badge gas-badge" id="gasRigStatus">Добыча остановлена</div>
+                <div class="rig-status-badge gas-badge" id="gasRigStatus">ÐÐ¾Ð±ÑÑÐ° Ð¾ÑÑÐ°Ð½Ð¾Ð²Ð»ÐµÐ½Ð°</div>
             </div>
 
             <button class="mine-btn mine-btn-gas" id="mineBtnGas" onclick="if(window.game)game.toggleMining()">
-                <span id="mineBtnGasIcon">🔥</span> <span id="mineBtnGasText">Начать добычу газа</span>
+                <span id="mineBtnGasIcon">ð¥</span> <span id="mineBtnGasText">ÐÐ°ÑÐ°ÑÑ Ð´Ð¾Ð±ÑÑÑ Ð³Ð°Ð·Ð°</span>
             </button>
             <div style="text-align:center;color:#444;font-size:12px;margin-top:8px;">
-                💡 Купите газовые вышки во вкладке «Оборудование»
+                ð¡ ÐÑÐ¿Ð¸ÑÐµ Ð³Ð°Ð·Ð¾Ð²ÑÐµ Ð²ÑÑÐºÐ¸ Ð²Ð¾ Ð²ÐºÐ»Ð°Ð´ÐºÐµ Â«ÐÐ±Ð¾ÑÑÐ´Ð¾Ð²Ð°Ð½Ð¸ÐµÂ»
             </div>
         </div>
 
     </div>
 
-    <!-- ОБОРУДОВАНИЕ -->
+    <!-- ÐÐÐÐ Ð£ÐÐÐÐÐÐÐ -->
     <div class="tab-content" id="equipment">
-        <div class="section-title">Купить оборудование</div>
+        <div class="section-title">ÐÑÐ¿Ð¸ÑÑ Ð¾Ð±Ð¾ÑÑÐ´Ð¾Ð²Ð°Ð½Ð¸Ðµ</div>
         <div id="equipmentList"></div>
     </div>
 
-    <!-- УЛУЧШЕНИЯ -->
+    <!-- Ð£ÐÐ£Ð§Ð¨ÐÐÐÐ¯ -->
     <div class="tab-content" id="upgrades">
         <div style="font-size:13px;color:#666;margin-bottom:12px;">
-            💡 Улучшай оборудование за
+            ð¡ Ð£Ð»ÑÑÑÐ°Ð¹ Ð¾Ð±Ð¾ÑÑÐ´Ð¾Ð²Ð°Ð½Ð¸Ðµ Ð·Ð°
             <span style="display:inline-flex;align-items:center;gap:3px;vertical-align:middle;">
-                <span class="token-icon ton">💎</span> TON
+                <span class="token-icon ton">ð</span> TON
             </span>
-            — увеличивай добычу и цену продажи
+            â ÑÐ²ÐµÐ»Ð¸ÑÐ¸Ð²Ð°Ð¹ Ð´Ð¾Ð±ÑÑÑ Ð¸ ÑÐµÐ½Ñ Ð¿ÑÐ¾Ð´Ð°Ð¶Ð¸
         </div>
         <div id="upgradesList">
-            <div style="text-align:center;color:#444;padding:20px;">Загрузка...</div>
+            <div style="text-align:center;color:#444;padding:20px;">ÐÐ°Ð³ÑÑÐ·ÐºÐ°...</div>
         </div>
     </div>
 
-    <!-- ХРАНИЛИЩЕ -->
+    <!-- Ð¥Ð ÐÐÐÐÐÐ©Ð -->
     <div class="tab-content" id="storage">
-        <div class="section-title">Хранилища ресурсов</div>
+        <div class="section-title">Ð¥ÑÐ°Ð½Ð¸Ð»Ð¸ÑÐ° ÑÐµÑÑÑÑÐ¾Ð²</div>
 
         <div class="storage-big-tank">
             <div class="tank-label-big">
                 <div class="tank-name">
-                    <span class="t-icon">🛢️</span>
-                    <span>Нефтехранилище</span>
+                    <span class="t-icon">ð¢ï¸</span>
+                    <span>ÐÐµÑÑÐµÑÑÐ°Ð½Ð¸Ð»Ð¸ÑÐµ</span>
                 </div>
                 <span class="tank-pct-big" id="oilPctBig">0%</span>
             </div>
@@ -1236,19 +1265,19 @@ button:active {
                 <div class="tank-fill oil-fill" id="oilFillBig" style="height:0%"></div>
                 <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
                             font-size:11px;color:rgba(255,255,255,0.7);font-weight:700;z-index:2;"
-                     id="oilStoredBig">0.0 барр.</div>
+                     id="oilStoredBig">0.0 Ð±Ð°ÑÑ.</div>
             </div>
             <div class="tank-label-row">
                 <span>0</span>
-                <span id="oilCapacityBig">макс.</span>
+                <span id="oilCapacityBig">Ð¼Ð°ÐºÑ.</span>
             </div>
         </div>
 
         <div class="storage-big-tank">
             <div class="tank-label-big">
                 <div class="tank-name">
-                    <span class="t-icon" style="animation-delay:0.5s;">⛽</span>
-                    <span>Газохранилище</span>
+                    <span class="t-icon" style="animation-delay:0.5s;">â½</span>
+                    <span>ÐÐ°Ð·Ð¾ÑÑÐ°Ð½Ð¸Ð»Ð¸ÑÐµ</span>
                 </div>
                 <span class="tank-pct-big" style="color:#4ade80;" id="gasPctBig">0%</span>
             </div>
@@ -1256,122 +1285,122 @@ button:active {
                 <div class="tank-fill gas-fill" id="gasFillBig" style="height:0%"></div>
                 <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
                             font-size:11px;color:rgba(255,255,255,0.7);font-weight:700;z-index:2;"
-                     id="gasStoredBig">0 м³</div>
+                     id="gasStoredBig">0 Ð¼Â³</div>
             </div>
             <div class="tank-label-row">
                 <span>0</span>
-                <span id="gasCapacityBig">макс.</span>
+                <span id="gasCapacityBig">Ð¼Ð°ÐºÑ.</span>
             </div>
         </div>
 
         <div id="storageInfo"></div>
     </div>
 
-    <!-- КОШЕЛЁК -->
+    <!-- ÐÐÐ¨ÐÐÐÐ -->
     <div class="tab-content" id="wallet">
-        <div class="section-title">Крипто-кошелёк</div>
+        <div class="section-title">ÐÑÐ¸Ð¿ÑÐ¾-ÐºÐ¾ÑÐµÐ»ÑÐº</div>
         <div id="walletSection">
-            <div style="text-align:center;color:#444;padding:40px 0;">Загрузка...</div>
+            <div style="text-align:center;color:#444;padding:40px 0;">ÐÐ°Ð³ÑÑÐ·ÐºÐ°...</div>
         </div>
         <div id="walletMsg"></div>
     </div>
 
-    <!-- СТЕЙКИНГ -->
+    <!-- Ð¡Ð¢ÐÐÐÐÐÐ -->
     <div class="tab-content" id="staking">
         <div class="staking-card">
             <div class="section-title">
-                Стейкинг
+                Ð¡ÑÐµÐ¹ÐºÐ¸Ð½Ð³
                 <span style="display:inline-flex;align-items:center;gap:4px;">
-                    <span class="token-icon rurc">₽</span> RURC
+                    <span class="token-icon rurc">â½</span> RURC
                 </span>
-                (15% годовых)
+                (15% Ð³Ð¾Ð´Ð¾Ð²ÑÑ)
             </div>
             <div class="staking-info">
                 <div class="staking-stat">
                     <div class="s-val"><span id="stakedBalance">0.00</span></div>
-                    <div class="s-lbl">Застейкано RURC</div>
+                    <div class="s-lbl">ÐÐ°ÑÑÐµÐ¹ÐºÐ°Ð½Ð¾ RURC</div>
                 </div>
                 <div class="staking-stat">
                     <div class="s-val"><span id="stakingRewards">0.0000</span></div>
-                    <div class="s-lbl">Награды RURC</div>
+                    <div class="s-lbl">ÐÐ°Ð³ÑÐ°Ð´Ñ RURC</div>
                 </div>
             </div>
             <div class="input-group">
-                <input type="number" id="stakeAmount" placeholder="Сумма RURC">
-                <button class="btn-stake" id="stakeBtn">Стейк</button>
+                <input type="number" id="stakeAmount" placeholder="Ð¡ÑÐ¼Ð¼Ð° RURC">
+                <button class="btn-stake" id="stakeBtn">Ð¡ÑÐµÐ¹Ðº</button>
             </div>
-            <button class="btn-unstake" id="unstakeBtn">Вывести всё</button>
+            <button class="btn-unstake" id="unstakeBtn">ÐÑÐ²ÐµÑÑÐ¸ Ð²ÑÑ</button>
         </div>
     </div>
 
-    <!-- ТРАНЗАКЦИИ -->
+    <!-- Ð¢Ð ÐÐÐÐÐÐ¦ÐÐ -->
     <div class="tab-content" id="transactions">
-        <div class="section-title">История транзакций</div>
+        <div class="section-title">ÐÑÑÐ¾ÑÐ¸Ñ ÑÑÐ°Ð½Ð·Ð°ÐºÑÐ¸Ð¹</div>
         <div id="transactionsFeed"></div>
     </div>
 
-    <!-- ХАЛВИНГ -->
+    <!-- Ð¥ÐÐÐÐÐÐ -->
     <div class="tab-content" id="halving">
         <div class="halving-card">
-            <div style="font-size:40px;animation:float 3s ease-in-out infinite;display:inline-block;">⏳</div>
-            <div style="color:#666;margin-top:10px;font-size:13px;">До следующего халвинга</div>
-            <div class="halving-timer" id="halvingTimer">--д --ч --м</div>
+            <div style="font-size:40px;animation:float 3s ease-in-out infinite;display:inline-block;">â³</div>
+            <div style="color:#666;margin-top:10px;font-size:13px;">ÐÐ¾ ÑÐ»ÐµÐ´ÑÑÑÐµÐ³Ð¾ ÑÐ°Ð»Ð²Ð¸Ð½Ð³Ð°</div>
+            <div class="halving-timer" id="halvingTimer">--Ð´ --Ñ --Ð¼</div>
             <div style="color:#444;font-size:12px;">
-                Текущая награда:
+                Ð¢ÐµÐºÑÑÐ°Ñ Ð½Ð°Ð³ÑÐ°Ð´Ð°:
                 <span style="color:#FF8C00;font-weight:700;">100</span>
                 <span style="display:inline-flex;align-items:center;gap:3px;vertical-align:middle;">
-                    <span class="token-icon rurc" style="width:16px;height:16px;font-size:10px;">₽</span> RURC/блок
+                    <span class="token-icon rurc" style="width:16px;height:16px;font-size:10px;">â½</span> RURC/Ð±Ð»Ð¾Ðº
                 </span>
             </div>
         </div>
     </div>
 
-    <!-- ОБМЕННИК -->
+    <!-- ÐÐÐÐÐÐÐÐ -->
     <div class="tab-content" id="exchange">
         <div id="exchangeTab">
-            <div style="text-align:center;color:#444;padding:40px 0;">Загрузка...</div>
+            <div style="text-align:center;color:#444;padding:40px 0;">ÐÐ°Ð³ÑÑÐ·ÐºÐ°...</div>
         </div>
     </div>
 
 </div>
-    <!-- СООБЩЕСТВО -->
+    <!-- Ð¡ÐÐÐÐ©ÐÐ¡Ð¢ÐÐ -->
     <div class="tab-content" id="community">
         <div style="padding:16px;max-width:480px;margin:0 auto;">
 
-            <!-- Главный баннер -->
+            <!-- ÐÐ»Ð°Ð²Ð½ÑÐ¹ Ð±Ð°Ð½Ð½ÐµÑ -->
             <div style="
                 background:linear-gradient(135deg,#0d1f3c,#0a2a1a);
                 border:1px solid rgba(255,140,0,0.35);
                 border-radius:20px;padding:24px 20px;margin-bottom:16px;
                 text-align:center;position:relative;overflow:hidden;
             ">
-                <!-- Декоративный блик -->
+                <!-- ÐÐµÐºÐ¾ÑÐ°ÑÐ¸Ð²Ð½ÑÐ¹ Ð±Ð»Ð¸Ðº -->
                 <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,140,0,0.5),transparent);"></div>
                 <div style="position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(74,222,128,0.3),transparent);"></div>
 
-                <div style="font-size:48px;margin-bottom:10px;filter:drop-shadow(0 0 16px rgba(255,140,0,0.5));">🛢️</div>
+                <div style="font-size:48px;margin-bottom:10px;filter:drop-shadow(0 0 16px rgba(255,140,0,0.5));">ð¢ï¸</div>
                 <div style="font-size:22px;font-weight:800;color:#FF8C00;margin-bottom:6px;letter-spacing:0.5px;">RURCoin</div>
-                <div style="font-size:15px;font-weight:700;color:#e8eaf0;margin-bottom:8px;">будущее 🚀</div>
+                <div style="font-size:15px;font-weight:700;color:#e8eaf0;margin-bottom:8px;">Ð±ÑÐ´ÑÑÐµÐµ ð</div>
                 <div style="font-size:13px;color:#9ca3af;line-height:1.6;margin-bottom:16px;">
-                    Мы покажем всему <span style="color:#4ade80;font-weight:700;">МИРУ 🌍</span><br>
-                    На что способен <span style="color:#FF8C00;font-weight:700;">$RUR</span> и его владельцы<span style="color:#f87171;">‼️</span>
+                    ÐÑ Ð¿Ð¾ÐºÐ°Ð¶ÐµÐ¼ Ð²ÑÐµÐ¼Ñ <span style="color:#4ade80;font-weight:700;">ÐÐÐ Ð£ ð</span><br>
+                    ÐÐ° ÑÑÐ¾ ÑÐ¿Ð¾ÑÐ¾Ð±ÐµÐ½ <span style="color:#FF8C00;font-weight:700;">$RUR</span> Ð¸ ÐµÐ³Ð¾ Ð²Ð»Ð°Ð´ÐµÐ»ÑÑÑ<span style="color:#f87171;">â¼ï¸</span>
                 </div>
 
-                <!-- Бейдж токена -->
+                <!-- ÐÐµÐ¹Ð´Ð¶ ÑÐ¾ÐºÐµÐ½Ð° -->
                 <div style="
                     display:inline-flex;align-items:center;gap:8px;
                     padding:6px 16px;border-radius:30px;
                     background:rgba(255,140,0,0.12);border:1px solid rgba(255,140,0,0.3);
                     font-size:12px;font-weight:700;color:#FF8C00;
                 ">
-                    <span>₽</span> $RURC · TON Network
+                    <span>â½</span> $RURC Â· TON Network
                 </div>
             </div>
 
-            <!-- Кнопки ссылок -->
+            <!-- ÐÐ½Ð¾Ð¿ÐºÐ¸ ÑÑÑÐ»Ð¾Ðº -->
             <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px;">
 
-                <!-- Telegram канал -->
+                <!-- Telegram ÐºÐ°Ð½Ð°Ð» -->
                 <a href="https://t.me/rurcoins" target="_blank" style="
                     display:flex;align-items:center;gap:14px;
                     padding:14px 18px;border-radius:14px;text-decoration:none;
@@ -1384,15 +1413,15 @@ button:active {
                         width:44px;height:44px;border-radius:12px;flex-shrink:0;
                         background:rgba(0,136,204,0.2);border:1px solid rgba(0,136,204,0.3);
                         display:flex;align-items:center;justify-content:center;font-size:22px;
-                    ">📢</div>
+                    ">ð¢</div>
                     <div style="flex:1;">
-                        <div style="font-size:14px;font-weight:700;color:#38bdf8;margin-bottom:2px;">Официальный канал</div>
-                        <div style="font-size:12px;color:#6b7280;">@rurcoins · Новости и обновления</div>
+                        <div style="font-size:14px;font-weight:700;color:#38bdf8;margin-bottom:2px;">ÐÑÐ¸ÑÐ¸Ð°Ð»ÑÐ½ÑÐ¹ ÐºÐ°Ð½Ð°Ð»</div>
+                        <div style="font-size:12px;color:#6b7280;">@rurcoins Â· ÐÐ¾Ð²Ð¾ÑÑÐ¸ Ð¸ Ð¾Ð±Ð½Ð¾Ð²Ð»ÐµÐ½Ð¸Ñ</div>
                     </div>
-                    <div style="font-size:18px;color:#38bdf8;opacity:0.7;">→</div>
+                    <div style="font-size:18px;color:#38bdf8;opacity:0.7;">â</div>
                 </a>
 
-                <!-- Telegram чат -->
+                <!-- Telegram ÑÐ°Ñ -->
                 <a href="https://t.me/+FIUTr6Q4XZRjOGRi" target="_blank" style="
                     display:flex;align-items:center;gap:14px;
                     padding:14px 18px;border-radius:14px;text-decoration:none;
@@ -1405,15 +1434,15 @@ button:active {
                         width:44px;height:44px;border-radius:12px;flex-shrink:0;
                         background:rgba(74,222,128,0.15);border:1px solid rgba(74,222,128,0.25);
                         display:flex;align-items:center;justify-content:center;font-size:22px;
-                    ">💬</div>
+                    ">ð¬</div>
                     <div style="flex:1;">
-                        <div style="font-size:14px;font-weight:700;color:#4ade80;margin-bottom:2px;">Чат сообщества</div>
-                        <div style="font-size:12px;color:#6b7280;">Обсуждения · Поддержка · Идеи</div>
+                        <div style="font-size:14px;font-weight:700;color:#4ade80;margin-bottom:2px;">Ð§Ð°Ñ ÑÐ¾Ð¾Ð±ÑÐµÑÑÐ²Ð°</div>
+                        <div style="font-size:12px;color:#6b7280;">ÐÐ±ÑÑÐ¶Ð´ÐµÐ½Ð¸Ñ Â· ÐÐ¾Ð´Ð´ÐµÑÐ¶ÐºÐ° Â· ÐÐ´ÐµÐ¸</div>
                     </div>
-                    <div style="font-size:18px;color:#4ade80;opacity:0.7;">→</div>
+                    <div style="font-size:18px;color:#4ade80;opacity:0.7;">â</div>
                 </a>
 
-                <!-- Администрация -->
+                <!-- ÐÐ´Ð¼Ð¸Ð½Ð¸ÑÑÑÐ°ÑÐ¸Ñ -->
                 <a href="https://t.me/RuR_Invest" target="_blank" style="
                     display:flex;align-items:center;gap:14px;
                     padding:14px 18px;border-radius:14px;text-decoration:none;
@@ -1426,46 +1455,46 @@ button:active {
                         width:44px;height:44px;border-radius:12px;flex-shrink:0;
                         background:rgba(251,191,36,0.15);border:1px solid rgba(251,191,36,0.25);
                         display:flex;align-items:center;justify-content:center;font-size:22px;
-                    ">👑</div>
+                    ">ð</div>
                     <div style="flex:1;">
-                        <div style="font-size:14px;font-weight:700;color:#fbbf24;margin-bottom:2px;">Администрация</div>
-                        <div style="font-size:12px;color:#6b7280;">@RuR_Invest · Связь с командой</div>
+                        <div style="font-size:14px;font-weight:700;color:#fbbf24;margin-bottom:2px;">ÐÐ´Ð¼Ð¸Ð½Ð¸ÑÑÑÐ°ÑÐ¸Ñ</div>
+                        <div style="font-size:12px;color:#6b7280;">@RuR_Invest Â· Ð¡Ð²ÑÐ·Ñ Ñ ÐºÐ¾Ð¼Ð°Ð½Ð´Ð¾Ð¹</div>
                     </div>
-                    <div style="font-size:18px;color:#fbbf24;opacity:0.7;">→</div>
+                    <div style="font-size:18px;color:#fbbf24;opacity:0.7;">â</div>
                 </a>
             </div>
 
-            <!-- Статистика сообщества (декоративная) -->
+            <!-- Ð¡ÑÐ°ÑÐ¸ÑÑÐ¸ÐºÐ° ÑÐ¾Ð¾Ð±ÑÐµÑÑÐ²Ð° (Ð´ÐµÐºÐ¾ÑÐ°ÑÐ¸Ð²Ð½Ð°Ñ) -->
             <div style="
                 background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);
                 border-radius:14px;padding:16px;
                 display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;text-align:center;
             ">
                 <div>
-                    <div style="font-size:20px;margin-bottom:4px;">🚀</div>
+                    <div style="font-size:20px;margin-bottom:4px;">ð</div>
                     <div style="font-size:13px;font-weight:700;color:#FF8C00;">$RURC</div>
-                    <div style="font-size:10px;color:#6b7280;">Токен</div>
+                    <div style="font-size:10px;color:#6b7280;">Ð¢Ð¾ÐºÐµÐ½</div>
                 </div>
                 <div>
-                    <div style="font-size:20px;margin-bottom:4px;">🌍</div>
+                    <div style="font-size:20px;margin-bottom:4px;">ð</div>
                     <div style="font-size:13px;font-weight:700;color:#4ade80;">TON</div>
-                    <div style="font-size:10px;color:#6b7280;">Сеть</div>
+                    <div style="font-size:10px;color:#6b7280;">Ð¡ÐµÑÑ</div>
                 </div>
                 <div>
-                    <div style="font-size:20px;margin-bottom:4px;">💎</div>
+                    <div style="font-size:20px;margin-bottom:4px;">ð</div>
                     <div style="font-size:13px;font-weight:700;color:#38bdf8;">Web3</div>
-                    <div style="font-size:10px;color:#6b7280;">Экосистема</div>
+                    <div style="font-size:10px;color:#6b7280;">Ð­ÐºÐ¾ÑÐ¸ÑÑÐµÐ¼Ð°</div>
                 </div>
             </div>
 
-            <!-- Слоган -->
+            <!-- Ð¡Ð»Ð¾Ð³Ð°Ð½ -->
             <div style="text-align:center;margin-top:16px;padding:12px;
                 background:linear-gradient(135deg,rgba(255,140,0,0.06),rgba(74,222,128,0.04));
                 border-radius:12px;border:1px solid rgba(255,140,0,0.15);">
                 <div style="font-size:12px;color:#6b7280;font-style:italic;">
-                    «Вместе мы изменим правила игры»
+                    Â«ÐÐ¼ÐµÑÑÐµ Ð¼Ñ Ð¸Ð·Ð¼ÐµÐ½Ð¸Ð¼ Ð¿ÑÐ°Ð²Ð¸Ð»Ð° Ð¸Ð³ÑÑÂ»
                 </div>
-                <div style="font-size:16px;margin-top:4px;">🛢️ 🌍 🚀</div>
+                <div style="font-size:16px;margin-top:4px;">ð¢ï¸ ð ð</div>
             </div>
 
         </div>
@@ -1474,13 +1503,13 @@ button:active {
 
 
 <!-- FAB -->
-<button class="topup-fab" onclick="window.showTopUpModal && showTopUpModal()">💰 Пополнить</button>
+<button class="topup-fab" onclick="window.showTopUpModal && showTopUpModal()">ð° ÐÐ¾Ð¿Ð¾Ð»Ð½Ð¸ÑÑ</button>
 
 <script>
 function switchToWalletTab() {
     if (window.rurcoinApp) window.rurcoinApp.switchTab('wallet');
 }
-// Обновление больших цистерн и процентов
+// ÐÐ±Ð½Ð¾Ð²Ð»ÐµÐ½Ð¸Ðµ Ð±Ð¾Ð»ÑÑÐ¸Ñ ÑÐ¸ÑÑÐµÑÐ½ Ð¸ Ð¿ÑÐ¾ÑÐµÐ½ÑÐ¾Ð²
 (function() {
     function patchStorageTanks() {
         var app = window.rurcoinApp;
@@ -1496,10 +1525,10 @@ function switchToWalletTab() {
         if(el('gasFillBig')) el('gasFillBig').style.height = gasPct + '%';
         if(el('oilPctBig')) el('oilPctBig').textContent = oilPct.toFixed(1) + '%';
         if(el('gasPctBig')) el('gasPctBig').textContent = gasPct.toFixed(1) + '%';
-        if(el('oilStoredBig')) el('oilStoredBig').textContent = (app.oilStored||0).toFixed(1) + ' барр.';
-        if(el('gasStoredBig')) el('gasStoredBig').textContent = Math.floor(app.gasStored||0) + ' м³';
-        if(el('oilCapacityBig')) el('oilCapacityBig').textContent = 'макс. ' + (app.oilCapacity||200);
-        if(el('gasCapacityBig')) el('gasCapacityBig').textContent = 'макс. ' + (app.gasCapacity||2000);
+        if(el('oilStoredBig')) el('oilStoredBig').textContent = (app.oilStored||0).toFixed(1) + ' Ð±Ð°ÑÑ.';
+        if(el('gasStoredBig')) el('gasStoredBig').textContent = Math.floor(app.gasStored||0) + ' Ð¼Â³';
+        if(el('oilCapacityBig')) el('oilCapacityBig').textContent = 'Ð¼Ð°ÐºÑ. ' + (app.oilCapacity||200);
+        if(el('gasCapacityBig')) el('gasCapacityBig').textContent = 'Ð¼Ð°ÐºÑ. ' + (app.gasCapacity||2000);
     }
     setInterval(patchStorageTanks, 1000);
 })();
