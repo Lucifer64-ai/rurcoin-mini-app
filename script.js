@@ -430,3 +430,151 @@ document.addEventListener('DOMContentLoaded', function() {
         renderUpgrades();
     }, 300);
 });
+
+
+// ============================================================
+//  renderEquipment — отрисовка вкладки "Оборудование"
+// ============================================================
+const EQUIPMENT_LIST = [
+    {
+        id: 'oilPump',
+        name: '🛢️ Нефтяная помпа',
+        desc: 'Добывает нефть. Каждая помпа +0.05 барр/сек',
+        icon: '🛢️',
+        countKey: 'oilPumps',
+        getCost: (app) => app.getOilPumpCost(),
+        buy: (app) => { if (window.rurcoinApp) window.rurcoinApp.buyOilPump(); },
+        stat: (app) => `${app.oilPumps} шт. · ${(app.getOilPerSec()*3600).toFixed(1)} барр/ч`,
+        color: '#FF8C00'
+    },
+    {
+        id: 'gasTower',
+        name: '🔥 Газовая вышка',
+        desc: 'Добывает природный газ. Каждая вышка +2 м³/сек',
+        icon: '🔥',
+        countKey: 'gasTowers',
+        getCost: (app) => app.getGasTowerCost(),
+        buy: (app) => { if (window.rurcoinApp) window.rurcoinApp.buyGasTower(); },
+        stat: (app) => `${app.gasTowers} шт. · ${(app.getGasPerSec()*3600).toFixed(0)} м³/ч`,
+        color: '#4ade80'
+    },
+    {
+        id: 'oilTank',
+        name: '🏗️ Нефтяной резервуар',
+        desc: 'Увеличивает ёмкость хранилища нефти на 50 барр',
+        icon: '🏗️',
+        countKey: 'oilTanks',
+        getCost: (app) => app.getOilTankCost(),
+        buy: (app) => { if (window.rurcoinApp) window.rurcoinApp.buyOilTank(); },
+        stat: (app) => `${app.oilTanks} шт. · ёмкость ${app.oilCapacity} барр`,
+        color: '#60a5fa'
+    },
+    {
+        id: 'gasTank',
+        name: '⛽ Газовый резервуар',
+        desc: 'Увеличивает ёмкость хранилища газа на 500 м³',
+        icon: '⛽',
+        countKey: 'gasTanks',
+        getCost: (app) => app.getGasTankCost(),
+        buy: (app) => { if (window.rurcoinApp) window.rurcoinApp.buyGasTank(); },
+        stat: (app) => `${app.gasTanks} шт. · ёмкость ${app.gasCapacity} м³`,
+        color: '#a78bfa'
+    }
+];
+
+function renderEquipment() {
+    const container = document.getElementById('equipmentList');
+    if (!container) return;
+    const app = window.rurcoinApp;
+    if (!app) {
+        container.innerHTML = '<div style="color:#555;text-align:center;padding:20px;">Загрузка...</div>';
+        return;
+    }
+
+    container.innerHTML = EQUIPMENT_LIST.map(eq => {
+        const count = app[eq.countKey] || 0;
+        const cost = eq.getCost(app);
+        const canAfford = app.balance >= cost;
+        const statText = eq.stat(app);
+
+        return `
+        <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);
+                    border-radius:14px;padding:16px;margin-bottom:12px;transition:all 0.2s;
+                    box-shadow:0 2px 12px rgba(0,0,0,0.3);">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+                <div style="width:48px;height:48px;border-radius:12px;
+                            background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);
+                            display:flex;align-items:center;justify-content:center;font-size:24px;
+                            flex-shrink:0;">
+                    ${eq.icon}
+                </div>
+                <div style="flex:1;min-width:0;">
+                    <div style="font-size:14px;font-weight:700;color:${eq.color};margin-bottom:2px;">${eq.name}</div>
+                    <div style="font-size:11px;color:#666;line-height:1.3;">${eq.desc}</div>
+                </div>
+                <div style="text-align:center;flex-shrink:0;">
+                    <div style="font-size:22px;font-weight:800;color:#fff;">${count}</div>
+                    <div style="font-size:10px;color:#555;">куплено</div>
+                </div>
+            </div>
+
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;
+                        padding-top:10px;border-top:1px solid rgba(255,255,255,0.05);">
+                <div style="font-size:11px;color:#555;">📊 ${statText}</div>
+                <button onclick="buyEquipment('${eq.id}')"
+                        style="padding:9px 18px;border:none;border-radius:10px;cursor:pointer;
+                               font-size:12px;font-weight:700;color:#fff;white-space:nowrap;
+                               transition:all 0.2s;flex-shrink:0;
+                               background:${canAfford
+                                   ? `linear-gradient(135deg,${eq.color},${eq.color}99)`
+                                   : 'rgba(80,80,80,0.4)'};
+                               opacity:${canAfford ? '1' : '0.55'};"
+                        ${canAfford ? '' : 'disabled'}>
+                    💰 ${cost.toLocaleString()} RURC
+                </button>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function buyEquipment(equipId) {
+    const app = window.rurcoinApp;
+    if (!app) return;
+    const eq = EQUIPMENT_LIST.find(e => e.id === equipId);
+    if (!eq) return;
+
+    const cost = eq.getCost(app);
+    if (app.balance < cost) {
+        const btn = document.querySelector(`button[onclick="buyEquipment('${equipId}')"]`);
+        if (btn) {
+            const orig = btn.innerHTML;
+            btn.style.background = 'rgba(255,34,68,0.5)';
+            btn.textContent = '❌ Недостаточно';
+            setTimeout(() => { btn.style.background = 'rgba(80,80,80,0.4)'; btn.innerHTML = orig; }, 1200);
+        }
+        return;
+    }
+
+    eq.buy(app);
+    // После покупки перерисовываем
+    setTimeout(() => {
+        renderEquipment();
+        renderUpgrades();
+    }, 50);
+}
+
+window.renderEquipment = renderEquipment;
+window.buyEquipment = buyEquipment;
+
+// Автообновление при переключении на вкладку
+document.addEventListener('click', function(e) {
+    const btn = e.target.closest('.tab-btn');
+    if (btn && btn.getAttribute('data-tab') === 'equipment') {
+        setTimeout(renderEquipment, 50);
+    }
+});
+
+// Инициализация
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(renderEquipment, 400);
+});
