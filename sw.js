@@ -1,10 +1,11 @@
 // Service Worker для RURCoin Mini App
-const CACHE_NAME = 'rurcoin-v6';
+const CACHE_NAME = 'rurcoin-v7';
 const STATIC_ASSETS = [
     '/style.css',
     '/script.js',
     '/contracts.js',
-    '/manifest.json'
+    '/manifest.json',
+    '/gps.js'
 ];
 
 self.addEventListener('install', (event) => {
