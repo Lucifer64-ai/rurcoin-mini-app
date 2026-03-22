@@ -143,7 +143,8 @@ let refineryState = {
     completed: [],
     totalProduced: {},
     totalEarned: 0,
-    totalBurned: 0      // сожжённые RURC
+    totalBurned: 0,     // сожжённые RURC
+    earningsLog: []     // [{ts, rurc, productId}] — история продаж для графика
 };
 
 function loadRefineryState() {
@@ -320,6 +321,11 @@ function sellProduct(taskId) {
     const cur = parseFloat(localStorage.getItem('rurc_balance') || '0');
     localStorage.setItem('rurc_balance', (cur + earned).toFixed(2));
     refineryState.totalEarned += earned;
+    // Логируем для графика
+    if (!refineryState.earningsLog) refineryState.earningsLog = [];
+    refineryState.earningsLog.push({ ts: Date.now(), rurc: earned, productId: task.productId });
+    // Храним только последние 200 записей
+    if (refineryState.earningsLog.length > 200) refineryState.earningsLog.shift();
     refineryState.completed.splice(idx, 1);
     saveRefineryState();
     return { success: true, earned, product };
@@ -340,6 +346,173 @@ function checkRefineryQueue() {
         return true;
     });
     if (changed) saveRefineryState();
+}
+
+
+// ─── РЕНДЕР: АНАЛИТИКА / ГРАФИК ДОХОДНОСТИ ───────────────
+function renderAnalyticsTab() {
+    const log = (refineryState.earningsLog || []);
+    const totalEarned = refineryState.totalEarned || 0;
+    const totalBurned = refineryState.totalBurned || 0;
+
+    // Считаем доход по продуктам
+    const byProduct = {};
+    for (const entry of log) {
+        if (!byProduct[entry.productId]) byProduct[entry.productId] = 0;
+        byProduct[entry.productId] += entry.rurc;
+    }
+
+    // Топ продукт
+    let topProduct = null, topRURC = 0;
+    for (const [pid, rurc] of Object.entries(byProduct)) {
+        if (rurc > topRURC) { topRURC = rurc; topProduct = pid; }
+    }
+
+    // Доход за последние 7 дней по дням
+    const now = Date.now();
+    const DAY = 86400000;
+    const days7 = Array(7).fill(0);
+    const dayLabels = [];
+    for (let i = 6; i >= 0; i--) {
+        const d = new Date(now - i * DAY);
+        dayLabels.push(d.toLocaleDateString('ru', { weekday: 'short' }));
+    }
+    for (const entry of log) {
+        const daysAgo = Math.floor((now - entry.ts) / DAY);
+        if (daysAgo < 7) days7[6 - daysAgo] += entry.rurc;
+    }
+
+    const maxDay = Math.max(...days7, 1);
+
+    // Доход за 24ч
+    const earned24h = log.filter(e => now - e.ts < DAY).reduce((s, e) => s + e.rurc, 0);
+    // Доход за 7 дней
+    const earned7d = days7.reduce((a, b) => a + b, 0);
+
+    let html = '<div class="analytics-wrap">';
+
+    // ── Карточки-метрики ──
+    html += `
+    <div class="analytics-cards">
+        <div class="an-card">
+            <div class="an-card-label">За 24ч</div>
+            <div class="an-card-value">${earned24h.toFixed(0)} <span class="an-unit">RURC</span></div>
+        </div>
+        <div class="an-card">
+            <div class="an-card-label">За 7 дней</div>
+            <div class="an-card-value">${earned7d.toFixed(0)} <span class="an-unit">RURC</span></div>
+        </div>
+        <div class="an-card">
+            <div class="an-card-label">Всего заработано</div>
+            <div class="an-card-value">${totalEarned.toFixed(0)} <span class="an-unit">RURC</span></div>
+        </div>
+        <div class="an-card an-card-burn">
+            <div class="an-card-label">Сожжено</div>
+            <div class="an-card-value">${totalBurned.toFixed(0)} <span class="an-unit">RURC</span></div>
+        </div>
+    </div>`;
+
+    // ── График по дням (canvas) ──
+    html += `
+    <div class="chart-block">
+        <div class="chart-title">📊 Доход по дням (RURC)</div>
+        <canvas id="earningsChart" width="320" height="160"></canvas>
+        <div class="chart-labels">
+            ${dayLabels.map(l => `<span>${l}</span>`).join('')}
+        </div>
+    </div>`;
+
+    // ── Топ продуктов ──
+    html += '<div class="chart-title" style="margin-top:16px">🏆 По продуктам</div>';
+    const sorted = Object.entries(byProduct).sort((a,b) => b[1]-a[1]);
+    if (sorted.length === 0) {
+        html += '<div class="an-empty">Продай хотя бы один продукт — тут появится статистика</div>';
+    } else {
+        const maxProd = sorted[0][1];
+        for (const [pid, rurc] of sorted) {
+            const p = REFINERY_PRODUCTS[pid];
+            if (!p) continue;
+            const pct = Math.round(rurc / maxProd * 100);
+            html += `
+            <div class="prod-bar-row">
+                <span class="prod-bar-emoji">${p.emoji}</span>
+                <div class="prod-bar-wrap">
+                    <div class="prod-bar-fill" style="width:${pct}%; background:${p.color}"></div>
+                </div>
+                <span class="prod-bar-val">${rurc.toFixed(0)}</span>
+            </div>`;
+        }
+    }
+
+    html += '</div>';
+
+    // Рисуем canvas после рендера
+    html += `<script>
+    (function() {
+        const data = ${JSON.stringify(days7)};
+        const maxVal = Math.max(...data, 1);
+        function draw() {
+            const canvas = document.getElementById('earningsChart');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const W = canvas.width, H = canvas.height;
+            const pad = { top: 16, right: 12, bottom: 8, left: 8 };
+            const chartW = W - pad.left - pad.right;
+            const chartH = H - pad.top - pad.bottom;
+            const barW = Math.floor(chartW / data.length);
+            const gap = 6;
+
+            ctx.clearRect(0, 0, W, H);
+
+            // Сетка
+            ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 4; i++) {
+                const y = pad.top + chartH - (chartH / 4 * i);
+                ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(W - pad.right, y); ctx.stroke();
+            }
+
+            // Столбцы
+            data.forEach((val, i) => {
+                const barH = val > 0 ? Math.max(4, Math.round(val / maxVal * chartH)) : 2;
+                const x = pad.left + i * barW + gap / 2;
+                const y = pad.top + chartH - barH;
+                const w = barW - gap;
+
+                // Градиент
+                const grad = ctx.createLinearGradient(x, y, x, y + barH);
+                grad.addColorStop(0, val > 0 ? '#00FF88' : '#333');
+                grad.addColorStop(1, val > 0 ? '#00AA55' : '#222');
+                ctx.fillStyle = grad;
+
+                // Скруглённые столбцы
+                const r = Math.min(4, w / 2);
+                ctx.beginPath();
+                ctx.moveTo(x + r, y);
+                ctx.lineTo(x + w - r, y);
+                ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+                ctx.lineTo(x + w, y + barH);
+                ctx.lineTo(x, y + barH);
+                ctx.lineTo(x, y + r);
+                ctx.quadraticCurveTo(x, y, x + r, y);
+                ctx.closePath();
+                ctx.fill();
+
+                // Значение над столбцом
+                if (val > 0) {
+                    ctx.fillStyle = '#fff';
+                    ctx.font = 'bold 9px sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(val >= 1000 ? (val/1000).toFixed(1)+'k' : val.toFixed(0), x + w/2, y - 3);
+                }
+            });
+        }
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', draw);
+        else draw();
+    })();
+    <\/script>`;
+
+    return html;
 }
 
 // ─── РЕНДЕР ГЛАВНОЙ ВКЛАДКИ ──────────────────────────────
@@ -390,6 +563,7 @@ function renderRefineryTab() {
             <button class="ref-subtab ${activeSubTab === 'warehouses' ? 'active' : ''}" onclick="switchRefSubTab('warehouses')">🏗 Склады</button>
             <button class="ref-subtab ${activeSubTab === 'queue' ? 'active' : ''}" onclick="switchRefSubTab('queue')">⏳ Очередь ${refineryState.queue.length > 0 ? '<span class="badge">'+refineryState.queue.length+'</span>' : ''}</button>
             <button class="ref-subtab ${activeSubTab === 'ready' ? 'active' : ''}" onclick="switchRefSubTab('ready')">✅ Готово ${refineryState.completed.length > 0 ? '<span class="badge green">'+refineryState.completed.length+'</span>' : ''}</button>
+            <button class="ref-subtab ${activeSubTab === 'analytics' ? 'active' : ''}" onclick="switchRefSubTab('analytics')">📈 Доходность</button>
         </div>
 
         <div id="ref-subtab-content">
@@ -399,6 +573,7 @@ function renderRefineryTab() {
     else if (activeSubTab === 'warehouses') html += renderWarehousesTab(rurcBalance);
     else if (activeSubTab === 'queue') html += renderQueueTab();
     else if (activeSubTab === 'ready') html += renderReadyTab();
+    else if (activeSubTab === 'analytics') html += renderAnalyticsTab();
 
     html += `</div></div>`;
     return html;
