@@ -1,0 +1,231 @@
+
+/* ═══════════════════════════════════════════
+   REFINERY — Завод переработки
+═══════════════════════════════════════════ */
+
+.refinery-container {
+    padding: 12px;
+    max-width: 480px;
+    margin: 0 auto;
+}
+
+.refinery-resources {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.res-item {
+    flex: 1;
+    background: #0f0f1a;
+    border: 1px solid #1a1a2e;
+    border-radius: 12px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.res-icon { font-size: 22px; }
+.res-label { font-size: 11px; color: #666; }
+.res-value { font-size: 14px; font-weight: 700; color: #FF6B00; }
+
+.refinery-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 16px 0 10px;
+    padding-left: 4px;
+}
+
+.products-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.product-card {
+    background: #0f0f1a;
+    border: 1px solid var(--product-color, #333);
+    border-radius: 16px;
+    padding: 14px;
+    position: relative;
+    transition: transform 0.2s;
+}
+
+.product-card:active { transform: scale(0.98); }
+
+.product-premium {
+    background: linear-gradient(135deg, #0f0f1a 0%, #0a1a2a 100%);
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.1);
+}
+
+.product-disabled {
+    opacity: 0.5;
+    border-color: #333;
+}
+
+.product-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.product-emoji { font-size: 28px; }
+
+.product-info { flex: 1; }
+
+.product-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--product-color, #fff);
+}
+
+.product-demand { font-size: 12px; color: #888; margin-top: 2px; }
+
+.product-badge {
+    background: var(--product-color);
+    color: #000;
+    font-size: 10px;
+    font-weight: 900;
+    padding: 3px 8px;
+    border-radius: 20px;
+    letter-spacing: 1px;
+}
+
+.product-desc {
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 12px;
+    line-height: 1.4;
+}
+
+.product-stats {
+    background: rgba(0,0,0,0.3);
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 12px;
+}
+
+.stat-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    padding: 3px 0;
+    color: #ccc;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.stat-row:last-child { border-bottom: none; }
+
+.stat-total {
+    color: #fff;
+    font-weight: 700;
+    font-size: 14px;
+    margin-top: 4px;
+    padding-top: 6px;
+    border-top: 1px solid rgba(255,255,255,0.1) !important;
+}
+
+.stat-ok { color: #00FF88; font-weight: 600; }
+.stat-bad { color: #FF4444; font-weight: 600; }
+
+.refine-btn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    background: var(--product-color, #FF6B00);
+    color: #000;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.refine-btn:active { opacity: 0.8; }
+.btn-disabled { background: #333 !important; color: #666 !important; cursor: not-allowed; }
+
+/* Очередь */
+.queue-list, .completed-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.queue-item {
+    background: #0f0f1a;
+    border: 1px solid var(--product-color, #333);
+    border-radius: 12px;
+    padding: 12px;
+}
+
+.queue-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--product-color);
+}
+
+.queue-time { color: #aaa; font-size: 13px; }
+
+.queue-progress {
+    background: #1a1a2e;
+    border-radius: 20px;
+    height: 6px;
+    overflow: hidden;
+    margin-bottom: 6px;
+}
+
+.queue-bar {
+    height: 100%;
+    background: var(--product-color);
+    border-radius: 20px;
+    transition: width 1s linear;
+}
+
+.queue-output { font-size: 12px; color: #888; }
+
+/* Готовые */
+.completed-item {
+    background: #0f0f1a;
+    border: 1px solid var(--product-color, #00FF88);
+    border-radius: 12px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.completed-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.completed-emoji { font-size: 28px; }
+.completed-name { font-size: 14px; font-weight: 700; color: var(--product-color); }
+.completed-amount { font-size: 12px; color: #888; }
+
+.sell-btn {
+    background: #00FF88;
+    color: #000;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    text-align: center;
+    min-width: 90px;
+    line-height: 1.4;
+}
+
+.sell-btn:active { opacity: 0.8; }
