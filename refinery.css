@@ -1,275 +1,274 @@
 
 /* ═══════════════════════════════════════════
-   REFINERY — Завод переработки
+   REFINERY — Завод + Склады + Улучшения
 ═══════════════════════════════════════════ */
 
-.refinery-container {
-    padding: 12px;
-    max-width: 480px;
-    margin: 0 auto;
-}
+.refinery-container { padding: 12px; max-width: 480px; margin: 0 auto; }
 
+/* ─── Ресурсы ─── */
 .refinery-resources {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 16px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    margin-bottom: 14px;
 }
-
 .res-item {
-    flex: 1;
     background: #0f0f1a;
     border: 1px solid #1a1a2e;
-    border-radius: 12px;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
+    border-radius: 10px;
+    padding: 8px 4px;
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
 }
+.res-icon { font-size: 18px; }
+.res-label { font-size: 9px; color: #555; text-transform: uppercase; letter-spacing: 0.5px; }
+.res-value { font-size: 11px; font-weight: 700; color: #FF6B00; }
+.res-value.ton-val { color: #00D4FF; }
+.res-full { color: #FF4444 !important; animation: pulse-red 1s infinite; }
+@keyframes pulse-red { 0%,100%{opacity:1} 50%{opacity:0.5} }
 
-.res-icon { font-size: 22px; }
-.res-label { font-size: 11px; color: #666; }
-.res-value { font-size: 14px; font-weight: 700; color: #FF6B00; }
-
-.refinery-title {
-    font-size: 14px;
-    font-weight: 700;
-    color: #aaa;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin: 16px 0 10px;
-    padding-left: 4px;
+/* ─── Подвкладки ─── */
+.ref-subtabs {
+    display: flex; gap: 6px; margin-bottom: 14px;
+    overflow-x: auto; padding-bottom: 2px;
 }
-
-.products-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+.ref-subtab {
+    flex-shrink: 0;
+    padding: 8px 12px;
+    border: 1px solid #1a1a2e;
+    border-radius: 20px;
+    background: #0f0f1a;
+    color: #666;
+    font-size: 12px; font-weight: 600;
+    cursor: pointer; white-space: nowrap;
+    transition: all 0.2s;
 }
+.ref-subtab.active {
+    background: #FF6B00;
+    border-color: #FF6B00;
+    color: #000;
+}
+.badge {
+    display: inline-block;
+    background: #FF4444; color: #fff;
+    font-size: 10px; font-weight: 900;
+    padding: 1px 5px; border-radius: 10px;
+    margin-left: 3px;
+}
+.badge.green { background: #00FF88; color: #000; }
+
+/* ─── Карточки заводов ─── */
+.products-grid { display: flex; flex-direction: column; gap: 12px; }
 
 .product-card {
     background: #0f0f1a;
     border: 1px solid var(--product-color, #333);
-    border-radius: 16px;
-    padding: 14px;
-    position: relative;
-    transition: transform 0.2s;
+    border-radius: 16px; padding: 14px;
+    position: relative; transition: transform 0.2s;
 }
-
 .product-card:active { transform: scale(0.98); }
+.product-premium { box-shadow: 0 0 20px rgba(0,212,255,0.1); }
+.product-disabled { opacity: 0.5; border-color: #333; }
+.product-owned { border-width: 2px; box-shadow: 0 0 16px rgba(0,255,136,0.08); }
 
-.product-premium {
-    background: linear-gradient(135deg, #0f0f1a 0%, #0a1a2a 100%);
-    box-shadow: 0 0 20px rgba(0, 212, 255, 0.1);
-}
-
-.product-disabled {
-    opacity: 0.5;
-    border-color: #333;
-}
-
-.product-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 8px;
-}
-
+.product-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
 .product-emoji { font-size: 28px; }
-
 .product-info { flex: 1; }
-
-.product-name {
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--product-color, #fff);
-}
-
+.product-name { font-size: 16px; font-weight: 700; color: var(--product-color, #fff); }
 .product-demand { font-size: 12px; color: #888; margin-top: 2px; }
-
 .product-badge {
-    background: var(--product-color);
-    color: #000;
-    font-size: 10px;
-    font-weight: 900;
-    padding: 3px 8px;
-    border-radius: 20px;
-    letter-spacing: 1px;
+    background: var(--product-color); color: #000;
+    font-size: 10px; font-weight: 900;
+    padding: 3px 8px; border-radius: 20px; letter-spacing: 1px;
+}
+.factory-level-badge {
+    background: rgba(255,255,255,0.1);
+    color: #fff; font-size: 11px; font-weight: 700;
+    padding: 4px 10px; border-radius: 20px;
+    border: 1px solid var(--product-color);
 }
 
-.product-desc {
-    font-size: 12px;
-    color: #888;
-    margin-bottom: 12px;
-    line-height: 1.4;
-}
+.product-desc { font-size: 12px; color: #888; margin-bottom: 12px; line-height: 1.4; }
 
 .product-stats {
-    background: rgba(0,0,0,0.3);
-    border-radius: 10px;
-    padding: 10px;
-    margin-bottom: 12px;
+    background: rgba(0,0,0,0.3); border-radius: 10px;
+    padding: 10px; margin-bottom: 12px;
 }
-
 .stat-row {
-    display: flex;
-    justify-content: space-between;
-    font-size: 13px;
-    padding: 3px 0;
-    color: #ccc;
+    display: flex; justify-content: space-between;
+    font-size: 13px; padding: 3px 0; color: #ccc;
     border-bottom: 1px solid rgba(255,255,255,0.05);
 }
-
 .stat-row:last-child { border-bottom: none; }
-
-.stat-total {
-    color: #fff;
-    font-weight: 700;
-    font-size: 14px;
-    margin-top: 4px;
-    padding-top: 6px;
-    border-top: 1px solid rgba(255,255,255,0.1) !important;
-}
-
+.stat-total { color: #fff; font-weight: 700; font-size: 14px; }
 .stat-ok { color: #00FF88; font-weight: 600; }
 .stat-bad { color: #FF4444; font-weight: 600; }
+.stat-price { color: #00D4FF; font-weight: 700; }
+.stat-time { color: #fff; }
+.time-bonus { color: #00FF88; font-size: 11px; margin-left: 4px; }
 
+/* ─── Кнопки заводов ─── */
+.refine-btn, .buy-refinery-btn, .upgrade-factory-btn {
+    width: 100%; padding: 12px; border-radius: 10px;
+    font-size: 13px; font-weight: 700; cursor: pointer;
+    transition: opacity 0.2s; margin-bottom: 8px;
+}
 .refine-btn {
-    width: 100%;
-    padding: 12px;
     border: none;
-    border-radius: 10px;
-    background: var(--product-color, #FF6B00);
-    color: #000;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: opacity 0.2s;
+    background: var(--product-color, #FF6B00); color: #000;
+}
+.buy-refinery-btn {
+    border: 2px solid var(--product-color, #FF6B00);
+    background: transparent; color: var(--product-color, #FF6B00);
+}
+.upgrade-factory-btn {
+    border: 1px solid #444;
+    background: #1a1a2e; color: #aaa;
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+}
+.upgrade-hint { font-size: 11px; color: #00FF88; font-weight: 400; }
+.btn-disabled { background: #1a1a1a !important; border-color: #333 !important; color: #444 !important; cursor: not-allowed; }
+.max-level-badge {
+    text-align: center; padding: 10px;
+    color: #FFD700; font-size: 13px; font-weight: 700;
+    border: 1px solid #FFD700; border-radius: 10px;
 }
 
-.refine-btn:active { opacity: 0.8; }
-.btn-disabled { background: #333 !important; color: #666 !important; cursor: not-allowed; }
+/* ─── Склады ─── */
+.warehouses-info {
+    background: rgba(255,107,0,0.1);
+    border: 1px solid rgba(255,107,0,0.3);
+    border-radius: 10px; padding: 10px 12px;
+    font-size: 12px; color: #FF6B00; margin-bottom: 14px;
+    line-height: 1.5;
+}
+.warehouses-grid { display: flex; flex-direction: column; gap: 14px; }
 
-/* Очередь */
-.queue-list, .completed-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+.warehouse-card {
+    background: #0f0f1a;
+    border: 1px solid var(--wh-color, #333);
+    border-radius: 16px; padding: 14px;
+}
+.wh-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.wh-emoji { font-size: 28px; }
+.wh-info { flex: 1; }
+.wh-name { font-size: 15px; font-weight: 700; color: var(--wh-color); }
+.wh-level { font-size: 11px; color: #888; margin-top: 2px; }
+.wh-max-badge {
+    background: #FFD700; color: #000;
+    font-size: 10px; font-weight: 900;
+    padding: 3px 8px; border-radius: 20px;
+}
+.wh-desc { font-size: 12px; color: #888; margin-bottom: 12px; line-height: 1.4; }
+
+.wh-fill-row {
+    display: flex; justify-content: space-between;
+    font-size: 12px; color: #aaa; margin-bottom: 6px;
+}
+.fill-ok { color: #00FF88; }
+.fill-warn { color: #FFD700; }
+.fill-danger { color: #FF4444; }
+.wh-fill-bar {
+    background: #1a1a2e; border-radius: 20px;
+    height: 8px; overflow: hidden; margin-bottom: 10px;
+}
+.wh-fill-inner {
+    height: 100%; background: var(--wh-color);
+    border-radius: 20px; transition: width 0.5s;
+}
+.fill-bar-danger { background: #FF4444 !important; }
+
+.wh-levels-row {
+    display: flex; gap: 6px; margin-bottom: 12px;
+}
+.wh-lvl-dot {
+    flex: 1; height: 4px; border-radius: 4px;
+    background: #1a1a2e;
+}
+.wh-lvl-dot.active { background: var(--wh-color); }
+
+.wh-upgrade-info {
+    background: rgba(0,0,0,0.3); border-radius: 10px;
+    padding: 10px; margin-bottom: 10px;
+}
+.wh-upgrade-row {
+    display: flex; justify-content: space-between;
+    font-size: 13px; color: #ccc; padding: 3px 0;
+}
+.burn-price { color: #FF4444; font-weight: 700; }
+
+.wh-upgrade-btn {
+    width: 100%; padding: 13px; border-radius: 10px;
+    border: 2px solid #FF4444;
+    background: rgba(255,68,68,0.1);
+    color: #FF4444; font-size: 13px; font-weight: 700;
+    cursor: pointer; transition: all 0.2s;
+}
+.wh-upgrade-btn:not(.btn-disabled):active {
+    background: #FF4444; color: #fff;
+}
+.wh-max-label {
+    text-align: center; padding: 10px;
+    color: #FFD700; font-size: 13px; font-weight: 700;
 }
 
+/* ─── Статистика сжигания ─── */
+.burn-stats {
+    margin-top: 16px;
+    background: rgba(255,68,68,0.05);
+    border: 1px solid rgba(255,68,68,0.2);
+    border-radius: 12px; padding: 12px;
+}
+.burn-stats-title { font-size: 13px; font-weight: 700; color: #FF4444; margin-bottom: 8px; }
+.burn-stat-row {
+    display: flex; justify-content: space-between;
+    font-size: 13px; color: #aaa;
+}
+.burn-val { color: #FF4444; font-weight: 700; }
+
+/* ─── Очередь ─── */
+.queue-list, .completed-list { display: flex; flex-direction: column; gap: 10px; }
 .queue-item {
     background: #0f0f1a;
     border: 1px solid var(--product-color, #333);
-    border-radius: 12px;
-    padding: 12px;
+    border-radius: 12px; padding: 12px;
 }
-
 .queue-header {
-    display: flex;
-    justify-content: space-between;
-    font-size: 14px;
-    font-weight: 600;
-    margin-bottom: 8px;
+    display: flex; justify-content: space-between;
+    font-size: 14px; font-weight: 600; margin-bottom: 8px;
     color: var(--product-color);
 }
-
 .queue-time { color: #aaa; font-size: 13px; }
-
 .queue-progress {
-    background: #1a1a2e;
-    border-radius: 20px;
-    height: 6px;
-    overflow: hidden;
-    margin-bottom: 6px;
+    background: #1a1a2e; border-radius: 20px;
+    height: 6px; overflow: hidden; margin-bottom: 6px;
 }
-
 .queue-bar {
-    height: 100%;
-    background: var(--product-color);
-    border-radius: 20px;
-    transition: width 1s linear;
+    height: 100%; background: var(--product-color);
+    border-radius: 20px; transition: width 1s linear;
 }
-
 .queue-output { font-size: 12px; color: #888; }
 
-/* Готовые */
+/* ─── Готово ─── */
 .completed-item {
     background: #0f0f1a;
     border: 1px solid var(--product-color, #00FF88);
-    border-radius: 12px;
-    padding: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
+    border-radius: 12px; padding: 12px;
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
 }
-
-.completed-info {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
+.completed-info { display: flex; align-items: center; gap: 10px; }
 .completed-emoji { font-size: 28px; }
 .completed-name { font-size: 14px; font-weight: 700; color: var(--product-color); }
 .completed-amount { font-size: 12px; color: #888; }
-
 .sell-btn {
-    background: #00FF88;
-    color: #000;
-    border: none;
-    border-radius: 10px;
-    padding: 10px 14px;
-    font-size: 12px;
-    font-weight: 700;
-    cursor: pointer;
-    text-align: center;
-    min-width: 90px;
-    line-height: 1.4;
+    background: #00FF88; color: #000;
+    border: none; border-radius: 10px;
+    padding: 10px 14px; font-size: 12px; font-weight: 700;
+    cursor: pointer; text-align: center; min-width: 90px; line-height: 1.4;
 }
-
 .sell-btn:active { opacity: 0.8; }
 
-/* ─── Покупка завода ─────────────────────────── */
-
-.buy-refinery-btn {
-    width: 100%;
-    padding: 13px;
-    border: 2px solid var(--product-color, #FF6B00);
-    border-radius: 10px;
-    background: transparent;
-    color: var(--product-color, #FF6B00);
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: background 0.2s, color 0.2s;
-}
-
-.buy-refinery-btn:not(.btn-disabled):active {
-    background: var(--product-color);
-    color: #000;
-}
-
-.owned-badge {
-    background: #00FF88;
-    color: #000;
-    font-size: 10px;
-    font-weight: 900;
-    padding: 3px 8px;
-    border-radius: 20px;
-    letter-spacing: 0.5px;
-}
-
-.product-owned {
-    border-width: 2px;
-    box-shadow: 0 0 16px rgba(0, 255, 136, 0.12);
-}
-
-.stat-price {
-    color: #00D4FF;
-    font-weight: 700;
-}
-
-.refinery-resources .ton-val {
-    color: #00D4FF;
+/* ─── Пустое состояние ─── */
+.empty-state {
+    text-align: center; padding: 50px 20px;
+    color: #555; font-size: 14px; line-height: 1.8;
 }
