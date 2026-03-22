@@ -1048,6 +1048,7 @@ button:active {
     [dir="rtl"] .tabs { direction: rtl; }
     [dir="rtl"] .app-header { direction: rtl; }
     </style>
+    <link rel="stylesheet" href="refinery.css">
 </head>
 <body>
 
@@ -1118,6 +1119,7 @@ button:active {
         <button class="tab-btn" data-tab="staking">💎 Стейкинг</button>
         <button class="tab-btn" data-tab="transactions">📋 Транзакции</button>
         <button class="tab-btn" data-tab="halving">⏳ Халвинг</button>
+        <button class="tab-btn" data-tab="refinery">⚗️<span>Завод</span></button>
         <button class="tab-btn" data-tab="exchange">🔄 Обменник</button>
         <button class="tab-btn" data-tab="community">🌍 Сообщество</button>
         <button class="tab-btn" data-tab="gps">🛰️ GPS</button>
@@ -1399,6 +1401,14 @@ button:active {
                     <span class="token-icon rurc" style="width:16px;height:16px;font-size:10px;">₽</span> RURC/блок
                 </span>
             </div>
+        </div>
+    </div>
+
+
+    <!-- ⚗️ ЗАВОД ПЕРЕРАБОТКИ -->
+    <div class="tab-content" id="refinery">
+        <div id="refinery-content">
+            <div style="text-align:center;padding:40px;color:#666;">Загрузка завода...</div>
         </div>
     </div>
 
@@ -1709,6 +1719,28 @@ function switchToWalletTab() {
     obs.observe(queue, { childList: true });
   });
 })();
+</script>
+
+    <script src="refinery.js"></script>
+
+<script>
+// Инициализация вкладки завода при переключении
+document.addEventListener('DOMContentLoaded', function() {
+    // Перехватываем клики по вкладкам
+    document.querySelectorAll('[data-tab]').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const tab = this.getAttribute('data-tab');
+            if (tab === 'refinery') {
+                setTimeout(() => {
+                    const el = document.getElementById('refinery-content');
+                    if (el && typeof renderRefineryTab === 'function') {
+                        el.innerHTML = renderRefineryTab();
+                    }
+                }, 50);
+            }
+        });
+    });
+});
 </script>
 
 </body>
