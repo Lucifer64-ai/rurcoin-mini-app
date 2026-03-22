@@ -2,20 +2,20 @@
 const CONTRACTS = {
     rurc: {
         name: "RURCoin",
-        address: "EQDPnYSAV-H8ADoaYGAuNhJL4HwfSB9IBj9ABi465D9ABj9ABgBaY",
+        address: "EQA8u0W168DzY440TOU8vjStCGHpROrYvd42ZJ8zDdrNn_Nd",
         decimals: 9,
         symbol: "RURC",
         description: "Российская криптовалюта на блокчейне TON"
     },
     staking: {
         name: "RURCoin Staking",
-        address: "EQDPnYSAV-H8ADoaYGAuNhJL4HwfSB9IBj9ABi465D9ABj9ABgBaY",
+        address: "EQA8u0W168DzY440TOU8vjStCGHpROrYvd42ZJ8zDdrNn_Nd",
         apy: 15,
         description: "Контракт для стейкинга RURC с начислением 15% годовых"
     },
     farmFactory: {
         name: "Farm Factory",
-        address: "EQDPnYSAV-H8ADoaYGAuNhJL4HwfSB9IBj9ABi465D9ABj9ABgBaY",
+        address: "EQA8u0W168DzY440TOU8vjStCGHpROrYvd42ZJ8zDdrNn_Nd",
         description: "Создание и управление майнинг-фермами"
     }
 };
