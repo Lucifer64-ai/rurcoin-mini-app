@@ -318,15 +318,124 @@ window.switchResourceSlide = switchResourceSlide;
 // ============================================================
 //  renderUpgrades — отрисовка вкладки улучшений
 // ============================================================
+//  UPGRADES — список улучшений с подробными описаниями
+// ============================================================
 const UPGRADES_LIST = [
-    { id:'oilSpeed',    name:'⚡ Скорость добычи нефти',         desc:'+20% добычи нефти за уровень',           icon:'🛢️', baseCost:50,  costMult:2.2, maxLevel:10, stat:(a)=>`${(a.getOilPerSec()*3600).toFixed(1)} барр/ч` },
-    { id:'gasSpeed',    name:'⚡ Скорость добычи газа',           desc:'+20% добычи газа за уровень',            icon:'🔥', baseCost:40,  costMult:2.0, maxLevel:10, stat:(a)=>`${(a.getGasPerSec()*3600).toFixed(0)} м³/ч` },
-    { id:'oilPrice',    name:'💰 Цена нефти',                    desc:'+15% к цене продажи нефти',              icon:'📈', baseCost:80,  costMult:2.5, maxLevel:8,  stat:(a)=>`$${a.getOilSellPrice().toFixed(2)}/барр` },
-    { id:'gasPrice',    name:'💰 Цена газа',                     desc:'+15% к цене продажи газа',               icon:'📈', baseCost:60,  costMult:2.3, maxLevel:8,  stat:(a)=>`$${a.getGasSellPrice().toFixed(3)}/м³` },
-    { id:'autoSell',    name:'🤖 Авто-продажа',                  desc:'Автоматически продаёт ресурсы при заполнении', icon:'🤖', baseCost:200, costMult:3.0, maxLevel:1,  stat:(a)=>(a.upgrades.autoSell>=1?'✅ Активно':'❌ Не куплено') },
-    { id:'oilCapacity', name:'🏗️ Ёмкость нефтяного резервуара', desc:'+50 барр к ёмкости за уровень',          icon:'🏗️', baseCost:100, costMult:1.8, maxLevel:20, stat:(a)=>`${a.oilCapacity} барр` },
-    { id:'gasCapacity', name:'🏗️ Ёмкость газового резервуара',  desc:'+500 м³ к ёмкости за уровень',           icon:'🏗️', baseCost:80,  costMult:1.8, maxLevel:20, stat:(a)=>`${a.gasCapacity} м³` }
+    {
+        id: 'oilSpeed',
+        name: '⚡ Скорость добычи нефти',
+        icon: '🛢️',
+        category: 'oil',
+        desc: 'Увеличивает скорость добычи нефти на 20% за каждый уровень.',
+        details: [
+            'Ур. 1 → +20% добычи нефти',
+            'Ур. 5 → +100% (×2 к базе)',
+            'Ур. 10 → +200% (×3 к базе)',
+            'Работает пассивно — нефть добывается быстрее без действий'
+        ],
+        baseCost: 50, costMult: 2.2, maxLevel: 10,
+        stat: (a) => `${(a.getOilPerSec()*3600).toFixed(1)} барр/ч`
+    },
+    {
+        id: 'gasSpeed',
+        name: '⚡ Скорость добычи газа',
+        icon: '🔥',
+        category: 'gas',
+        desc: 'Увеличивает скорость добычи природного газа на 20% за уровень.',
+        details: [
+            'Ур. 1 → +20% добычи газа',
+            'Ур. 5 → +100% (×2 к базе)',
+            'Ур. 10 → +200% (×3 к базе)',
+            'Стекается с количеством газовых вышек'
+        ],
+        baseCost: 40, costMult: 2.0, maxLevel: 10,
+        stat: (a) => `${(a.getGasPerSec()*3600).toFixed(0)} м³/ч`
+    },
+    {
+        id: 'oilPrice',
+        name: '💰 Цена продажи нефти',
+        icon: '📈',
+        category: 'oil',
+        desc: 'Повышает цену продажи нефти на 15% за каждый уровень.',
+        details: [
+            'Ур. 1 → +15% к цене нефти',
+            'Ур. 4 → +60% к цене нефти',
+            'Ур. 8 → +120% к цене нефти',
+            'Влияет на ручную и авто-продажу'
+        ],
+        baseCost: 80, costMult: 2.5, maxLevel: 8,
+        stat: (a) => `$${a.getOilSellPrice().toFixed(2)}/барр`
+    },
+    {
+        id: 'gasPrice',
+        name: '💰 Цена продажи газа',
+        icon: '📈',
+        category: 'gas',
+        desc: 'Повышает цену продажи газа на 15% за каждый уровень.',
+        details: [
+            'Ур. 1 → +15% к цене газа',
+            'Ур. 4 → +60% к цене газа',
+            'Ур. 8 → +120% к цене газа',
+            'Влияет на ручную и авто-продажу'
+        ],
+        baseCost: 60, costMult: 2.3, maxLevel: 8,
+        stat: (a) => `$${a.getGasSellPrice().toFixed(3)}/м³`
+    },
+    {
+        id: 'autoSell',
+        name: '🤖 Авто-продажа',
+        icon: '🤖',
+        category: 'auto',
+        desc: 'Автоматически продаёт нефть и газ при заполнении хранилища.',
+        details: [
+            'Продаёт нефть при заполнении резервуара на 100%',
+            'Продаёт газ при заполнении резервуара на 100%',
+            'Работает в фоне — не нужно нажимать кнопки',
+            'Одноразовое улучшение — 1 уровень'
+        ],
+        baseCost: 200, costMult: 3.0, maxLevel: 1,
+        stat: (a) => (a.upgrades.autoSell >= 1 ? '✅ Активно' : '❌ Не куплено')
+    },
+    {
+        id: 'oilCapacity',
+        name: '🏗️ Ёмкость нефтехранилища',
+        icon: '🏗️',
+        category: 'storage',
+        desc: 'Увеличивает максимальную ёмкость нефтяного резервуара на 50 барр за уровень.',
+        details: [
+            'Ур. 1 → +50 барр (итого 150)',
+            'Ур. 5 → +250 барр (итого 350)',
+            'Ур. 10 → +500 барр (итого 600)',
+            'Ур. 20 → +1000 барр (итого 1100)',
+            'Больше ёмкость = реже нужно продавать'
+        ],
+        baseCost: 100, costMult: 1.8, maxLevel: 20,
+        stat: (a) => `${a.oilCapacity} барр`
+    },
+    {
+        id: 'gasCapacity',
+        name: '🏗️ Ёмкость газохранилища',
+        icon: '🏗️',
+        category: 'storage',
+        desc: 'Увеличивает максимальную ёмкость газового резервуара на 500 м³ за уровень.',
+        details: [
+            'Ур. 1 → +500 м³ (итого 1500)',
+            'Ур. 5 → +2500 м³ (итого 3500)',
+            'Ур. 10 → +5000 м³ (итого 6000)',
+            'Ур. 20 → +10000 м³ (итого 11000)',
+            'Больше ёмкость = реже нужно продавать'
+        ],
+        baseCost: 80, costMult: 1.8, maxLevel: 20,
+        stat: (a) => `${a.gasCapacity} м³`
+    }
 ];
+
+const UPGRADE_CATEGORIES = {
+    oil:     { label: '🛢️ Нефть',    color: '#FF8C00' },
+    gas:     { label: '🔥 Газ',      color: '#4ade80' },
+    auto:    { label: '🤖 Авто',     color: '#60a5fa' },
+    storage: { label: '🏗️ Хранилище', color: '#a78bfa' }
+};
 
 function getUpgradeCost(upg) {
     const app = window.rurcoinApp;
@@ -334,54 +443,158 @@ function getUpgradeCost(upg) {
     return Math.round(upg.baseCost * Math.pow(upg.costMult, level));
 }
 
+// Состояние раскрытых карточек
+const _upgExpanded = {};
+
+function toggleUpgradeDetails(id) {
+    _upgExpanded[id] = !_upgExpanded[id];
+    renderUpgrades();
+}
+
 function renderUpgrades() {
     const container = document.getElementById('upgradesList');
     if (!container) return;
     const app = window.rurcoinApp;
-    if (!app) { container.innerHTML = '<div style="color:#555;text-align:center;padding:20px;">Загрузка...</div>'; return; }
+    if (!app) {
+        container.innerHTML = '<div style="color:#555;text-align:center;padding:20px;">Загрузка...</div>';
+        return;
+    }
 
-    container.innerHTML = UPGRADES_LIST.map(upg => {
-        const level = app.upgrades[upg.id] || 0;
-        const maxed = level >= upg.maxLevel;
-        const cost  = getUpgradeCost(upg);
-        const canAfford = app.balance >= cost;
-        const statText  = upg.stat(app);
-        return `
-        <div style="background:rgba(255,107,0,0.06);border:1px solid rgba(255,107,0,${maxed?'0.5':'0.15'});
-                    border-radius:12px;padding:14px;margin-bottom:10px;transition:all 0.2s;">
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-                <span style="font-size:24px;">${upg.icon}</span>
-                <div style="flex:1;">
-                    <div style="font-size:13px;font-weight:700;color:${maxed?'#FFD700':'#FF8C00'};">${upg.name}</div>
-                    <div style="font-size:11px;color:#666;margin-top:2px;">${upg.desc}</div>
-                </div>
-                <div style="text-align:right;">
-                    <div style="font-size:11px;color:#888;">Уровень</div>
-                    <div style="font-size:16px;font-weight:700;color:${maxed?'#FFD700':'#00D4FF'};">${level}/${upg.maxLevel}</div>
-                </div>
-            </div>
-            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
-                <div style="font-size:11px;color:#555;">📊 ${statText}</div>
-                ${maxed
-                    ? `<div style="padding:8px 16px;border-radius:8px;background:rgba(255,215,0,0.1);
-                                  border:1px solid rgba(255,215,0,0.3);color:#FFD700;font-size:12px;font-weight:700;">✅ МАКС</div>`
-                    : `<button onclick="buyUpgrade('${upg.id}')"
-                               style="padding:8px 16px;border:none;border-radius:8px;cursor:pointer;
-                                      font-size:12px;font-weight:700;color:#fff;transition:all 0.2s;
-                                      background:${canAfford?'linear-gradient(135deg,#FF6B00,#cc4400)':'rgba(80,80,80,0.4)'};
-                                      opacity:${canAfford?'1':'0.6'};"
-                               ${canAfford?'':'disabled'}>
-                           💰 ${cost.toLocaleString()} RURC
-                       </button>`
-                }
-            </div>
-            ${level > 0 ? `
-            <div style="margin-top:8px;background:rgba(0,0,0,0.3);border-radius:4px;height:4px;overflow:hidden;">
-                <div style="height:100%;width:${(level/upg.maxLevel*100).toFixed(0)}%;
-                            background:linear-gradient(90deg,#FF6B00,#FFD700);transition:width 0.5s;"></div>
-            </div>` : ''}
+    // Группируем по категориям
+    const grouped = {};
+    UPGRADES_LIST.forEach(upg => {
+        if (!grouped[upg.category]) grouped[upg.category] = [];
+        grouped[upg.category].push(upg);
+    });
+
+    let html = '';
+
+    for (const [catKey, upgrades] of Object.entries(grouped)) {
+        const cat = UPGRADE_CATEGORIES[catKey];
+        html += `
+        <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;
+                    color:${cat.color};border-left:2px solid ${cat.color};
+                    padding-left:8px;margin:14px 0 8px;font-weight:700;">
+            ${cat.label}
         </div>`;
-    }).join('');
+
+        upgrades.forEach(upg => {
+            const level     = app.upgrades[upg.id] || 0;
+            const maxed     = level >= upg.maxLevel;
+            const cost      = getUpgradeCost(upg);
+            const canAfford = app.balance >= cost;
+            const statText  = upg.stat(app);
+            const pct       = Math.round(level / upg.maxLevel * 100);
+            const expanded  = !!_upgExpanded[upg.id];
+            const cat_      = UPGRADE_CATEGORIES[upg.category];
+
+            const detailsHtml = upg.details.map(d =>
+                `<div style="display:flex;align-items:flex-start;gap:6px;margin-bottom:4px;">
+                    <span style="color:${cat_.color};flex-shrink:0;">▸</span>
+                    <span style="color:#888;font-size:11px;line-height:1.4;">${d}</span>
+                </div>`
+            ).join('');
+
+            html += `
+            <div style="background:rgba(255,255,255,0.02);
+                        border:1px solid ${maxed ? cat_.color + '66' : 'rgba(255,255,255,0.07)'};
+                        border-radius:14px;padding:14px;margin-bottom:10px;
+                        transition:all 0.2s;
+                        ${maxed ? `box-shadow:0 0 12px ${cat_.color}22;` : ''}">
+
+                <!-- Шапка карточки -->
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+                    <div style="width:44px;height:44px;border-radius:12px;flex-shrink:0;
+                                background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);
+                                display:flex;align-items:center;justify-content:center;font-size:22px;">
+                        ${upg.icon}
+                    </div>
+                    <div style="flex:1;min-width:0;">
+                        <div style="font-size:13px;font-weight:700;
+                                    color:${maxed ? '#FFD700' : cat_.color};
+                                    margin-bottom:2px;">${upg.name}</div>
+                        <div style="font-size:11px;color:#666;line-height:1.3;">${upg.desc}</div>
+                    </div>
+                    <div style="text-align:center;flex-shrink:0;">
+                        <div style="font-size:18px;font-weight:800;
+                                    color:${maxed ? '#FFD700' : '#fff'};">${level}</div>
+                        <div style="font-size:9px;color:#444;">/ ${upg.maxLevel}</div>
+                    </div>
+                </div>
+
+                <!-- Прогресс-бар -->
+                <div style="background:rgba(0,0,0,0.4);border-radius:4px;height:5px;
+                            margin-bottom:10px;overflow:hidden;">
+                    <div style="height:100%;width:${pct}%;
+                                background:${maxed
+                                    ? 'linear-gradient(90deg,#FFD700,#FF8C00)'
+                                    : `linear-gradient(90deg,${cat_.color},${cat_.color}88)`};
+                                transition:width 0.5s;border-radius:4px;"></div>
+                </div>
+
+                <!-- Статистика + кнопка -->
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;
+                            margin-bottom:${expanded ? '10px' : '0'};">
+                    <div style="display:flex;align-items:center;gap:6px;flex:1;min-width:0;">
+                        <span style="font-size:10px;color:#555;">📊</span>
+                        <span style="font-size:11px;color:#666;white-space:nowrap;overflow:hidden;
+                                     text-overflow:ellipsis;">${statText}</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+                        <!-- Кнопка подробнее -->
+                        <button onclick="toggleUpgradeDetails('${upg.id}')"
+                                style="padding:7px 10px;border:1px solid rgba(255,255,255,0.1);
+                                       border-radius:8px;cursor:pointer;font-size:11px;
+                                       background:rgba(255,255,255,0.04);color:#888;
+                                       transition:all 0.2s;">
+                            ${expanded ? '▲' : '▼'}
+                        </button>
+                        <!-- Кнопка купить -->
+                        ${maxed
+                            ? `<div style="padding:7px 14px;border-radius:8px;
+                                          background:rgba(255,215,0,0.1);
+                                          border:1px solid rgba(255,215,0,0.3);
+                                          color:#FFD700;font-size:11px;font-weight:700;">
+                                   ✅ МАКС
+                               </div>`
+                            : `<button onclick="buyUpgrade('${upg.id}')"
+                                       style="padding:7px 14px;border:none;border-radius:8px;
+                                              cursor:pointer;font-size:12px;font-weight:700;
+                                              color:#fff;transition:all 0.2s;white-space:nowrap;
+                                              background:${canAfford
+                                                  ? `linear-gradient(135deg,${cat_.color},${cat_.color}99)`
+                                                  : 'rgba(80,80,80,0.4)'};
+                                              opacity:${canAfford ? '1' : '0.55'};"
+                                       ${canAfford ? '' : 'disabled'}>
+                                   💰 ${cost.toLocaleString()}
+                               </button>`
+                        }
+                    </div>
+                </div>
+
+                <!-- Раскрывающееся описание -->
+                ${expanded ? `
+                <div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:10px;
+                            animation:slide-up 0.2s ease;">
+                    <div style="font-size:10px;letter-spacing:1px;text-transform:uppercase;
+                                color:${cat_.color};margin-bottom:8px;font-weight:700;">
+                        Что даёт улучшение:
+                    </div>
+                    ${detailsHtml}
+                    ${level > 0 && level < upg.maxLevel ? `
+                    <div style="margin-top:8px;padding:8px;background:rgba(255,255,255,0.02);
+                                border-radius:8px;border:1px solid rgba(255,255,255,0.05);">
+                        <div style="font-size:10px;color:#555;margin-bottom:2px;">Следующий уровень:</div>
+                        <div style="font-size:12px;color:${cat_.color};font-weight:700;">
+                            Уровень ${level} → ${level+1} · Стоимость: ${cost.toLocaleString()} RURC
+                        </div>
+                    </div>` : ''}
+                </div>` : ''}
+            </div>`;
+        });
+    }
+
+    container.innerHTML = html;
 }
 
 function buyUpgrade(upgradeId) {
@@ -397,8 +610,8 @@ function buyUpgrade(upgradeId) {
         if (btn) {
             const orig = btn.innerHTML;
             btn.style.background = 'rgba(255,34,68,0.6)';
-            btn.textContent = '❌ Недостаточно';
-            setTimeout(() => { btn.style.background='rgba(80,80,80,0.4)'; btn.innerHTML=orig; }, 1200);
+            btn.textContent = '❌ Мало RURC';
+            setTimeout(() => { btn.style.background = 'rgba(80,80,80,0.4)'; btn.innerHTML = orig; }, 1200);
         }
         return;
     }
@@ -414,6 +627,7 @@ function buyUpgrade(upgradeId) {
 
 window.renderUpgrades = renderUpgrades;
 window.buyUpgrade = buyUpgrade;
+window.toggleUpgradeDetails = toggleUpgradeDetails;
 
 // Автообновление при переключении на вкладку улучшений
 document.addEventListener('click', function(e) {
