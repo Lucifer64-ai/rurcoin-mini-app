@@ -272,3 +272,30 @@
     text-align: center; padding: 50px 20px;
     color: #555; font-size: 14px; line-height: 1.8;
 }
+
+/* ─── ROI улучшения ─── */
+.upgrade-roi {
+    display: block;
+    font-size: 11px;
+    color: #00FF88;
+    font-weight: 600;
+    margin-top: 3px;
+}
+.upgrade-hint {
+    display: block;
+    font-size: 11px;
+    color: #aaa;
+    font-weight: 400;
+    margin-top: 2px;
+}
+
+/* ─── Газовый завод — метка ─── */
+.gas-only-badge {
+    display: inline-block;
+    background: rgba(0,191,255,0.15);
+    border: 1px solid #00BFFF;
+    color: #00BFFF;
+    font-size: 10px; font-weight: 700;
+    padding: 2px 8px; border-radius: 20px;
+    margin-bottom: 6px;
+}
