@@ -14,7 +14,11 @@ const GPS = (function () {
   const PLATFORM_EXCL_KM   = 150;   // радиус эксклюзивности платформы (км)
   const FIELD_RESERVE_INIT = 1000;  // начальный запас месторождения
   const FIELD_DRAIN_PER_SEC = 0.5;  // расход запаса в сек при активной платформе
-  const FIELD_REGEN_PER_SEC = 0.05; // восстановление без платформы
+  const FIELD_REGEN_PER_SEC  = 0.05;  // восстановление без платформы
+  const PLATFORM_HP_MAX      = 100;   // максимальное HP платформы
+  const PLATFORM_HP_DRAIN    = 0.005; // потеря HP/сек (~5.5 часов до 0)
+  const PLATFORM_REPAIR_COST = 50;   // стоимость ремонта (RURC)
+  const PLATFORM_HP_WARN     = 30;   // % HP — порог предупреждения
   const CAPTURE_TTL_MS     = 86400000; // 24ч — захват
   const CACHE_TTL_MS       = 300000;
   const MAX_SPEED_KMH      = 300;
@@ -221,10 +225,28 @@ const GPS = (function () {
     FIELDS.forEach(function(f) {
       const p = state.platforms[f.id];
       if (p) {
+        // Расход запаса месторождения
         const drain = FIELD_DRAIN_PER_SEC * (1 + (p.level - 1) * 0.3);
         const newVal = getReserve(f.id) - drain;
         setReserve(f.id, newVal);
-        if (newVal <= 0) onFieldDepleted(f.id, f);
+        if (newVal <= 0) { onFieldDepleted(f.id, f); return; }
+
+        // Деградация HP платформы
+        if (p.hp === undefined) p.hp = PLATFORM_HP_MAX;
+        p.hp = Math.max(0, p.hp - PLATFORM_HP_DRAIN);
+
+        // Предупреждение при низком HP (раз в 5 мин)
+        if (p.owner === getPlayerId()) {
+          const hpPct = Math.round(p.hp);
+          if (hpPct <= PLATFORM_HP_WARN && (!p._warnedAt || Date.now() - p._warnedAt > 300000)) {
+            p._warnedAt = Date.now();
+            const ff = FIELDS.find(ff => ff.id === f.id);
+            notify('⚠️ Платформа разрушается!', (ff ? ff.name : f.id) + ' — HP ' + hpPct + '%, нужен ремонт', 'warning');
+          }
+        }
+
+        // Разрушение при 0 HP
+        if (p.hp <= 0) { onPlatformDestroyed(f.id, f); return; }
       } else {
         const cur = getReserve(f.id);
         if (cur < FIELD_RESERVE_INIT) setReserve(f.id, cur + FIELD_REGEN_PER_SEC);
@@ -407,6 +429,21 @@ const GPS = (function () {
         + '<div style="background:' + rColor + ';width:' + rPct + '%;height:100%;border-radius:4px;transition:width 2s;"></div>'
         + '</div></div>';
 
+      // Полоса HP платформы
+      if (hasPlatform) {
+        const hp = Math.round(getPlatformHp(state.platforms[f.id]));
+        const hpC = hpColor(hp);
+        html += '<div style="margin-bottom:8px;">'
+          + '<div style="display:flex;justify-content:space-between;font-size:11px;color:#888;margin-bottom:3px;">'
+          + '<span>🔩 HP платформы</span>'
+          + '<span style="color:' + hpC + ';">' + hp + '%'
+          + (hp <= PLATFORM_HP_WARN ? ' ⚠️ Нужен ремонт' : '') + '</span>'
+          + '</div>'
+          + '<div style="background:#1a1a2e;border-radius:4px;height:6px;">'
+          + '<div style="background:' + hpC + ';width:' + hp + '%;height:100%;border-radius:4px;transition:width 2s;"></div>'
+          + '</div></div>';
+      }
+
       // Блокировщик
       const blocker = getBlockingPlatform(f.id);
       if (blocker && !hasPlatform) {
@@ -427,6 +464,10 @@ const GPS = (function () {
           html += '<div style="flex:1;padding:6px;background:#FF444422;border:1px solid #FF4444;border-radius:6px;color:#FF4444;font-size:12px;text-align:center;">🚫 Заблокировано</div>';
         } else if (myPlatform) {
           html += '<button onclick="GPS.upgradePlatform(\'' + f.id + '\')" style="flex:1;padding:6px;background:#00D4FF22;border:1px solid #00D4FF;border-radius:6px;color:#00D4FF;font-size:12px;cursor:pointer;">⬆️ Улучшить</button>';
+          const hpNow = Math.round(getPlatformHp(state.platforms[f.id]));
+          if (hpNow < PLATFORM_HP_MAX) {
+            html += '<button onclick="GPS.repairPlatform(\'' + f.id + '\')" style="flex:1;padding:6px;background:#2ECC7122;border:1px solid #2ECC71;border-radius:6px;color:#2ECC71;font-size:12px;cursor:pointer;">🔨 Ремонт (' + PLATFORM_REPAIR_COST + ' RURC)</button>';
+          }
           html += '<button onclick="GPS.dismantlePlatform(\'' + f.id + '\')" style="padding:6px 10px;background:#FF444422;border:1px solid #FF4444;border-radius:6px;color:#FF4444;font-size:12px;cursor:pointer;">🔧 Демонтаж</button>';
         }
         html += '</div>';
@@ -485,7 +526,8 @@ const GPS = (function () {
   function onPlatformBuilt(fieldId, field) {
     const platform = {
       owner: getPlayerId(), ownerName: getPlayerName(),
-      builtAt: Date.now(), level: 1, bonusPct: 0.20
+      builtAt: Date.now(), level: 1, bonusPct: 0.20,
+      hp: PLATFORM_HP_MAX
     };
     state.platforms[fieldId] = platform;
     saveWorldState();
@@ -533,6 +575,44 @@ const GPS = (function () {
     notify('🔧 Платформа демонтирована', (f ? f.name : fieldId), 'info');
     renderScanResults();
     renderPlatformsList();
+  }
+
+  // ── HP платформ ──────────────────────────────────────────────────────
+  function getPlatformHp(p) { return p && p.hp !== undefined ? p.hp : PLATFORM_HP_MAX; }
+  function hpColor(hp) { return hp > 60 ? '#2ECC71' : hp > 30 ? '#FFD700' : '#FF4444'; }
+
+  function repairPlatform(fieldId) {
+    const p = state.platforms[fieldId];
+    const f = FIELDS.find(f => f.id === fieldId);
+    if (!p || p.owner !== getPlayerId()) { notify('❌ Не ваша платформа', '', 'error'); return; }
+    const hp = getPlatformHp(p);
+    if (hp >= PLATFORM_HP_MAX) { notify('✅ Платформа в порядке', 'HP уже максимальное', 'info'); return; }
+    if (typeof window.gameState !== 'undefined' && window.gameState.balance !== undefined) {
+      if (window.gameState.balance < PLATFORM_REPAIR_COST) {
+        notify('💸 Недостаточно RURC', 'Нужно ' + PLATFORM_REPAIR_COST + ' RURC для ремонта', 'error'); return;
+      }
+      window.gameState.balance -= PLATFORM_REPAIR_COST;
+      if (typeof window.updateUI === 'function') window.updateUI();
+    }
+    p.hp = PLATFORM_HP_MAX;
+    p.repairedAt = Date.now();
+    saveWorldState();
+    if (f) updateFieldMarker(f);
+    notify('🔨 Отремонтировано!', (f ? f.name : fieldId) + ' — HP 100%', 'success');
+    renderScanResults();
+    renderPlatformsList();
+  }
+
+  function onPlatformDestroyed(fieldId, field) {
+    const p = state.platforms[fieldId];
+    const wasOwner = p && p.owner === getPlayerId();
+    delete state.platforms[fieldId];
+    saveWorldState();
+    if (wasOwner) notify('💥 Платформа разрушена!', (field ? field.name : fieldId) + ' — HP 0%, нужно строить заново', 'error');
+    applyPlatformBonuses();
+    if (map && field) updateFieldMarker(field);
+    renderPlatformsList();
+    renderScanResults();
   }
 
   function applyPlatformBonuses() {
@@ -780,7 +860,11 @@ const GPS = (function () {
     const rColorP = rPctP > 60 ? '#2ECC71' : rPctP > 30 ? '#FFD700' : '#FF4444';
     html += '⛽ Запас: <span style="color:' + rColorP + ';">' + rPctP + '%</span><br>';
     if (platform) {
+      const hpVal = Math.round(getPlatformHp(platform));
+      const hpC2  = hpColor(hpVal);
       html += '🏗️ Платформа: <b>' + platform.ownerName + '</b> (ур.' + platform.level + ') · +' + Math.round(platform.bonusPct*100) + '%<br>';
+      html += '🔩 HP: <span style="color:' + hpC2 + ';">' + hpVal + '%</span>'
+        + (hpVal <= PLATFORM_HP_WARN ? ' <span style="color:#FF4444;">⚠️ Нужен ремонт!</span>' : '') + '<br>';
     }
     if (isMine) html += '<span style="color:#FFD700;">🚩 Захвачено вами</span><br>';
     else if (capture && (now - capture.ts) < CAPTURE_TTL_MS) html += '<span style="color:#ff4444;">🔒 ' + capture.ownerName + '</span><br>';
@@ -881,8 +965,12 @@ const GPS = (function () {
       return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #1a1a2e;">'
         + '<span style="font-size:20px;">🏗️</span>'
         + '<div style="flex:1;"><div style="font-weight:bold;color:#9B59B6;">' + (f?f.name:id) + '</div>'
-        + '<div style="font-size:12px;color:#888;">' + (f?f.region:'') + ' · Ур.' + p.level + ' · +' + Math.round(p.bonusPct*100) + '% к добыче</div></div>'
+        + '<div style="font-size:12px;color:#888;">' + (f?f.region:'') + ' · Ур.' + p.level + ' · +' + Math.round(p.bonusPct*100) + '% к добыче</div>'
+        + (function(){ const hp=Math.round(getPlatformHp(p)); const hc=hpColor(hp); return '<div style="margin-top:4px;"><div style="display:flex;justify-content:space-between;font-size:10px;color:#666;margin-bottom:2px;"><span>🔩 HP</span><span style="color:'+hc+';">'+hp+'%'+(hp<=PLATFORM_HP_WARN?' ⚠️':'')+' </span></div><div style="background:#0d0d1a;border-radius:3px;height:4px;"><div style="background:'+hc+';width:'+hp+'%;height:100%;border-radius:3px;"></div></div></div>'; })()
+        + '</div>'
         + (p.level < 5 ? '<button onclick="GPS.upgradePlatform(\'' + id + '\')" style="padding:4px 10px;background:#9B59B622;border:1px solid #9B59B6;border-radius:6px;color:#9B59B6;font-size:11px;cursor:pointer;">⬆️</button>' : '<span style="color:#FFD700;font-size:11px;">MAX</span>')
+
+        + (getPlatformHp(p) < PLATFORM_HP_MAX ? '<button onclick="GPS.repairPlatform(\\\'' + id + '\\\')" style="margin-left:4px;padding:4px 10px;background:#2ECC7122;border:1px solid #2ECC71;border-radius:6px;color:#2ECC71;font-size:11px;cursor:pointer;">🔨</button>' : '')
         + '</div>';
     }).join('');
   }
@@ -932,7 +1020,7 @@ const GPS = (function () {
     });
   });
 
-  return { enable, disable, toggle, getBonus, getState, initTab, runScan, captureField, buildPlatform, upgradePlatform, dismantlePlatform };
+  return { enable, disable, toggle, getBonus, getState, initTab, runScan, captureField, buildPlatform, upgradePlatform, dismantlePlatform, repairPlatform };
 })();
 
 window.GPS = GPS;
