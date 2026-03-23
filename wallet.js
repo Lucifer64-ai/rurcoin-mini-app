@@ -137,10 +137,28 @@ function detectNetwork(address) {
 // ============================================================
 //  Подключение MetaMask / EVM-кошельков
 // ============================================================
+const EVM_MOBILE_LINKS = {
+    ethereum:               { name: 'MetaMask',        deeplink: 'metamask://dapp/lucifer64-ai.github.io/rurcoin-mini-app/', store_ios: 'https://apps.apple.com/app/metamask/id1438144202', store_android: 'https://play.google.com/store/apps/details?id=io.metamask' },
+    trustwallet:            { name: 'Trust Wallet',    deeplink: 'trust://browser_enable?url=https://lucifer64-ai.github.io/rurcoin-mini-app/', store_ios: 'https://apps.apple.com/app/trust-crypto-bitcoin-wallet/id1288339409', store_android: 'https://play.google.com/store/apps/details?id=com.wallet.crypto.trustapp' },
+    coinbaseWalletExtension:{ name: 'Coinbase Wallet', deeplink: 'cbwallet://dapp?url=https://lucifer64-ai.github.io/rurcoin-mini-app/', store_ios: 'https://apps.apple.com/app/coinbase-wallet-nfts-crypto/id1278383455', store_android: 'https://play.google.com/store/apps/details?id=org.toshi' },
+    okxwallet:              { name: 'OKX Wallet',      deeplink: 'okx://wallet/dapp/url?dappUrl=https://lucifer64-ai.github.io/rurcoin-mini-app/', store_ios: 'https://apps.apple.com/app/okx-buy-bitcoin-eth-crypto/id1327268470', store_android: 'https://play.google.com/store/apps/details?id=com.okinc.okex.gp' },
+};
+
 async function connectEVM(walletKey, networkId) {
     const provider = window[walletKey] || window.ethereum;
+    const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
+
+    // На мобильном — расширений нет, открываем приложение кошелька
+    if (!provider && isMobile) {
+        const cfg = EVM_MOBILE_LINKS[walletKey] || EVM_MOBILE_LINKS['ethereum'];
+        showEVMMobileModal(cfg, networkId);
+        return;
+    }
+
     if (!provider) {
-        showWalletMsg(`❌ ${walletKey} не найден. Установи расширение.`, 'error');
+        const cfg = EVM_MOBILE_LINKS[walletKey];
+        const storeName = cfg ? cfg.name : walletKey;
+        showWalletMsg(`❌ ${storeName} не найден. Установи расширение для браузера.`, 'error');
         return;
     }
 
@@ -156,11 +174,53 @@ async function connectEVM(walletKey, networkId) {
     }
 }
 
+function showEVMMobileModal(cfg, network) {
+    const existing = document.getElementById('evmMobileModal');
+    if (existing) existing.remove();
+
+    const modal = document.createElement('div');
+    modal.id = 'evmMobileModal';
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:1000;display:flex;align-items:center;justify-content:center;';
+    modal.innerHTML = `
+        <div style="background:#111122;border:1px solid #333;border-radius:16px;padding:24px;text-align:center;max-width:300px;width:90%;">
+            <div style="font-size:18px;font-weight:700;margin-bottom:8px;">Открыть ${cfg.name}</div>
+            <div style="font-size:13px;color:#888;margin-bottom:20px;">
+                Нажми кнопку — откроется ${cfg.name} с запросом на подключение к RURCoin.
+            </div>
+            <a href="${cfg.deeplink}" 
+               style="display:block;padding:14px;background:linear-gradient(135deg,#FF8C00,#FF6000);border-radius:10px;color:#fff;text-decoration:none;font-weight:700;font-size:15px;margin-bottom:10px;">
+                📲 Открыть ${cfg.name}
+            </a>
+            <div style="font-size:11px;color:#555;margin-bottom:12px;">Нет приложения?</div>
+            <div style="display:flex;gap:8px;margin-bottom:12px;">
+                <a href="${cfg.store_ios}" target="_blank" style="flex:1;padding:10px;background:#1a1a2e;border:1px solid #333;border-radius:8px;color:#aaa;text-decoration:none;font-size:12px;">🍎 App Store</a>
+                <a href="${cfg.store_android}" target="_blank" style="flex:1;padding:10px;background:#1a1a2e;border:1px solid #333;border-radius:8px;color:#aaa;text-decoration:none;font-size:12px;">🤖 Google Play</a>
+            </div>
+            <button onclick="document.getElementById('evmMobileModal').remove()" style="width:100%;padding:10px;background:#333;border:none;border-radius:8px;color:#fff;cursor:pointer;">
+                Отмена
+            </button>
+        </div>
+    `;
+    document.body.appendChild(modal);
+}
+
 // ============================================================
 //  Подключение Phantom (Solana)
 // ============================================================
 async function connectPhantom() {
     const phantom = window.phantom?.solana || window.solana;
+    const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
+
+    if (!phantom && isMobile) {
+        showEVMMobileModal({
+            name: 'Phantom',
+            deeplink: 'https://phantom.app/ul/browse/https://lucifer64-ai.github.io/rurcoin-mini-app/?ref=https://lucifer64-ai.github.io',
+            store_ios: 'https://apps.apple.com/app/phantom-crypto-wallet/id1598432977',
+            store_android: 'https://play.google.com/store/apps/details?id=app.phantom'
+        }, 'SOL');
+        return;
+    }
+
     if (!phantom) {
         showWalletMsg('❌ Phantom не найден. Установи расширение.', 'error');
         return;
