@@ -81,18 +81,25 @@ const MULTI_WALLET_CONFIG = {
 
     // Кошельки для подключения
     walletApps: [
-        { id: 'metamask',    name: 'MetaMask',      icon: '🦊', networks: ['ETH','BNB'],      type: 'injected',    key: 'ethereum' },
-        { id: 'tonkeeper',   name: 'Tonkeeper',     icon: '💎', networks: ['TON'],             type: 'tonconnect'  },
-        { id: 'phantom',     name: 'Phantom',       icon: '👻', networks: ['SOL','ETH'],       type: 'injected',    key: 'phantom'  },
-        { id: 'trustwallet', name: 'Trust Wallet',  icon: '🛡️', networks: ['ETH','BNB','BTC'], type: 'injected',    key: 'trustwallet' },
-        { id: 'coinbase',    name: 'Coinbase Wallet',icon: '🔵', networks: ['ETH','SOL','BTC'], type: 'injected',    key: 'coinbaseWalletExtension' },
-        { id: 'mytonwallet', name: 'MyTonWallet',   icon: '💙', networks: ['TON'],             type: 'tonconnect'  },
-        { id: 'okx',         name: 'OKX Wallet',    icon: '⚫', networks: ['ETH','BNB','BTC','SOL'], type: 'injected', key: 'okxwallet' },
-        { id: 'polkadotjs', name: 'Polkadot.js',   icon: '⚫', networks: ['DOT'],             type: 'polkadotjs' },
-        { id: 'talisman',   name: 'Talisman',      icon: '🔮', networks: ['DOT'],             type: 'polkadotjs' },
-        { id: 'subwallet',  name: 'SubWallet',     icon: '🟣', networks: ['DOT'],             type: 'polkadotjs' },
-        { id: 'xumm',        name: 'Xaman (XUMM)',  icon: '🔷', networks: ['XRP'],             type: 'xumm'       },
-        { id: 'manual',      name: 'Ввести адрес',  icon: '✍️', networks: ['TON','ETH','BTC','SOL','BNB','TRX','XRP','DOT'], type: 'manual' }
+        { id: 'telegram',    name: 'Telegram Wallet', icon: '✈️', networks: ['TON'],             type: 'tonconnect',
+          universalLink: 'https://t.me/wallet',
+          deeplink: 'https://t.me/wallet' },
+        { id: 'tonkeeper',   name: 'Tonkeeper',       icon: '💎', networks: ['TON'],             type: 'tonconnect',
+          universalLink: 'https://app.tonkeeper.com/ton-connect',
+          deeplink: 'tonkeeper://ton-connect' },
+        { id: 'mytonwallet', name: 'MyTonWallet',     icon: '💙', networks: ['TON'],             type: 'tonconnect',
+          universalLink: 'https://mytonwallet.io/ton-connect',
+          deeplink: 'mytonwallet://ton-connect' },
+        { id: 'metamask',    name: 'MetaMask',        icon: '🦊', networks: ['ETH','BNB'],       type: 'injected',   key: 'ethereum',                deeplink: 'https://metamask.app.link/dapp/' + window.location.host + window.location.pathname },
+        { id: 'phantom',     name: 'Phantom',         icon: '👻', networks: ['SOL','ETH'],       type: 'injected',   key: 'phantom',                 deeplink: 'https://phantom.app/ul/browse/' + encodeURIComponent(window.location.href) + '?ref=' + encodeURIComponent(window.location.origin) },
+        { id: 'trustwallet', name: 'Trust Wallet',    icon: '🛡️', networks: ['ETH','BNB','BTC'], type: 'injected',   key: 'trustwallet',             deeplink: 'https://link.trustwallet.com/open_url?coin_id=60&url=' + encodeURIComponent(window.location.href) },
+        { id: 'coinbase',    name: 'Coinbase Wallet', icon: '🔵', networks: ['ETH','SOL','BTC'], type: 'injected',   key: 'coinbaseWalletExtension', deeplink: 'https://go.cb-w.com/dapp?cb_url=' + encodeURIComponent(window.location.href) },
+        { id: 'okx',         name: 'OKX Wallet',      icon: '⚫', networks: ['ETH','BNB','BTC','SOL','TON'], type: 'injected', key: 'okxwallet', deeplink: 'okx://wallet/dapp/url?dappUrl=' + encodeURIComponent(window.location.href) },
+        { id: 'polkadotjs',  name: 'Polkadot.js',     icon: '⚫', networks: ['DOT'],             type: 'polkadotjs' },
+        { id: 'talisman',    name: 'Talisman',        icon: '🔮', networks: ['DOT'],             type: 'polkadotjs' },
+        { id: 'subwallet',   name: 'SubWallet',       icon: '🟣', networks: ['DOT'],             type: 'polkadotjs', deeplink: 'subwallet://browser?url=' + encodeURIComponent(window.location.href) },
+        { id: 'xumm',        name: 'Xaman (XUMM)',    icon: '🔷', networks: ['XRP'],             type: 'xumm',       deeplink: 'https://xumm.app' },
+        { id: 'manual',      name: 'Ввести адрес',    icon: '✍️', networks: ['TON','ETH','BTC','SOL','BNB','TRX','XRP','DOT'], type: 'manual' }
     ]
 };
 
@@ -172,17 +179,58 @@ async function connectPhantom() {
 //  Подключение TON Connect (Tonkeeper / MyTonWallet)
 // ============================================================
 async function connectTONWallet(walletId) {
-    // Пробуем TON Connect SDK
+    const appCfg = MULTI_WALLET_CONFIG.walletApps.find(w => w.id === walletId);
+    const manifestUrl = 'https://lucifer64-ai.github.io/rurcoin-mini-app/manifest.json';
+
+    // --- Telegram Wallet (встроенный в Telegram) ---
+    if (walletId === 'telegram') {
+        // Если открыто внутри Telegram WebApp — используем TON Connect через Telegram
+        if (window.Telegram?.WebApp) {
+            try {
+                if (window.TONConnect) {
+                    const connector = new TONConnect.TonConnect({ manifestUrl });
+                    const wallets = await connector.getWallets();
+                    const tgWallet = wallets.find(w =>
+                        w.appName === 'telegram-wallet' ||
+                        w.name?.toLowerCase().includes('telegram')
+                    );
+                    if (tgWallet) {
+                        const link = connector.connect({
+                            universalLink: tgWallet.universalLink,
+                            bridgeUrl: tgWallet.bridgeUrl
+                        });
+                        // Открываем Telegram Wallet прямо в Telegram
+                        window.Telegram.WebApp.openTelegramLink(tgWallet.universalLink || 'https://t.me/wallet');
+                        connector.onStatusChange((w) => {
+                            if (w) {
+                                onMultiWalletConnected(w.account.address, 'TON', 'Telegram Wallet');
+                                closeTONQRModal();
+                            }
+                        });
+                        showWalletMsg('📲 Открываем Telegram Wallet...', 'info');
+                        return;
+                    }
+                }
+            } catch (e) {
+                console.warn('Telegram Wallet TON Connect error:', e);
+            }
+        }
+        // Fallback — открываем t.me/wallet с deeplink
+        showTONConnectQR('https://t.me/wallet', 'Telegram Wallet', '✈️', true);
+        return;
+    }
+
+    // --- TON Connect 2.0 для Tonkeeper / MyTonWallet ---
     if (window.TONConnect) {
         try {
-            const connector = new TONConnect.TonConnect({
-                manifestUrl: 'https://lucifer64-ai.github.io/rurcoin-mini-app/manifest.json'
-            });
-
+            const connector = new TONConnect.TonConnect({ manifestUrl });
             const wallets = await connector.getWallets();
+
+            // Ищем по appName или имени
+            const searchKey = walletId === 'mytonwallet' ? 'mytonwallet' : walletId;
             const wallet = wallets.find(w =>
-                w.appName === walletId ||
-                w.name.toLowerCase().includes(walletId.replace('my', ''))
+                w.appName?.toLowerCase() === searchKey ||
+                w.name?.toLowerCase().includes(searchKey.replace('my', ''))
             );
 
             if (wallet && wallet.universalLink) {
@@ -190,7 +238,15 @@ async function connectTONWallet(walletId) {
                     universalLink: wallet.universalLink,
                     bridgeUrl: wallet.bridgeUrl
                 });
-                showTONConnectQR(link, wallet.name);
+
+                const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
+                if (isMobile && wallet.universalLink) {
+                    // На мобильном — сразу открываем приложение
+                    showTONConnectQR(link, wallet.name, appCfg?.icon || '💎', false, wallet.universalLink);
+                } else {
+                    // На десктопе — QR-код
+                    showTONConnectQR(link, wallet.name, appCfg?.icon || '💎', false);
+                }
 
                 connector.onStatusChange((w) => {
                     if (w) {
@@ -205,8 +261,12 @@ async function connectTONWallet(walletId) {
         }
     }
 
-    // Fallback: предложить ввести вручную
-    showWalletMsg('💡 Введи TON-адрес вручную ниже', 'info');
+    // Fallback — deeplink напрямую
+    if (appCfg?.deeplink) {
+        showTONConnectQR(appCfg.deeplink, appCfg.name, appCfg.icon || '💎', false, appCfg.universalLink);
+    } else {
+        showWalletMsg('💡 Введи TON-адрес вручную ниже', 'info');
+    }
 }
 
 // ============================================================
@@ -769,28 +829,75 @@ async function handleWalletConnect(walletId) {
 // ============================================================
 //  QR для TON Connect
 // ============================================================
-function showTONConnectQR(link, walletName) {
+function showTONConnectQR(link, walletName, icon, isTelegram, mobileLink) {
     const existing = document.getElementById('tonQRModal');
     if (existing) existing.remove();
+
+    const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
+    const openLink = mobileLink || link;
 
     const modal = document.createElement('div');
     modal.id = 'tonQRModal';
     modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:1000;display:flex;align-items:center;justify-content:center;';
-    modal.innerHTML = `
-        <div style="background:#111122;border:1px solid #333;border-radius:16px;padding:24px;text-align:center;max-width:300px;width:90%;">
-            <div style="font-size:18px;font-weight:700;margin-bottom:16px;">Подключить ${walletName}</div>
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(link)}"
-                 style="width:200px;height:200px;border-radius:12px;margin-bottom:12px;">
-            <p style="color:#888;font-size:12px;margin-bottom:16px;">Отсканируй в ${walletName}</p>
-            <a href="${link}" target="_blank"
-               style="display:block;padding:12px;background:#FF8C00;border-radius:10px;color:#fff;text-decoration:none;font-weight:700;margin-bottom:10px;">
-                Открыть ${walletName}
-            </a>
-            <button onclick="closeTONQRModal()" style="width:100%;padding:10px;background:#333;border:none;border-radius:8px;color:#fff;cursor:pointer;">
-                Отмена
-            </button>
-        </div>
-    `;
+
+    if (isTelegram) {
+        // Специальная модалка для Telegram Wallet
+        modal.innerHTML = `
+            <div style="background:#111122;border:1px solid #2481cc;border-radius:16px;padding:24px;text-align:center;max-width:300px;width:90%;">
+                <div style="font-size:48px;margin-bottom:12px;">✈️</div>
+                <div style="font-size:18px;font-weight:700;margin-bottom:8px;color:#2481cc;">Telegram Wallet</div>
+                <div style="font-size:13px;color:#888;margin-bottom:20px;">
+                    Встроенный TON-кошелёк в Telegram.<br>Нажми кнопку — откроется @wallet.
+                </div>
+                <a href="https://t.me/wallet" target="_blank"
+                   style="display:block;padding:14px;background:linear-gradient(135deg,#2481cc,#1a6aaa);border-radius:10px;color:#fff;text-decoration:none;font-weight:700;font-size:15px;margin-bottom:8px;">
+                    ✈️ Открыть Telegram Wallet
+                </a>
+                <div style="font-size:11px;color:#555;margin-bottom:14px;">
+                    После подключения введи свой TON-адрес вручную
+                </div>
+                <button onclick="closeTONQRModal()" style="width:100%;padding:10px;background:#333;border:none;border-radius:8px;color:#fff;cursor:pointer;">
+                    Отмена
+                </button>
+            </div>
+        `;
+    } else if (isMobile && openLink) {
+        // Мобильная модалка — кнопка открытия приложения
+        modal.innerHTML = `
+            <div style="background:#111122;border:1px solid #333;border-radius:16px;padding:24px;text-align:center;max-width:300px;width:90%;">
+                <div style="font-size:48px;margin-bottom:12px;">${icon || '💎'}</div>
+                <div style="font-size:18px;font-weight:700;margin-bottom:8px;">Подключить ${walletName}</div>
+                <div style="font-size:13px;color:#888;margin-bottom:20px;">
+                    Нажми кнопку — откроется приложение ${walletName} с запросом на подключение.
+                </div>
+                <a href="${openLink}" target="_blank"
+                   style="display:block;padding:14px;background:linear-gradient(135deg,#FF8C00,#FF6000);border-radius:10px;color:#fff;text-decoration:none;font-weight:700;font-size:15px;margin-bottom:10px;">
+                    📲 Открыть ${walletName}
+                </a>
+                <button onclick="closeTONQRModal()" style="width:100%;padding:10px;background:#333;border:none;border-radius:8px;color:#fff;cursor:pointer;">
+                    Отмена
+                </button>
+            </div>
+        `;
+    } else {
+        // Десктоп — QR-код
+        modal.innerHTML = `
+            <div style="background:#111122;border:1px solid #333;border-radius:16px;padding:24px;text-align:center;max-width:300px;width:90%;">
+                <div style="font-size:18px;font-weight:700;margin-bottom:16px;">Подключить ${walletName}</div>
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(link)}"
+                     style="width:200px;height:200px;border-radius:12px;margin-bottom:12px;">
+                <p style="color:#888;font-size:12px;margin-bottom:16px;">Отсканируй в ${walletName}</p>
+                <a href="${link}" target="_blank"
+                   style="display:block;padding:12px;background:#FF8C00;border-radius:10px;color:#fff;text-decoration:none;font-weight:700;margin-bottom:10px;">
+                    Открыть ${walletName}
+                </a>
+                <button onclick="closeTONQRModal()" style="width:100%;padding:10px;background:#333;border:none;border-radius:8px;color:#fff;cursor:pointer;">
+                    Отмена
+                </button>
+            </div>
+        `;
+    }
+
     document.body.appendChild(modal);
 }
 
