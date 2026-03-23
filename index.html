@@ -64,15 +64,16 @@
             <div class="lang-row"><button class="lang-btn active" data-lang="ru" onclick="applyLanguage('ru')">RU</button><button class="lang-btn" data-lang="en" onclick="applyLanguage('en')">EN</button><button class="lang-btn" data-lang="zh" onclick="applyLanguage('zh')">中文</button><button class="lang-btn" data-lang="ar" onclick="applyLanguage('ar')">AR</button></div>
         </div>
         <div class="header-balance">
-            <div class="balance-chip rurc-chip">
+            <div class="hud-chip rurc-chip">
                 <span class="coin-icon">₽</span>
                 <span id="balance">0.00</span>
             </div>
-            <div class="balance-chip ton-chip">
+            <div class="hud-chip ton-chip">
                 <span class="coin-icon">💎</span>
                 <span id="tonBalance">5.00</span>
             </div>
         </div>
+        <div id="playerLevel" style="font-family:var(--fh);font-size:9px;color:var(--gold);letter-spacing:1px;text-shadow:0 0 8px rgba(255,215,0,.6);">LVL 1</div>
         <div class="header-wallet-badge" id="headerWallet" onclick="switchToWalletTab()">
             Не подключён
         </div>
@@ -228,8 +229,10 @@
                 <div class="rig-status-badge" id="oilRigStatus">Добыча остановлена</div>
             </div>
 
-            <button class="mine-btn mine-btn-oil" id="mineBtnOil" onclick="if(window.game)game.toggleMining()">
-                <span id="mineBtnOilIcon">⛽</span> <span id="mineBtnOilText">Начать добычу нефти</span>
+            <button class="mine-btn mine-btn-oil" id="mineBtnOil" onclick="if(window.rurcoinApp)window.rurcoinApp.toggleMining()">
+                <div class="mine-btn-icon" id="mineBtnOilIcon">⛽</div>
+                <div class="mine-btn-label" id="mineBtnOilText">Начать добычу</div>
+                <div class="mine-btn-sub" id="miningStatus">▶ Нажми чтобы начать</div>
             </button>
             <div style="text-align:center;color:#444;font-size:12px;margin-top:8px;">
                 💡 Купите насосы во вкладке «Оборудование»
@@ -264,8 +267,10 @@
                 <div class="rig-status-badge gas-badge" id="gasRigStatus">Добыча остановлена</div>
             </div>
 
-            <button class="mine-btn mine-btn-gas" id="mineBtnGas" onclick="if(window.game)game.toggleMining()">
-                <span id="mineBtnGasIcon">🔥</span> <span id="mineBtnGasText">Начать добычу газа</span>
+            <button class="mine-btn mine-btn-gas" id="mineBtnGas" onclick="if(window.rurcoinApp)window.rurcoinApp.toggleMining()">
+                <div class="mine-btn-icon" id="mineBtnGasIcon">🔥</div>
+                <div class="mine-btn-label" id="mineBtnGasText">Добыча газа</div>
+                <div class="mine-btn-sub">⚡ Автоматически</div>
             </button>
             <div style="text-align:center;color:#444;font-size:12px;margin-top:8px;">
                 💡 Купите газовые вышки во вкладке «Оборудование»
@@ -831,7 +836,8 @@ function switchToWalletTab() {
 
 <script src="notifications.js"></script>
 <script src="contracts.js"></script>
-<script src="exchange.js"></script>
+<script src="game-ui.js"></script>
+    <script src="exchange.js"></script>
 <script src="payment.js"></script>
 <script src="wallet.js"></script>
 <script src="price_feed.js"></script>
@@ -966,5 +972,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 
+<div id="floatCoins"></div>
 </body>
 </html>
