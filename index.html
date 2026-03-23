@@ -129,7 +129,7 @@
     <!-- ДОБЫЧА -->
     <div class="tab-content active" id="mining">
 
-        <!-- Биржевые цены -->
+        <!-- Биржевые цены (оставляем) -->
         <div class="price-card">
             <div style="display:flex;align-items:center;gap:8px;">
                 <span style="font-size:18px;display:inline-block;animation:spin-slow 4s linear infinite;">📈</span>
@@ -162,7 +162,7 @@
             </div>
         </div>
 
-        <!-- Мировой резервуар -->
+        <!-- Мировой резервуар (оставляем) -->
         <div class="global-card">
             <div style="display:flex;align-items:center;gap:8px;">
                 <span style="font-size:18px;display:inline-block;animation:float 3s ease-in-out infinite;">🌍</span>
@@ -191,90 +191,75 @@
             </div>
         </div>
 
-        <!-- СЛАЙДЕР: Нефть / Газ -->
-        <div class="resource-slider-nav">
-            <button class="res-slide-btn active" id="slideOilBtn" onclick="switchResourceSlide('oil')">
-                🛢️ Нефть
-            </button>
-            <button class="res-slide-btn" id="slideGasBtn" onclick="switchResourceSlide('gas')">
-                🔥 Газ
-            </button>
+        <!-- Статистика добычи -->
+        <div style="background:var(--bg2,#111);border:1px solid rgba(255,140,0,.2);
+                    border-radius:16px;padding:14px;margin-bottom:12px;">
+            <div style="font-family:var(--fh,'Rajdhani'),sans-serif;font-size:9px;
+                        color:var(--dim,#555);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;">
+                ⚡ Текущая добыча
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                <div style="background:rgba(255,140,0,.06);border:1px solid rgba(255,140,0,.15);
+                            border-radius:12px;padding:12px;text-align:center;">
+                    <div style="font-size:22px;margin-bottom:4px;">🛢️</div>
+                    <div style="font-family:var(--fh,'Rajdhani'),sans-serif;font-size:16px;
+                                font-weight:700;color:#FF8C00;" id="oilRate">0.00</div>
+                    <div style="font-size:9px;color:var(--dim,#555);margin-top:2px;">барр/ч</div>
+                    <div style="margin-top:8px;background:rgba(0,0,0,.4);border-radius:10px;height:6px;overflow:hidden;">
+                        <div id="oilBar" style="width:0%;height:100%;background:linear-gradient(90deg,#FF8C00,#FFD700);
+                                                border-radius:10px;transition:width .5s;box-shadow:0 0 8px #FF8C0066;"></div>
+                    </div>
+                    <div style="font-size:9px;color:#888;margin-top:4px;">
+                        <span id="oilStored">0.0</span> / <span id="oilCapacity">100</span> барр
+                    </div>
+                </div>
+                <div style="background:rgba(74,222,128,.06);border:1px solid rgba(74,222,128,.15);
+                            border-radius:12px;padding:12px;text-align:center;">
+                    <div style="font-size:22px;margin-bottom:4px;">🔥</div>
+                    <div style="font-family:var(--fh,'Rajdhani'),sans-serif;font-size:16px;
+                                font-weight:700;color:#4ade80;" id="gasRate">0</div>
+                    <div style="font-size:9px;color:var(--dim,#555);margin-top:2px;">м³/ч</div>
+                    <div style="margin-top:8px;background:rgba(0,0,0,.4);border-radius:10px;height:6px;overflow:hidden;">
+                        <div id="gasBar" style="width:0%;height:100%;background:linear-gradient(90deg,#4ade80,#00ffaa);
+                                                border-radius:10px;transition:width .5s;box-shadow:0 0 8px #4ade8066;"></div>
+                    </div>
+                    <div style="font-size:9px;color:#888;margin-top:4px;">
+                        <span id="gasStored">0</span> / <span id="gasCapacity">1000</span> м³
+                    </div>
+                </div>
+            </div>
+            <!-- Кнопки продажи -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;">
+                <button onclick="if(window.rurcoinApp)window.rurcoinApp.sellOil()"
+                    style="padding:10px;background:linear-gradient(135deg,#FF8C00,#cc4400);
+                    border:none;border-radius:10px;color:#fff;font-size:11px;font-weight:700;
+                    cursor:pointer;box-shadow:0 4px 16px rgba(255,140,0,.3);">
+                    🛢️ Продать нефть
+                </button>
+                <button onclick="if(window.rurcoinApp)window.rurcoinApp.sellGas()"
+                    style="padding:10px;background:linear-gradient(135deg,#4ade80,#00aa55);
+                    border:none;border-radius:10px;color:#000;font-size:11px;font-weight:700;
+                    cursor:pointer;box-shadow:0 4px 16px rgba(74,222,128,.3);">
+                    🔥 Продать газ
+                </button>
+            </div>
         </div>
 
-        <!-- ══════════ СЛАЙД: НЕФТЬ ══════════ -->
-        <div class="resource-slide" id="slideOil">
-
-            <!-- SVG Качалка-балансир (Pump Jack) -->
-            <div class="rig-visual-wrap">
-                <div style="display:flex;flex-direction:column;gap:8px;align-items:center;width:100%;">
-  <div style="width:100%;text-align:center;">
-    <video autoplay loop muted playsinline style="width:100%;max-width:320px;display:block;margin:0 auto;border-radius:12px;">
-      <source src="oil.gif.mp4" type="video/mp4">
-    </video>
-    <div style="font-size:11px;color:#aaa;margin-top:4px;">🛢️ Качалка</div>
-  </div>
-  <div style="width:100%;text-align:center;position:relative;display:inline-block;">
-    <div style="position:relative;display:inline-block;width:100%;max-width:320px;margin:0 auto;">
-      <video autoplay loop muted playsinline style="width:100%;display:block;border-radius:12px;">
-        <source src="barrel_oil.gif.mp4" type="video/mp4">
-      </video>
-      <div id="oilBarrelOverlay" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;">
-        <div id="oilBarrelPct" style="font-size:22px;font-weight:700;color:#FF8C00;text-shadow:0 0 8px #000,0 0 4px #000;">0%</div>
-        <div id="oilBarrelVal" style="font-size:13px;color:#fff;text-shadow:0 0 6px #000,0 0 3px #000;margin-top:2px;">0.0 барр.</div>
-      </div>
-    </div>
-    <div style="font-size:11px;color:#aaa;margin-top:4px;">🛢️ Резервуар</div>
-  </div>
-</div>
-                <div class="rig-status-badge" id="oilRigStatus">Добыча остановлена</div>
+        <!-- Дашборд платформ -->
+        <div style="background:var(--bg2,#111);border:1px solid rgba(255,255,255,.07);
+                    border-radius:16px;padding:14px;margin-bottom:12px;">
+            <div style="font-family:var(--fh,'Rajdhani'),sans-serif;font-size:9px;
+                        color:var(--dim,#555);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;">
+                🛰️ Мои платформы
             </div>
-
-            <button class="mine-btn mine-btn-oil" id="mineBtnOil" onclick="if(window.rurcoinApp)window.rurcoinApp.toggleMining()">
-                <div class="mine-btn-icon" id="mineBtnOilIcon">⛽</div>
-                <div class="mine-btn-label" id="mineBtnOilText">Начать добычу</div>
-                <div class="mine-btn-sub" id="miningStatus">▶ Нажми чтобы начать</div>
-            </button>
-            <div style="text-align:center;color:#444;font-size:12px;margin-top:8px;">
-                💡 Купите насосы во вкладке «Оборудование»
+            <div id="platformDashboard">
+                <!-- Заполняется через JS -->
             </div>
         </div>
 
-        <!-- ══════════ СЛАЙД: ГАЗ ══════════ -->
-        <div class="resource-slide" id="slideGas" style="display:none;">
-
-            <!-- SVG Морская газовая платформа -->
-            <div class="rig-visual-wrap gas-rig-wrap">
-                <div style="display:flex;flex-direction:column;gap:8px;align-items:center;width:100%;">
-  <div style="width:100%;text-align:center;">
-    <video autoplay loop muted playsinline style="width:100%;max-width:320px;display:block;margin:0 auto;border-radius:12px;">
-      <source src="gas.gif.mp4" type="video/mp4">
-    </video>
-    <div style="font-size:11px;color:#aaa;margin-top:4px;">🔥 Платформа</div>
-  </div>
-  <div style="width:100%;text-align:center;position:relative;display:inline-block;">
-    <div style="position:relative;display:inline-block;width:100%;max-width:320px;margin:0 auto;">
-      <video autoplay loop muted playsinline style="width:100%;display:block;border-radius:12px;">
-        <source src="barrel_gas.gif.mp4" type="video/mp4">
-      </video>
-      <div id="gasBarrelOverlay" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;">
-        <div id="gasBarrelPct" style="font-size:22px;font-weight:700;color:#4ade80;text-shadow:0 0 8px #000,0 0 4px #000;">0%</div>
-        <div id="gasBarrelVal" style="font-size:13px;color:#fff;text-shadow:0 0 6px #000,0 0 3px #000;margin-top:2px;">0 м³</div>
-      </div>
-    </div>
-    <div style="font-size:11px;color:#aaa;margin-top:4px;">🏭 Резервуар</div>
-  </div>
-</div>
-                <div class="rig-status-badge gas-badge" id="gasRigStatus">Добыча остановлена</div>
-            </div>
-
-            <button class="mine-btn mine-btn-gas" id="mineBtnGas" onclick="if(window.rurcoinApp)window.rurcoinApp.toggleMining()">
-                <div class="mine-btn-icon" id="mineBtnGasIcon">🔥</div>
-                <div class="mine-btn-label" id="mineBtnGasText">Добыча газа</div>
-                <div class="mine-btn-sub">⚡ Автоматически</div>
-            </button>
-            <div style="text-align:center;color:#444;font-size:12px;margin-top:8px;">
-                💡 Купите газовые вышки во вкладке «Оборудование»
-            </div>
+        <!-- Итого добыто -->
+        <div style="text-align:center;padding:8px;color:#444;font-size:11px;">
+            Всего добыто: <span style="color:#FF8C00;font-weight:700;" id="totalMined">0.0</span> ед.
         </div>
 
     </div>
