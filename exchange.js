@@ -19,23 +19,23 @@ let _tonRubRate = null; // кэш
 async function fetchTonRubRate() {
     try {
         const res = await fetch(
-            'https://api.coingecko.com/api/v3/simple/price?ids=the-open-network&vs_currencies=rub',
+            'https://api.bybit.com/v5/market/tickers?category=spot&symbol=TONRUB',
             { cache: 'no-store' }
         );
         if (!res.ok) throw new Error('HTTP ' + res.status);
         const data = await res.json();
-        const rate = data?.['the-open-network']?.rub;
+        const rate = parseFloat(data?.result?.list?.[0]?.lastPrice);
         if (rate && rate > 0) {
             _tonRubRate = rate;
             EXCHANGE_CONFIG.rateRurcPerTon = Math.round(rate); // 1 RURC = 1 RUB
-            console.log('[Exchange] TON/RUB rate updated:', rate);
+            console.log('[Exchange] TON/RUB rate (Bybit):', rate);
             // Перерисовываем если вкладка открыта
             if (document.getElementById('exchangeTab')?.closest('.tab-content.active')) {
                 renderExchange();
             }
         }
     } catch (e) {
-        console.warn('[Exchange] Rate fetch failed:', e.message);
+        console.warn('[Exchange] Bybit rate fetch failed:', e.message);
     }
 }
 
