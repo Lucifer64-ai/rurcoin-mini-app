@@ -344,28 +344,113 @@ function closeConfirmModal() {
 }
 
 // ── Подтверждение оплаты ───────────────────────────────────────
+// Защита от двойного начисления
+const _sbpPendingPayments = new Set();
+
 async function confirmSBPPayment(rurcAmount, statusElId) {
     const statusEl = document.getElementById(statusElId);
+
+    // Защита от двойного нажатия
+    const payKey = 'sbp_' + rurcAmount + '_' + Math.floor(Date.now() / 10000);
+    if (_sbpPendingPayments.has(payKey)) {
+        if (statusEl) statusEl.innerHTML = '<div class="sbp-checking">⏳ Платёж уже обрабатывается...</div>';
+        return;
+    }
+    _sbpPendingPayments.add(payKey);
+
+    // Блокируем кнопки
+    document.querySelectorAll('.btn-pay').forEach(b => { b.disabled = true; });
+
     if (statusEl) statusEl.innerHTML = '<div class="sbp-checking">🔄 Проверяем платёж...</div>';
 
-    await new Promise(r => setTimeout(r, 1500));
-
-    if (statusEl) statusEl.innerHTML = '<div class="sbp-success">✅ Платёж подтверждён! +' + rurcAmount + ' RURC</div>';
-
-    await handlePaymentSuccess(rurcAmount);
-
-    setTimeout(() => {
-        closeSBPQRModal();
-        closeConfirmModal();
-        if (typeof showNotification === 'function') {
-            showNotification('Баланс пополнен на ' + rurcAmount + ' RURC', 'success');
-        }
-    }, 2500);
+    // Показываем поле ввода кода подтверждения
+    if (statusEl) {
+        statusEl.innerHTML = `
+            <div style="margin-top:12px;">
+                <div class="sbp-checking">📋 Введите последние 4 цифры суммы перевода для подтверждения</div>
+                <div style="display:flex;gap:8px;margin-top:10px;">
+                    <input type="number" id="sbpConfirmCode" placeholder="Сумма в рублях"
+                        style="flex:1;padding:10px;background:#0d0d1a;border:1px solid #333;border-radius:8px;color:#fff;font-size:14px;"
+                        min="1" max="999999">
+                    <button onclick="verifySBPAmount(${rurcAmount}, '${statusElId}', '${payKey}')"
+                        style="padding:10px 16px;background:#1565C0;border:none;border-radius:8px;color:#fff;font-size:14px;cursor:pointer;">
+                        ✅ Подтвердить
+                    </button>
+                </div>
+                <div style="font-size:11px;color:#555;margin-top:6px;">
+                    Введите сумму, которую вы перевели (в рублях)
+                </div>
+            </div>`;
+    }
 }
 
-async function handlePaymentSuccess(rurcAmount) {
-    if (window.mintWithUI) {
-        await window.mintWithUI(rurcAmount);
+async function verifySBPAmount(rurcAmount, statusElId, payKey) {
+    const statusEl = document.getElementById(statusElId);
+    const input = document.getElementById('sbpConfirmCode');
+    const enteredAmount = parseFloat(input?.value);
+    const expectedAmount = rurcAmount; // 1 RURC = 1 ₽
+
+    if (!enteredAmount || enteredAmount <= 0) {
+        if (statusEl) statusEl.innerHTML += '<div style="color:#f44;font-size:12px;margin-top:6px;">⚠️ Введите сумму перевода</div>';
+        return;
+    }
+
+    // Проверяем: введённая сумма должна совпадать с ожидаемой (±1 рубль допуск)
+    if (Math.abs(enteredAmount - expectedAmount) > 1) {
+        if (statusEl) statusEl.innerHTML = `
+            <div style="color:#f44;font-size:13px;padding:10px 0;">
+                ❌ Сумма не совпадает. Ожидалось: ${expectedAmount} ₽, введено: ${enteredAmount} ₽
+            </div>
+            <div style="font-size:11px;color:#555;margin-top:4px;">
+                Если вы перевели другую сумму — начислим соответствующее количество RURC
+            </div>
+            <div style="display:flex;gap:8px;margin-top:10px;">
+                <button onclick="applyActualAmount(${enteredAmount}, '${statusElId}', '${payKey}')"
+                    style="flex:1;padding:10px;background:#FF8C00;border:none;border-radius:8px;color:#fff;font-size:13px;cursor:pointer;">
+                    Начислить ${Math.floor(enteredAmount)} RURC
+                </button>
+            </div>`;
+        return;
+    }
+
+    // Сумма совпала — начисляем
+    await handlePaymentSuccess(rurcAmount, statusEl, payKey);
+}
+
+async function applyActualAmount(actualRubles, statusElId, payKey) {
+    const statusEl = document.getElementById(statusElId);
+    const rurcToAdd = Math.floor(actualRubles); // 1 ₽ = 1 RURC
+    await handlePaymentSuccess(rurcToAdd, statusEl, payKey);
+}
+
+async function handlePaymentSuccess(rurcAmount, statusEl, payKey) {
+    if (!window.mintWithUI) {
+        console.error('mintWithUI не найдена!');
+        if (statusEl) statusEl.innerHTML = '<div style="color:#f44;">❌ Ошибка начисления. Обновите страницу.</div>';
+        return;
+    }
+
+    try {
+        window.mintWithUI(rurcAmount);
+
+        if (statusEl) statusEl.innerHTML = '<div class="sbp-success">✅ Платёж подтверждён! +' + rurcAmount + ' RURC начислено</div>';
+
+        setTimeout(() => {
+            closeSBPQRModal();
+            closeConfirmModal();
+            if (typeof showNotification === 'function') {
+                showNotification('✅ Баланс пополнен на ' + rurcAmount + ' RURC', 'success');
+            }
+            // Разблокируем кнопки
+            document.querySelectorAll('.btn-pay').forEach(b => { b.disabled = false; });
+            if (payKey) _sbpPendingPayments.delete(payKey);
+        }, 2000);
+
+    } catch(e) {
+        console.error('Ошибка начисления:', e);
+        if (statusEl) statusEl.innerHTML = '<div style="color:#f44;">❌ Ошибка: ' + e.message + '</div>';
+        document.querySelectorAll('.btn-pay').forEach(b => { b.disabled = false; });
+        if (payKey) _sbpPendingPayments.delete(payKey);
     }
 }
 
@@ -498,6 +583,9 @@ window.closeBankSelectModal = closeBankSelectModal;
 window.showSBPQRModal = showSBPQRModal;
 window.closeSBPQRModal = closeSBPQRModal;
 window.confirmSBPPayment = confirmSBPPayment;
+window.verifySBPAmount = verifySBPAmount;
+window.applyActualAmount = applyActualAmount;
+window.handlePaymentSuccess = handlePaymentSuccess;
 window.closeConfirmModal = closeConfirmModal;
 window.PAYMENT_CONFIG = PAYMENT_CONFIG;
 window.SBP_BANKS = SBP_BANKS;
