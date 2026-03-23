@@ -3,6 +3,9 @@
 //  Адрес кошелька = уникальный ID игрока
 // ============================================================
 
+// Глобальный TON Connect connector (не должен уничтожаться GC)
+let _tonConnector = null;
+
 const MULTI_WALLET_CONFIG = {
     // Поддерживаемые сети
     networks: {
@@ -241,91 +244,101 @@ async function connectPhantom() {
 async function connectTONWallet(walletId) {
     const appCfg = MULTI_WALLET_CONFIG.walletApps.find(w => w.id === walletId);
     const manifestUrl = 'https://lucifer64-ai.github.io/rurcoin-mini-app/tonconnect-manifest.json';
+    const isMobile = /Android|iPhone|iPad|Telegram/i.test(navigator.userAgent);
 
-    // --- Telegram Wallet (встроенный в Telegram) ---
-    if (walletId === 'telegram') {
-        // Если открыто внутри Telegram WebApp — используем TON Connect через Telegram
-        if (window.Telegram?.WebApp) {
-            try {
-                if (window.TONConnect) {
-                    const connector = new TONConnect.TonConnect({ manifestUrl });
-                    const wallets = await connector.getWallets();
-                    const tgWallet = wallets.find(w =>
-                        w.appName === 'telegram-wallet' ||
-                        w.name?.toLowerCase().includes('telegram')
-                    );
-                    if (tgWallet) {
-                        const link = connector.connect({
-                            universalLink: tgWallet.universalLink,
-                            bridgeUrl: tgWallet.bridgeUrl
-                        });
-                        // Открываем Telegram Wallet прямо в Telegram
-                        window.Telegram.WebApp.openTelegramLink(tgWallet.universalLink || 'https://t.me/wallet');
-                        connector.onStatusChange((w) => {
-                            if (w) {
-                                onMultiWalletConnected(w.account.address, 'TON', 'Telegram Wallet');
-                                closeTONQRModal();
-                            }
-                        });
-                        showWalletMsg('📲 Открываем Telegram Wallet...', 'info');
-                        return;
-                    }
-                }
-            } catch (e) {
-                console.warn('Telegram Wallet TON Connect error:', e);
-            }
-        }
-        // Fallback — открываем t.me/wallet с deeplink
-        showTONConnectQR('https://t.me/wallet', 'Telegram Wallet', '✈️', true);
+    // Уничтожаем предыдущий connector если был
+    if (_tonConnector) {
+        try { _tonConnector.disconnect(); } catch(e) {}
+        _tonConnector = null;
+    }
+
+    if (!window.TonConnectSDK && !window.TONConnect) {
+        showWalletMsg('❌ TON Connect SDK не загружен', 'error');
         return;
     }
 
-    // --- TON Connect 2.0 для Tonkeeper / MyTonWallet ---
-    if (window.TONConnect) {
-        try {
-            const connector = new TONConnect.TonConnect({ manifestUrl });
-            const wallets = await connector.getWallets();
+    const SDK = window.TonConnectSDK || window.TONConnect;
 
-            // Ищем по appName или имени
-            const searchKey = walletId === 'mytonwallet' ? 'mytonwallet' : walletId;
-            const wallet = wallets.find(w =>
-                w.appName?.toLowerCase() === searchKey ||
-                w.name?.toLowerCase().includes(searchKey.replace('my', ''))
-            );
+    try {
+        // Создаём глобальный connector
+        _tonConnector = new SDK.TonConnect({ manifestUrl });
 
-            if (wallet && wallet.universalLink) {
-                const link = connector.connect({
-                    universalLink: wallet.universalLink,
-                    bridgeUrl: wallet.bridgeUrl
-                });
-
-                const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
-                if (isMobile && wallet.universalLink) {
-                    // На мобильном — сразу открываем приложение
-                    showTONConnectQR(link, wallet.name, appCfg?.icon || '💎', false, link);
-                } else {
-                    // На десктопе — QR-код
-                    showTONConnectQR(link, wallet.name, appCfg?.icon || '💎', false);
-                }
-
-                connector.onStatusChange((w) => {
-                    if (w) {
-                        onMultiWalletConnected(w.account.address, 'TON', wallet.name);
-                        closeTONQRModal();
-                    }
-                });
-                return;
-            }
-        } catch (e) {
-            console.warn('TON Connect error:', e);
+        // Восстанавливаем сессию если была
+        await _tonConnector.restoreConnection();
+        if (_tonConnector.connected) {
+            const acc = _tonConnector.account;
+            onMultiWalletConnected(acc.address, 'TON', appCfg?.name || 'TON Wallet');
+            return;
         }
-    }
 
-    // Fallback — deeplink напрямую
-    if (appCfg?.deeplink) {
-        showTONConnectQR(link || appCfg.deeplink, appCfg.name, appCfg.icon || '💎', false, link || appCfg.deeplink);
-    } else {
-        showWalletMsg('💡 Введи TON-адрес вручную ниже', 'info');
+        const wallets = await SDK.getWallets();
+
+        // --- Telegram Wallet ---
+        if (walletId === 'telegram') {
+            const tgWallet = wallets.find(w =>
+                w.appName === 'telegram-wallet' ||
+                w.name?.toLowerCase().includes('telegram')
+            );
+            const target = tgWallet || { universalLink: 'https://t.me/wallet', bridgeUrl: 'https://bridge.tonapi.io/bridge' };
+            const link = _tonConnector.connect({
+                universalLink: target.universalLink || 'https://t.me/wallet',
+                bridgeUrl: target.bridgeUrl || 'https://bridge.tonapi.io/bridge'
+            });
+
+            _tonConnector.onStatusChange((w) => {
+                if (w) {
+                    onMultiWalletConnected(w.account.address, 'TON', 'Telegram Wallet');
+                    closeTONQRModal();
+                }
+            });
+
+            if (window.Telegram?.WebApp) {
+                window.Telegram.WebApp.openTelegramLink('https://t.me/wallet?attach=' + encodeURIComponent(link));
+            } else {
+                showTONConnectQR(link, 'Telegram Wallet', '✈️', true, link);
+            }
+            showWalletMsg('📲 Открываем Telegram Wallet...', 'info');
+            return;
+        }
+
+        // --- Tonkeeper / MyTonWallet ---
+        const searchKey = walletId === 'mytonwallet' ? 'mytonwallet' : walletId;
+        const wallet = wallets.find(w =>
+            w.appName?.toLowerCase() === searchKey ||
+            w.name?.toLowerCase().includes(searchKey.replace('my', ''))
+        );
+
+        if (wallet && (wallet.universalLink || wallet.bridgeUrl)) {
+            const link = _tonConnector.connect({
+                universalLink: wallet.universalLink,
+                bridgeUrl: wallet.bridgeUrl
+            });
+
+            _tonConnector.onStatusChange((w) => {
+                if (w) {
+                    onMultiWalletConnected(w.account.address, 'TON', wallet.name);
+                    closeTONQRModal();
+                }
+            });
+
+            if (isMobile && wallet.universalLink) {
+                showTONConnectQR(link, wallet.name, appCfg?.icon || '💎', false, wallet.universalLink + '?ret=' + encodeURIComponent(window.location.href));
+            } else {
+                showTONConnectQR(link, wallet.name, appCfg?.icon || '💎', false, null);
+            }
+            return;
+        }
+
+        // Fallback — прямой deeplink
+        if (appCfg?.deeplink) {
+            showTONConnectQR(appCfg.deeplink, appCfg.name, appCfg.icon || '💎', false, appCfg.deeplink);
+        } else {
+            showWalletMsg('💡 Введи TON-адрес вручную ниже', 'info');
+        }
+
+    } catch (e) {
+        console.error('TON Connect error:', e);
+        showWalletMsg('❌ Ошибка подключения: ' + e.message, 'error');
     }
 }
 
