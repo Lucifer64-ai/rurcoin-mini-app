@@ -267,11 +267,25 @@ async function loadMultiBalance(address, network) {
         let balance = '...';
 
         if (network === 'TON') {
-            const r = await fetch(`https://tonapi.io/v2/accounts/${address}`, {
-                headers: { 'Authorization': 'Bearer AHVHQCBZEV2TA6IAAAAJHMD6BQFJMEKBTA6WY3STOQMD5ZAPNOSYAM7ETRGBDN7S7JYYQZI' }
-            });
-            const d = await r.json();
-            if (d.balance) balance = (parseInt(d.balance) / 1e9).toFixed(4) + ' TON';
+            try {
+                // Пробуем toncenter (без ключа, публичный)
+                const r = await fetch(`https://toncenter.com/api/v2/getAddressBalance?address=${address}`);
+                const d = await r.json();
+                if (d.ok && d.result !== undefined) {
+                    balance = (parseInt(d.result) / 1e9).toFixed(4) + ' TON';
+                } else {
+                    throw new Error('toncenter failed');
+                }
+            } catch(e1) {
+                try {
+                    // Fallback: tonapi без ключа
+                    const r2 = await fetch(`https://tonapi.io/v2/accounts/${address}`);
+                    const d2 = await r2.json();
+                    if (d2.balance) balance = (parseInt(d2.balance) / 1e9).toFixed(4) + ' TON';
+                } catch(e2) {
+                    balance = 'Ошибка загрузки';
+                }
+            }
 
         } else if (network === 'ETH' || network === 'BNB') {
             // Используем публичный RPC
