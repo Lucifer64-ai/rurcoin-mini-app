@@ -11,40 +11,6 @@ const EXCHANGE_CONFIG = {
     minTon         : 0.1,
     minRurc        : 100,
     poolAddress    : 'EQDPnYSAV-H8ADoaYGAuNhJL4HwfSB9IBj9ABi465D9ABj9ABgBaY',
-
-// ── Динамический курс TON/RUB → RURC ─────────────────────────
-let _tonRubPrice = null;
-let _rateUpdateTimer = null;
-
-async function fetchTonRate() {
-    try {
-        const res = await fetch(
-            'https://api.coingecko.com/api/v3/simple/price?ids=the-open-network&vs_currencies=rub',
-            { cache: 'no-store' }
-        );
-        const data = await res.json();
-        const price = data?.['the-open-network']?.rub;
-        if (price && price > 0) {
-            _tonRubPrice = price;
-            // 1 RURC = 1 RUB → 1 TON = price RURC
-            EXCHANGE_CONFIG.rateRurcPerTon = Math.round(price);
-            // Обновляем UI если открыт
-            const rateEl = document.getElementById('ex-rate-display');
-            if (rateEl) rateEl.textContent = '1 TON = ' + EXCHANGE_CONFIG.rateRurcPerTon.toLocaleString('ru') + ' RURC';
-            // Пересчитываем поле ввода
-            if (typeof renderExchangePreview === 'function') renderExchangePreview();
-        }
-    } catch(e) {
-        console.warn('TON rate fetch failed:', e);
-    }
-}
-
-function startRateUpdater() {
-    fetchTonRate();
-    if (_rateUpdateTimer) clearInterval(_rateUpdateTimer);
-    _rateUpdateTimer = setInterval(fetchTonRate, 60000);
-}
-
 };
 
 // ── Состояние ─────────────────────────────────────────────────
@@ -106,7 +72,7 @@ function renderExchange() {
             <div>
                 <div style="font-size:10px;color:#555;margin-bottom:2px;">Курс обмена</div>
                 <div style="font-size:14px;font-weight:700;color:#60a5fa;">
-                    1 TON = <span id="ex-rate-display">${rate.toLocaleString()} RURC</span>
+                    1 TON = ${rate.toLocaleString()} RURC
                 </div>
             </div>
             <div style="text-align:right;">
@@ -458,12 +424,9 @@ function showExchError(msg) {
 
 // ── Инициализация ─────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
-    // Запускаем обновление курса сразу
-    startRateUpdater();
     document.addEventListener('click', (e) => {
         const btn = e.target.closest('[data-tab]');
         if (btn && btn.getAttribute('data-tab') === 'exchange') {
-            startRateUpdater();
             setTimeout(() => renderExchange(), 50);
         }
     });
