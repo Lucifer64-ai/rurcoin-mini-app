@@ -4,7 +4,7 @@
 class RURCoinMiner {
     constructor() {
         this.balance = 0;
-        this.tonBalance = 5;
+        this.tonBalance = 0;
         this.stakedBalance = 0;
         this.stakingRewards = 0;
         this.totalMined = 0;
