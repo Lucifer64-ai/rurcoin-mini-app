@@ -13,6 +13,37 @@ const EXCHANGE_CONFIG = {
     poolAddress    : 'EQDPnYSAV-H8ADoaYGAuNhJL4HwfSB9IBj9ABi465D9ABj9ABgBaY',
 };
 
+// ── Обновление курса TON/RUB с CoinGecko ─────────────────────
+let _tonRubRate = null; // кэш
+
+async function fetchTonRubRate() {
+    try {
+        const res = await fetch(
+            'https://api.coingecko.com/api/v3/simple/price?ids=the-open-network&vs_currencies=rub',
+            { cache: 'no-store' }
+        );
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        const rate = data?.['the-open-network']?.rub;
+        if (rate && rate > 0) {
+            _tonRubRate = rate;
+            EXCHANGE_CONFIG.rateRurcPerTon = Math.round(rate); // 1 RURC = 1 RUB
+            console.log('[Exchange] TON/RUB rate updated:', rate);
+            // Перерисовываем если вкладка открыта
+            if (document.getElementById('exchangeTab')?.closest('.tab-content.active')) {
+                renderExchange();
+            }
+        }
+    } catch (e) {
+        console.warn('[Exchange] Rate fetch failed:', e.message);
+    }
+}
+
+// Запускаем сразу и каждые 60 секунд
+fetchTonRubRate();
+setInterval(fetchTonRubRate, 60000);
+
+
 // ── Состояние ─────────────────────────────────────────────────
 const exchangeState = {
     direction : 'buy',
