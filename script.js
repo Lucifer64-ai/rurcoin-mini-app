@@ -240,6 +240,31 @@ class RURCoinMiner {
 // ââ ÐÐÐÐ¦ÐÐÐÐÐÐÐ¦ÐÐ¯ ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 document.addEventListener('DOMContentLoaded', function() {
     window.rurcoinApp = new RURCoinMiner();
+
+// ── Начисление RURC после оплаты СБП ─────────────────────────
+window.mintWithUI = function(rurcAmount) {
+    const app = window.rurcoinApp;
+    if (!app) { console.error('rurcoinApp не инициализирован'); return; }
+    const amount = parseFloat(rurcAmount);
+    if (!amount || amount <= 0) return;
+
+    app.balance += amount;
+    app.totalMined = (app.totalMined || 0) + amount;
+
+    // Добавляем в историю транзакций
+    if (!app.transactions) app.transactions = [];
+    app.transactions.unshift({
+        type: 'topup',
+        amount: amount,
+        method: 'СБП',
+        date: new Date().toISOString(),
+        id: 'SBP_' + Date.now()
+    });
+
+    app.saveData();
+    app.render();
+    console.log('✅ Начислено', amount, 'RURC. Новый баланс:', app.balance);
+};
     console.log('RURCoin Oil & Gas Ð·Ð°Ð¿ÑÑÐµÐ½Ð¾!');
 
     // ââ ÐÐÐ ÐÐÐÐ®Ð§ÐÐÐÐ ÐÐÐÐÐÐÐ (event delegation â ÑÐ°Ð±Ð¾ÑÐ°ÐµÑ Ð´Ð»Ñ Ð´Ð¸Ð½Ð°Ð¼Ð¸ÑÐµÑÐºÐ¸Ñ ÐºÐ½Ð¾Ð¿Ð¾Ðº) ââ
