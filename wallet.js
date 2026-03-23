@@ -503,6 +503,18 @@ async function loadMultiBalance(address, network) {
         const el = document.getElementById('mwBalance');
         if (el) el.textContent = balance;
 
+        // Обновляем баланс TON в хедере реальным значением с блокчейна
+        if (network === 'TON') {
+            const headerEl = document.getElementById('tonBalance');
+            if (headerEl) {
+                const numVal = parseFloat(balance);
+                if (!isNaN(numVal)) {
+                    headerEl.textContent = numVal.toFixed(3);
+                    if (window.rurcoinApp) window.rurcoinApp.tonBalance = numVal;
+                }
+            }
+        }
+
     } catch (e) {
         console.warn('Balance error:', e);
         const el = document.getElementById('mwBalance');
