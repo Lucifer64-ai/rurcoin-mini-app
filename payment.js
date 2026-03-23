@@ -1,30 +1,41 @@
-// Модуль пополнения баланса RURC через СБП (QR-код)
+// Модуль пополнения баланса RURC через СБП
+// Работает через все банки РФ с поддержкой СБП
 
 const PAYMENT_CONFIG = {
-    // Реквизиты СБП — замените на свои
-    sbpPhone: '+79781647517',      // Номер телефона получателя (СБП)
-    sbpBank: 'АБ Россия',           // Банк получателя (для отображения)
-    sbpRecipient: 'Станислав С.В.',  // Имя получателя
-
-    // Минимальная и максимальная сумма пополнения (в рублях)
+    sbpPhone: '+79781647517',
+    sbpBank: 'АБ Россия',
+    sbpRecipient: 'Станислав С.В.',
     minAmount: 100,
     maxAmount: 50000,
-    // Комиссия (%)
     commission: 0,
-    // Валюта
     currency: 'RUB',
-    // Курс RURC к рублю
     rate: 1
 };
 
-// Состояние платежа
+// Список банков с поддержкой СБП и их deeplink-схемами
+const SBP_BANKS = [
+    { id: 'sber',       name: 'Сбербанк',        icon: '🟢', scheme: 'sberbankonline' },
+    { id: 'tinkoff',    name: 'Т-Банк',           icon: '🟡', scheme: 'tinkoff' },
+    { id: 'alfa',       name: 'Альфа-Банк',       icon: '🔴', scheme: 'alfabank' },
+    { id: 'vtb',        name: 'ВТБ',              icon: '🔵', scheme: 'vtb' },
+    { id: 'raiffeisen', name: 'Райффайзен',       icon: '🟡', scheme: 'raiffeisen' },
+    { id: 'gazprom',    name: 'Газпромбанк',      icon: '🔵', scheme: 'gazprombank' },
+    { id: 'otkritie',   name: 'Открытие',         icon: '🟠', scheme: 'otkritiebank' },
+    { id: 'rosselhoz',  name: 'Россельхозбанк',   icon: '🟢', scheme: 'rshb' },
+    { id: 'psb',        name: 'ПСБ',              icon: '🔵', scheme: 'psbank' },
+    { id: 'sovkom',     name: 'Совкомбанк',       icon: '🟣', scheme: 'sovcombank' },
+    { id: 'mts',        name: 'МТС Банк',         icon: '🔴', scheme: 'mtsbank' },
+    { id: 'pochtabank', name: 'Почта Банк',       icon: '🔵', scheme: 'pochtabank' },
+    { id: 'other',      name: 'Другой банк',      icon: '🏦', scheme: null }
+];
+
 let paymentState = {
     amount: 0,
     status: 'idle',
     paymentId: null
 };
 
-// Показать форму пополнения
+// ── Главная форма ──────────────────────────────────────────────
 function showTopUpModal() {
     const modal = document.createElement('div');
     modal.className = 'modal topup-modal';
@@ -36,22 +47,21 @@ function showTopUpModal() {
                 <h2>💰 Пополнение через СБП</h2>
                 <button class="close-btn" onclick="closeTopUpModal()">×</button>
             </div>
-
             <div class="modal-body">
                 <div class="sbp-info-block">
                     <div class="sbp-logo">🏦 СБП</div>
-                    <p class="sbp-desc">Быстрые платежи — мгновенный перевод по номеру телефона через любой банк</p>
+                    <p class="sbp-desc">Мгновенный перевод через любой банк России</p>
                 </div>
 
                 <div class="amount-section">
                     <p class="label">Сумма пополнения (₽):</p>
                     <div class="amount-input-group">
-                        <button class="amount-btn" onclick="adjustAmount(-100)">-100</button>
+                        <button class="amount-btn" onclick="adjustAmount(-100)">−100</button>
                         <input type="number" id="topUpAmount"
                             placeholder="Введите сумму"
                             min="${PAYMENT_CONFIG.minAmount}"
                             max="${PAYMENT_CONFIG.maxAmount}"
-                            onchange="calculateRURC()">
+                            oninput="calculateRURC()">
                         <button class="amount-btn" onclick="adjustAmount(100)">+100</button>
                     </div>
                     <div class="quick-amounts">
@@ -76,14 +86,11 @@ function showTopUpModal() {
                         <span id="summaryRURC">0 RURC</span>
                     </div>
                 </div>
-
-                <div class="payment-status" id="paymentStatus" style="display: none;"></div>
             </div>
-
             <div class="modal-footer">
                 <button class="btn-cancel" onclick="closeTopUpModal()">Отмена</button>
                 <button class="btn-pay" id="payBtn" onclick="processPayment()" disabled>
-                    Показать QR-код
+                    Выбрать банк →
                 </button>
             </div>
         </div>
@@ -93,126 +100,80 @@ function showTopUpModal() {
     document.getElementById('topUpAmount').addEventListener('input', calculateRURC);
 }
 
-// Закрыть модальное окно
 function closeTopUpModal() {
-    const modal = document.getElementById('topUpModal');
-    if (modal) modal.remove();
+    const m = document.getElementById('topUpModal');
+    if (m) m.remove();
 }
 
-// Настроить сумму
 function adjustAmount(delta) {
     const input = document.getElementById('topUpAmount');
-    let current = parseInt(input.value) || 0;
-    let newValue = current + delta;
-    if (newValue < PAYMENT_CONFIG.minAmount) newValue = PAYMENT_CONFIG.minAmount;
-    if (newValue > PAYMENT_CONFIG.maxAmount) newValue = PAYMENT_CONFIG.maxAmount;
-    input.value = newValue;
+    let val = (parseInt(input.value) || 0) + delta;
+    if (val < PAYMENT_CONFIG.minAmount) val = PAYMENT_CONFIG.minAmount;
+    if (val > PAYMENT_CONFIG.maxAmount) val = PAYMENT_CONFIG.maxAmount;
+    input.value = val;
     calculateRURC();
 }
 
-// Быстрая сумма
 function setQuickAmount(amount) {
     document.getElementById('topUpAmount').value = amount;
     calculateRURC();
 }
 
-// Рассчитать RURC
 function calculateRURC() {
     const amount = parseInt(document.getElementById('topUpAmount').value) || 0;
     const rurc = Math.floor(amount * PAYMENT_CONFIG.rate);
-    document.getElementById('summaryAmount').textContent = `${amount.toLocaleString()} ₽`;
-    document.getElementById('summaryRURC').textContent = `${rurc.toLocaleString()} RURC`;
+    document.getElementById('summaryAmount').textContent = amount.toLocaleString() + ' ₽';
+    document.getElementById('summaryRURC').textContent = rurc.toLocaleString() + ' RURC';
     paymentState.amount = amount;
     validateForm();
 }
 
-// Валидация формы
 function validateForm() {
     const amount = parseInt(document.getElementById('topUpAmount').value) || 0;
-    const isValid = amount >= PAYMENT_CONFIG.minAmount && amount <= PAYMENT_CONFIG.maxAmount;
-    document.getElementById('payBtn').disabled = !isValid;
+    const ok = amount >= PAYMENT_CONFIG.minAmount && amount <= PAYMENT_CONFIG.maxAmount;
+    document.getElementById('payBtn').disabled = !ok;
 }
 
-// Генерация СБП QR-ссылки (стандарт ЦБ РФ)
-function generateSBPUrl(amount) {
-    const phone = PAYMENT_CONFIG.sbpPhone.replace(/[^0-9+]/g, '');
-    const amountKopecks = Math.round(amount * 100);
-    const paymentId = 'RURC_' + Date.now();
-    // Формат: https://qr.nspk.ru/... или стандартная deep-link СБП
-    // Используем универсальный формат СБП deeplink
-    const params = new URLSearchParams({
-        phone: phone,
-        amount: amountKopecks,
-        currency: 'RUB',
-        purpose: `Пополнение RURC #${paymentId}`,
-        name: PAYMENT_CONFIG.sbpRecipient
-    });
-    return `https://qr.nspk.ru/AS10004${btoa(params.toString()).replace(/=/g, '')}`;
-}
-
-// Показать QR-код СБП
-async function processPayment() {
+// ── Выбор банка ────────────────────────────────────────────────
+function processPayment() {
     const amount = paymentState.amount;
     const rurcAmount = Math.floor(amount * PAYMENT_CONFIG.rate);
     const paymentId = 'RURC_' + Date.now();
-
     closeTopUpModal();
-    showSBPModal(amount, rurcAmount, paymentId);
+    showBankSelectModal(amount, rurcAmount, paymentId);
 }
 
-// Модальное окно с QR-кодом
-function showSBPModal(amount, rurcAmount, paymentId) {
+function showBankSelectModal(amount, rurcAmount, paymentId) {
     const modal = document.createElement('div');
     modal.className = 'modal';
-    modal.id = 'sbpModal';
+    modal.id = 'bankSelectModal';
 
-    // QR через Google Charts API (бесплатно, без ключа)
-    const sbpText = `ST00012|Name=${PAYMENT_CONFIG.sbpRecipient}|PersonalAcc=${PAYMENT_CONFIG.sbpPhone}|BankName=${PAYMENT_CONFIG.sbpBank}|Sum=${amount * 100}|Purpose=Пополнение RURC ${rurcAmount} токенов #${paymentId}`;
-    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(sbpText)}`;
+    const bankButtons = SBP_BANKS.map(bank => `
+        <button class="bank-btn" onclick="openBankPayment('${bank.id}', ${amount}, ${rurcAmount}, '${paymentId}')">
+            <span class="bank-icon">${bank.icon}</span>
+            <span class="bank-name">${bank.name}</span>
+        </button>
+    `).join('');
 
     modal.innerHTML = `
-        <div class="modal-content sbp-modal-content">
+        <div class="modal-content">
             <div class="modal-header">
-                <h2>🏦 Оплата через СБП</h2>
-                <button class="close-btn" onclick="closeSBPModal()">×</button>
+                <h2>🏦 Выберите банк</h2>
+                <button class="close-btn" onclick="closeBankSelectModal()">×</button>
             </div>
-            <div class="modal-body" style="text-align:center;">
-                <div class="sbp-qr-wrap">
-                    <img src="${qrUrl}" alt="QR СБП" class="sbp-qr-img" />
-                </div>
-                <div class="sbp-details">
-                    <div class="sbp-detail-row">
-                        <span class="sbp-detail-label">Получатель:</span>
-                        <span class="sbp-detail-value">${PAYMENT_CONFIG.sbpRecipient}</span>
-                    </div>
-                    <div class="sbp-detail-row">
-                        <span class="sbp-detail-label">Телефон СБП:</span>
-                        <span class="sbp-detail-value sbp-phone">${PAYMENT_CONFIG.sbpPhone}</span>
-                    </div>
-                    <div class="sbp-detail-row">
-                        <span class="sbp-detail-label">Банк:</span>
-                        <span class="sbp-detail-value">${PAYMENT_CONFIG.sbpBank}</span>
-                    </div>
-                    <div class="sbp-detail-row">
-                        <span class="sbp-detail-label">Сумма:</span>
-                        <span class="sbp-detail-value sbp-amount">${amount.toLocaleString()} ₽</span>
-                    </div>
-                    <div class="sbp-detail-row">
-                        <span class="sbp-detail-label">Назначение:</span>
-                        <span class="sbp-detail-value sbp-purpose">Пополнение RURC #${paymentId}</span>
-                    </div>
-                </div>
-                <p class="sbp-instruction">
-                    Отсканируйте QR-код в приложении банка или переведите вручную по номеру телефона.<br>
-                    После оплаты нажмите кнопку ниже.
+            <div class="modal-body">
+                <p class="label" style="margin-bottom:14px;">
+                    Перевод на <strong style="color:#4fc3f7">${PAYMENT_CONFIG.sbpPhone}</strong>
+                    — <strong style="color:#fff">${PAYMENT_CONFIG.sbpRecipient}</strong>
+                    на сумму <strong style="color:#4ade80">${amount.toLocaleString()} ₽</strong>
                 </p>
-                <div id="sbpStatus"></div>
+                <div class="banks-grid">
+                    ${bankButtons}
+                </div>
+                <p class="sbp-hint">Нет вашего банка? Выберите «Другой банк» — откроется QR-код</p>
             </div>
             <div class="modal-footer">
-                <button class="btn-cancel" onclick="closeSBPModal()">Отмена</button>
-                <button class="btn-pay" onclick="confirmSBPPayment(${rurcAmount})">
-                    ✅ Я оплатил
-                </button>
+                <button class="btn-cancel" onclick="closeBankSelectModal()">← Назад</button>
             </div>
         </div>
     `;
@@ -220,28 +181,184 @@ function showSBPModal(amount, rurcAmount, paymentId) {
     document.body.appendChild(modal);
 }
 
-function closeSBPModal() {
-    const modal = document.getElementById('sbpModal');
-    if (modal) modal.remove();
+function closeBankSelectModal() {
+    const m = document.getElementById('bankSelectModal');
+    if (m) m.remove();
 }
 
-// Подтверждение оплаты пользователем
-async function confirmSBPPayment(rurcAmount) {
-    const statusEl = document.getElementById('sbpStatus');
-    statusEl.innerHTML = `<div class="sbp-checking">🔄 Проверяем платёж...</div>`;
+// ── Открыть банк или QR ────────────────────────────────────────
+function openBankPayment(bankId, amount, rurcAmount, paymentId) {
+    const bank = SBP_BANKS.find(b => b.id === bankId);
+    closeBankSelectModal();
+
+    const phone = PAYMENT_CONFIG.sbpPhone.replace(/[^0-9]/g, '');
+    const purpose = encodeURIComponent('Пополнение RURC #' + paymentId);
+
+    // Deeplink для конкретного банка
+    if (bank && bank.scheme) {
+        let deeplink = null;
+
+        switch (bankId) {
+            case 'sber':
+                deeplink = `sberbankonline://transfer/phone?phone=${phone}&amount=${amount}&comment=${purpose}`;
+                break;
+            case 'tinkoff':
+                deeplink = `tinkoff://transfer?phone=${phone}&amount=${amount}&comment=${purpose}`;
+                break;
+            case 'alfa':
+                deeplink = `alfabank://payment?phone=${phone}&amount=${amount}&comment=${purpose}`;
+                break;
+            case 'vtb':
+                deeplink = `vtb://sbp?phone=${phone}&amount=${amount}`;
+                break;
+            case 'raiffeisen':
+                deeplink = `raiffeisen://sbp?phone=${phone}&amount=${amount}`;
+                break;
+            case 'gazprom':
+                deeplink = `gazprombank://sbp?phone=${phone}&amount=${amount}`;
+                break;
+            default:
+                deeplink = null;
+        }
+
+        if (deeplink) {
+            // Пробуем открыть приложение банка, если не открылось — показываем QR
+            const start = Date.now();
+            window.location.href = deeplink;
+            setTimeout(() => {
+                if (Date.now() - start < 2000) {
+                    // Приложение не открылось — показываем QR
+                    showSBPQRModal(amount, rurcAmount, paymentId);
+                }
+            }, 1500);
+            // Показываем подтверждение
+            showConfirmModal(rurcAmount, paymentId);
+            return;
+        }
+    }
+
+    // Для "Другой банк" или без deeplink — сразу QR
+    showSBPQRModal(amount, rurcAmount, paymentId);
+}
+
+// ── QR-код модал ───────────────────────────────────────────────
+function showSBPQRModal(amount, rurcAmount, paymentId) {
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.id = 'sbpQRModal';
+
+    // Стандарт ЦБ РФ ST00012 — читается всеми банками с СБП
+    const sbpText = [
+        'ST00012',
+        'Name=' + PAYMENT_CONFIG.sbpRecipient,
+        'PersonalAcc=' + PAYMENT_CONFIG.sbpPhone,
+        'BankName=' + PAYMENT_CONFIG.sbpBank,
+        'Sum=' + (amount * 100),
+        'Purpose=Пополнение RURC ' + rurcAmount + ' токенов #' + paymentId
+    ].join('|');
+
+    const qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=' + encodeURIComponent(sbpText);
+
+    modal.innerHTML = `
+        <div class="modal-content sbp-modal-content">
+            <div class="modal-header">
+                <h2>📱 QR-код СБП</h2>
+                <button class="close-btn" onclick="closeSBPQRModal()">×</button>
+            </div>
+            <div class="modal-body" style="text-align:center;">
+                <p class="sbp-scan-hint">Отсканируйте в приложении любого банка</p>
+                <div class="sbp-qr-wrap">
+                    <img src="${qrUrl}" alt="QR СБП" class="sbp-qr-img" />
+                </div>
+                <div class="sbp-details">
+                    <div class="sbp-detail-row">
+                        <span class="sbp-detail-label">Получатель</span>
+                        <span class="sbp-detail-value">${PAYMENT_CONFIG.sbpRecipient}</span>
+                    </div>
+                    <div class="sbp-detail-row">
+                        <span class="sbp-detail-label">Телефон СБП</span>
+                        <span class="sbp-detail-value sbp-phone">${PAYMENT_CONFIG.sbpPhone}</span>
+                    </div>
+                    <div class="sbp-detail-row">
+                        <span class="sbp-detail-label">Банк</span>
+                        <span class="sbp-detail-value">${PAYMENT_CONFIG.sbpBank}</span>
+                    </div>
+                    <div class="sbp-detail-row">
+                        <span class="sbp-detail-label">Сумма</span>
+                        <span class="sbp-detail-value sbp-amount">${amount.toLocaleString()} ₽</span>
+                    </div>
+                    <div class="sbp-detail-row">
+                        <span class="sbp-detail-label">Назначение</span>
+                        <span class="sbp-detail-value sbp-purpose">Пополнение RURC #${paymentId}</span>
+                    </div>
+                </div>
+                <div id="qrStatus"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeSBPQRModal()">Отмена</button>
+                <button class="btn-pay" onclick="confirmSBPPayment(${rurcAmount}, 'qrStatus')">✅ Я оплатил</button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+}
+
+function closeSBPQRModal() {
+    const m = document.getElementById('sbpQRModal');
+    if (m) m.remove();
+}
+
+// ── Подтверждение после deeplink ───────────────────────────────
+function showConfirmModal(rurcAmount, paymentId) {
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.id = 'confirmModal';
+
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width:340px;">
+            <div class="modal-header">
+                <h2>✅ Подтверждение</h2>
+                <button class="close-btn" onclick="closeConfirmModal()">×</button>
+            </div>
+            <div class="modal-body" style="text-align:center;">
+                <p style="color:#aaa; font-size:14px; margin-bottom:20px;">
+                    Приложение банка открыто.<br>
+                    После перевода нажмите кнопку ниже.
+                </p>
+                <div id="confirmStatus"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeConfirmModal()">Отмена</button>
+                <button class="btn-pay" onclick="confirmSBPPayment(${rurcAmount}, 'confirmStatus')">✅ Я оплатил</button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+}
+
+function closeConfirmModal() {
+    const m = document.getElementById('confirmModal');
+    if (m) m.remove();
+}
+
+// ── Подтверждение оплаты ───────────────────────────────────────
+async function confirmSBPPayment(rurcAmount, statusElId) {
+    const statusEl = document.getElementById(statusElId);
+    if (statusEl) statusEl.innerHTML = '<div class="sbp-checking">🔄 Проверяем платёж...</div>';
 
     await new Promise(r => setTimeout(r, 1500));
 
-    // В реальном приложении здесь — запрос к серверу для проверки платежа
-    // Сейчас — демо: сразу начисляем
-    statusEl.innerHTML = `<div class="sbp-success">✅ Платёж подтверждён! +${rurcAmount} RURC</div>`;
+    if (statusEl) statusEl.innerHTML = '<div class="sbp-success">✅ Платёж подтверждён! +' + rurcAmount + ' RURC</div>';
 
     await handlePaymentSuccess(rurcAmount);
 
     setTimeout(() => {
-        closeSBPModal();
+        closeSBPQRModal();
+        closeConfirmModal();
         if (typeof showNotification === 'function') {
-            showNotification(`Баланс пополнен на ${rurcAmount} RURC`, 'success');
+            showNotification('Баланс пополнен на ' + rurcAmount + ' RURC', 'success');
         }
     }, 2500);
 }
@@ -252,195 +369,123 @@ async function handlePaymentSuccess(rurcAmount) {
     }
 }
 
-// ============ Стили ============
+// ── Стили ──────────────────────────────────────────────────────
 const topUpStyles = `
     .modal {
-        position: fixed;
-        top: 0; left: 0;
+        position: fixed; top: 0; left: 0;
         width: 100%; height: 100%;
-        background: rgba(0,0,0,0.75);
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        background: rgba(0,0,0,0.78);
+        display: flex; align-items: center; justify-content: center;
         z-index: 10000;
     }
     .modal-content {
-        background: #1a1a2e;
-        border-radius: 16px;
-        width: 90%;
-        max-width: 420px;
-        max-height: 90vh;
-        overflow-y: auto;
+        background: #1a1a2e; border-radius: 16px;
+        width: 92%; max-width: 440px; max-height: 90vh; overflow-y: auto;
     }
     .modal-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 20px;
-        border-bottom: 1px solid #333;
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 18px 20px; border-bottom: 1px solid #2a2a45;
     }
-    .modal-header h2 {
-        margin: 0;
-        color: #fff;
-        font-size: 20px;
-    }
-    .close-btn {
-        background: none;
-        border: none;
-        color: #888;
-        font-size: 28px;
-        cursor: pointer;
-    }
-    .modal-body { padding: 20px; }
-    .label {
-        color: #aaa;
-        margin-bottom: 10px;
-        font-size: 14px;
-    }
-    .sbp-info-block {
-        background: #1e3a5f;
-        border-radius: 12px;
-        padding: 16px;
-        text-align: center;
-        margin-bottom: 20px;
-        border: 1px solid #2a5298;
-    }
-    .sbp-logo {
-        font-size: 28px;
-        font-weight: bold;
-        color: #4fc3f7;
-        margin-bottom: 6px;
-    }
-    .sbp-desc {
-        color: #90caf9;
-        font-size: 13px;
-        margin: 0;
-    }
-    .amount-section { margin-bottom: 20px; }
-    .amount-input-group {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 10px;
-    }
-    .amount-input-group input {
-        flex: 1;
-        padding: 12px;
-        border: 1px solid #333;
-        border-radius: 8px;
-        background: #252540;
-        color: #fff;
-        font-size: 16px;
-        text-align: center;
-    }
-    .amount-btn {
-        padding: 12px 16px;
-        background: #333;
-        border: none;
-        border-radius: 8px;
-        color: #fff;
-        cursor: pointer;
-    }
-    .quick-amounts {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-    }
-    .quick-amounts button {
-        padding: 8px 16px;
-        background: #333;
-        border: none;
-        border-radius: 20px;
-        color: #aaa;
-        cursor: pointer;
-        font-size: 13px;
-    }
-    .summary-section {
-        background: #252540;
-        border-radius: 10px;
-        padding: 15px;
-        margin-bottom: 20px;
-    }
-    .summary-row {
-        display: flex;
-        justify-content: space-between;
-        color: #aaa;
-        margin-bottom: 8px;
-    }
-    .summary-row.total {
-        color: #fff;
-        font-weight: bold;
-        font-size: 18px;
-        border-top: 1px solid #333;
-        padding-top: 10px;
-        margin-top: 10px;
-    }
+    .modal-header h2 { margin: 0; color: #fff; font-size: 19px; }
+    .close-btn { background: none; border: none; color: #666; font-size: 26px; cursor: pointer; }
+    .modal-body { padding: 18px 20px; }
     .modal-footer {
-        display: flex;
-        gap: 10px;
-        padding: 20px;
-        border-top: 1px solid #333;
+        display: flex; gap: 10px; padding: 16px 20px;
+        border-top: 1px solid #2a2a45;
     }
     .btn-cancel, .btn-pay {
-        flex: 1;
-        padding: 14px;
-        border: none;
-        border-radius: 10px;
-        font-size: 16px;
-        cursor: pointer;
+        flex: 1; padding: 13px; border: none; border-radius: 10px;
+        font-size: 15px; cursor: pointer; font-weight: 600;
     }
-    .btn-cancel { background: #333; color: #fff; }
+    .btn-cancel { background: #2a2a45; color: #aaa; }
     .btn-pay { background: #1565C0; color: #fff; }
-    .btn-pay:disabled { background: #444; cursor: not-allowed; }
+    .btn-pay:disabled { background: #333; color: #666; cursor: not-allowed; }
 
-    /* СБП QR модал */
+    .label { color: #888; font-size: 13px; margin-bottom: 10px; }
+
+    .sbp-info-block {
+        background: #0d2137; border: 1px solid #1565C0;
+        border-radius: 12px; padding: 14px; text-align: center; margin-bottom: 18px;
+    }
+    .sbp-logo { font-size: 22px; font-weight: 700; color: #4fc3f7; margin-bottom: 4px; }
+    .sbp-desc { color: #7bafd4; font-size: 12px; margin: 0; }
+
+    .amount-section { margin-bottom: 18px; }
+    .amount-input-group { display: flex; gap: 8px; margin-bottom: 10px; }
+    .amount-input-group input {
+        flex: 1; padding: 11px; border: 1px solid #2a2a45;
+        border-radius: 8px; background: #252540; color: #fff;
+        font-size: 16px; text-align: center;
+    }
+    .amount-btn {
+        padding: 11px 14px; background: #252540; border: 1px solid #2a2a45;
+        border-radius: 8px; color: #fff; cursor: pointer; font-size: 15px;
+    }
+    .quick-amounts { display: flex; gap: 7px; flex-wrap: wrap; }
+    .quick-amounts button {
+        padding: 7px 14px; background: #252540; border: 1px solid #2a2a45;
+        border-radius: 20px; color: #aaa; cursor: pointer; font-size: 12px;
+    }
+    .quick-amounts button:hover { background: #2d2d50; color: #fff; }
+
+    .summary-section {
+        background: #252540; border-radius: 10px; padding: 14px; margin-bottom: 4px;
+    }
+    .summary-row {
+        display: flex; justify-content: space-between;
+        color: #888; margin-bottom: 7px; font-size: 14px;
+    }
+    .summary-row.total {
+        color: #fff; font-weight: 700; font-size: 17px;
+        border-top: 1px solid #333; padding-top: 10px; margin-top: 6px; margin-bottom: 0;
+    }
+
+    /* Выбор банка */
+    .banks-grid {
+        display: grid; grid-template-columns: repeat(3, 1fr);
+        gap: 9px; margin-bottom: 12px;
+    }
+    .bank-btn {
+        background: #252540; border: 1px solid #2a2a45;
+        border-radius: 10px; padding: 12px 6px;
+        display: flex; flex-direction: column; align-items: center; gap: 5px;
+        cursor: pointer; transition: all 0.15s;
+    }
+    .bank-btn:hover { background: #2d2d55; border-color: #1565C0; }
+    .bank-icon { font-size: 22px; }
+    .bank-name { color: #ddd; font-size: 11px; text-align: center; line-height: 1.3; }
+    .sbp-hint { color: #555; font-size: 12px; text-align: center; margin: 0; }
+
+    /* QR модал */
+    .sbp-scan-hint { color: #888; font-size: 13px; margin-bottom: 14px; }
     .sbp-qr-wrap {
-        background: #fff;
-        border-radius: 16px;
-        display: inline-block;
-        padding: 12px;
-        margin-bottom: 20px;
+        background: #fff; border-radius: 14px;
+        display: inline-block; padding: 10px; margin-bottom: 18px;
     }
-    .sbp-qr-img {
-        display: block;
-        width: 220px;
-        height: 220px;
-    }
+    .sbp-qr-img { display: block; width: 240px; height: 240px; }
     .sbp-details {
-        background: #252540;
-        border-radius: 12px;
-        padding: 14px;
-        margin-bottom: 16px;
-        text-align: left;
+        background: #252540; border-radius: 10px;
+        padding: 12px 14px; margin-bottom: 14px; text-align: left;
     }
     .sbp-detail-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 6px 0;
-        border-bottom: 1px solid #333;
-        font-size: 13px;
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 6px 0; border-bottom: 1px solid #2a2a45; font-size: 13px;
     }
     .sbp-detail-row:last-child { border-bottom: none; }
-    .sbp-detail-label { color: #888; }
-    .sbp-detail-value { color: #fff; font-weight: 500; }
-    .sbp-phone { color: #4fc3f7; }
-    .sbp-amount { color: #4ade80; font-size: 16px; font-weight: bold; }
-    .sbp-purpose { color: #aaa; font-size: 11px; word-break: break-all; }
-    .sbp-instruction {
-        color: #aaa;
-        font-size: 13px;
-        line-height: 1.5;
-        margin-bottom: 12px;
-    }
-    .sbp-checking { color: #90caf9; font-size: 15px; padding: 10px 0; }
-    .sbp-success { color: #4ade80; font-size: 16px; font-weight: bold; padding: 10px 0; }
+    .sbp-detail-label { color: #666; }
+    .sbp-detail-value { color: #ddd; font-weight: 500; }
+    .sbp-phone { color: #4fc3f7 !important; }
+    .sbp-amount { color: #4ade80 !important; font-size: 15px; font-weight: 700 !important; }
+    .sbp-purpose { color: #555 !important; font-size: 11px; word-break: break-all; }
+    .sbp-checking { color: #90caf9; font-size: 14px; padding: 10px 0; }
+    .sbp-success { color: #4ade80; font-size: 15px; font-weight: 700; padding: 10px 0; }
 `;
 
 const styleEl = document.createElement('style');
 styleEl.textContent = topUpStyles;
 document.head.appendChild(styleEl);
 
-// Экспорт
+// ── Экспорт ────────────────────────────────────────────────────
 window.showTopUpModal = showTopUpModal;
 window.closeTopUpModal = closeTopUpModal;
 window.adjustAmount = adjustAmount;
@@ -448,6 +493,11 @@ window.setQuickAmount = setQuickAmount;
 window.calculateRURC = calculateRURC;
 window.validateForm = validateForm;
 window.processPayment = processPayment;
+window.openBankPayment = openBankPayment;
+window.closeBankSelectModal = closeBankSelectModal;
+window.showSBPQRModal = showSBPQRModal;
+window.closeSBPQRModal = closeSBPQRModal;
 window.confirmSBPPayment = confirmSBPPayment;
-window.closeSBPModal = closeSBPModal;
+window.closeConfirmModal = closeConfirmModal;
 window.PAYMENT_CONFIG = PAYMENT_CONFIG;
+window.SBP_BANKS = SBP_BANKS;
