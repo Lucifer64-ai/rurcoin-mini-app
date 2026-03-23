@@ -3,7 +3,7 @@
 //  Кошелёк команды разработчиков RURCoin
 // ============================================================
 
-const DEV_WALLET_ADDRESS = 'UQBMECsWYTb9gHH5bT-fweEZQXptdgmKpOy0mIswhbu0RqEb';
+const DEV_WALLET_ADDRESS = 'UQBv5qIVT1x5BD1uOJFKqMMqQfZbdaqExRuIATNCn_HiCGoI';
 const DEV_WALLET_COMMENT = 'RURCoin Equipment Purchase — Dev Fund';
 const TONAPI_BASE        = 'https://tonapi.io/v2';
 const TONAPI_KEY         = 'AHVHQCBZEV2TA6IAAAAJHMD6BQFJMEKBTA6WY3STOQMD5ZAPNOSYAM7ETRGBDN7S7JYYQZI';
