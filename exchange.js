@@ -1,17 +1,78 @@
 // ============================================================
 //  RURCoin — Обменник RURC ↔ TON
-//  Комиссия: 1.5% пользователю (ликвидность) + 2% владельцу
+//  Курс: динамический TON/RUB с CoinGecko (1 RURC = 1 RUB)
+//  Комиссия: 1.5% пул + 2% владельцу
 // ============================================================
 
 const EXCHANGE_CONFIG = {
-    rateRurcPerTon : 1000,      // 1 TON = 1000 RURC
-    userFeePct     : 1.5,       // % комиссии пула
-    ownerFeePct    : 2.0,       // % владельцу при каждом обмене
+    rateRurcPerTon : 1000,      // fallback, перезаписывается динамически
+    userFeePct     : 1.5,
+    ownerFeePct    : 2.0,
     ownerWallet    : 'UQBMECsWYTb9gHH5bT-fweEZQXptdgmKpOy0mIswhbu0RqEb',
     minTon         : 0.1,
     minRurc        : 100,
     poolAddress    : 'EQDPnYSAV-H8ADoaYGAuNhJL4HwfSB9IBj9ABi465D9ABj9ABgBaY',
+    rateUpdatedAt  : null,
+    rateLoading    : false,
 };
+
+// ── Динамический курс TON/RUB ─────────────────────────────────
+// 1 RURC = 1 RUB → 1 TON = X RUB = X RURC
+async function fetchTonRubRate() {
+    if (EXCHANGE_CONFIG.rateLoading) return;
+    EXCHANGE_CONFIG.rateLoading = true;
+
+    // Обновляем индикатор
+    const rateEl = document.getElementById('exchRateLive');
+    if (rateEl) rateEl.innerHTML = '⏳ Обновление...';
+
+    try {
+        // CoinGecko — бесплатный API, без ключа
+        const res = await fetch(
+            'https://api.coingecko.com/api/v3/simple/price?ids=the-open-network&vs_currencies=rub',
+            { cache: 'no-store' }
+        );
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        const rubPrice = data?.['the-open-network']?.rub;
+        if (!rubPrice || rubPrice <= 0) throw new Error('bad data');
+
+        EXCHANGE_CONFIG.rateRurcPerTon = Math.round(rubPrice);
+        EXCHANGE_CONFIG.rateUpdatedAt  = new Date();
+
+        if (rateEl) {
+            const t = EXCHANGE_CONFIG.rateUpdatedAt.toLocaleTimeString('ru');
+            rateEl.innerHTML =
+                `<span style="color:#4ade80;">● Живой курс</span> &nbsp;` +
+                `<span style="color:#60a5fa;font-weight:700;">1 TON = ${EXCHANGE_CONFIG.rateRurcPerTon.toLocaleString()} RURC</span>` +
+                `<span style="color:#444;font-size:10px;"> (≈ ${EXCHANGE_CONFIG.rateRurcPerTon.toLocaleString()} ₽) · ${t}</span>`;
+        }
+
+        // Пересчитать если что-то введено
+        if (exchangeState.inputVal) onExchInput(exchangeState.inputVal);
+
+    } catch (e) {
+        console.warn('[Exchange] Rate fetch failed:', e.message);
+        if (rateEl) {
+            rateEl.innerHTML =
+                `<span style="color:#f59e0b;">⚠ Нет данных</span> &nbsp;` +
+                `<span style="color:#888;">1 TON = ${EXCHANGE_CONFIG.rateRurcPerTon.toLocaleString()} RURC (кэш)</span>`;
+        }
+    } finally {
+        EXCHANGE_CONFIG.rateLoading = false;
+    }
+}
+
+// Автообновление каждые 60 секунд
+let _rateInterval = null;
+function startRateUpdater() {
+    fetchTonRubRate();
+    if (_rateInterval) clearInterval(_rateInterval);
+    _rateInterval = setInterval(fetchTonRubRate, 60_000);
+}
+function stopRateUpdater() {
+    if (_rateInterval) { clearInterval(_rateInterval); _rateInterval = null; }
+}
 
 // ── Состояние ─────────────────────────────────────────────────
 const exchangeState = {
@@ -24,29 +85,31 @@ const exchangeState = {
 // ── Расчёт ────────────────────────────────────────────────────
 function calcOutput(input, direction) {
     const n         = parseFloat(input) || 0;
+    const rate      = EXCHANGE_CONFIG.rateRurcPerTon;
     const totalFee  = EXCHANGE_CONFIG.userFeePct + EXCHANGE_CONFIG.ownerFeePct; // 3.5%
     const ownerFee  = EXCHANGE_CONFIG.ownerFeePct / 100;
     const totalFeeR = totalFee / 100;
 
     if (direction === 'buy') {
         // TON → RURC
-        const gross     = n * EXCHANGE_CONFIG.rateRurcPerTon;
-        const feeRurc   = gross * totalFeeR;
-        const ownerTon  = n * ownerFee;          // TON владельцу
-        const out       = gross * (1 - totalFeeR);
+        const gross    = n * rate;
+        const feeRurc  = gross * totalFeeR;
+        const ownerTon = n * ownerFee;
+        const out      = gross * (1 - totalFeeR);
         return { out, feeTotal: feeRurc, ownerTon, ownerRurc: gross * ownerFee, gross };
     } else {
         // RURC → TON
-        const gross     = n / EXCHANGE_CONFIG.rateRurcPerTon;
-        const feeTon    = gross * totalFeeR;
-        const ownerTon  = gross * ownerFee;
-        const out       = gross * (1 - totalFeeR);
+        const gross   = n / rate;
+        const feeTon  = gross * totalFeeR;
+        const ownerTon = gross * ownerFee;
+        const out     = gross * (1 - totalFeeR);
         return { out, feeTotal: feeTon, ownerTon, ownerRurc: 0, gross };
     }
 }
 
 function fmtTon(v)  { return (Math.round(v * 10000) / 10000).toFixed(4) + ' TON'; }
 function fmtRurc(v) { return (Math.round(v * 100)   / 100  ).toFixed(2) + ' RURC'; }
+function fmtRub(v)  { return v.toLocaleString('ru', { maximumFractionDigits: 0 }) + ' ₽'; }
 
 // ── Рендер ────────────────────────────────────────────────────
 function renderExchange() {
@@ -54,7 +117,6 @@ function renderExchange() {
     if (!el) return;
 
     const isBuy    = exchangeState.direction === 'buy';
-    const rate     = EXCHANGE_CONFIG.rateRurcPerTon;
     const totalFee = EXCHANGE_CONFIG.userFeePct + EXCHANGE_CONFIG.ownerFeePct;
 
     el.innerHTML = `
@@ -64,25 +126,24 @@ function renderExchange() {
         <div style="font-size:11px;color:#555;margin-top:2px;">RURC ↔ TON</div>
     </div>
 
-    <!-- Курс и комиссия -->
+    <!-- Живой курс -->
     <div style="background:linear-gradient(135deg,#0d0d2d,#0a1628);
                 border:1px solid #1a2a4a;border-radius:14px;
                 padding:12px 16px;margin-bottom:14px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-            <div>
-                <div style="font-size:10px;color:#555;margin-bottom:2px;">Курс обмена</div>
-                <div style="font-size:14px;font-weight:700;color:#60a5fa;">
-                    1 TON = ${rate.toLocaleString()} RURC
-                </div>
-            </div>
-            <div style="text-align:right;">
-                <div style="font-size:10px;color:#555;margin-bottom:2px;">Комиссия</div>
-                <div style="font-size:13px;font-weight:600;color:#f59e0b;">${totalFee}%</div>
-            </div>
+        <div id="exchRateLive" style="font-size:12px;line-height:1.8;">
+            ⏳ Загрузка курса...
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
+            <div style="font-size:10px;color:#555;">Источник: CoinGecko · обновление каждые 60 сек</div>
+            <button onclick="fetchTonRubRate()"
+                style="background:none;border:1px solid #1a2a4a;border-radius:6px;
+                       color:#60a5fa;font-size:10px;padding:3px 8px;cursor:pointer;">
+                🔄 Обновить
+            </button>
         </div>
         <!-- Разбивка комиссии -->
         <div style="background:rgba(0,0,0,0.3);border-radius:8px;padding:8px 10px;
-                    font-size:10px;color:#555;line-height:1.8;">
+                    font-size:10px;color:#555;line-height:1.8;margin-top:10px;">
             <div style="display:flex;justify-content:space-between;">
                 <span>🏦 Пул ликвидности</span>
                 <span style="color:#888;">${EXCHANGE_CONFIG.userFeePct}%</span>
@@ -90,6 +151,11 @@ function renderExchange() {
             <div style="display:flex;justify-content:space-between;">
                 <span>👑 Владелец платформы</span>
                 <span style="color:#FF8C00;">${EXCHANGE_CONFIG.ownerFeePct}%</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;border-top:1px solid #222;
+                        margin-top:4px;padding-top:4px;font-weight:600;">
+                <span style="color:#fff;">Итого комиссия</span>
+                <span style="color:#f59e0b;">${totalFee}%</span>
             </div>
         </div>
     </div>
@@ -133,6 +199,8 @@ function renderExchange() {
                     ${isBuy ? 'TON' : 'RURC'}
                 </span>
             </div>
+            <!-- Эквивалент в рублях -->
+            <div id="exchInputRub" style="font-size:10px;color:#555;margin-top:5px;text-align:right;"></div>
             <!-- Быстрые суммы -->
             <div style="display:flex;gap:5px;margin-top:8px;flex-wrap:wrap;">
                 ${(isBuy
@@ -142,9 +210,7 @@ function renderExchange() {
                     `<button onclick="setExchInput('${v}')"
                         style="flex:1;min-width:38px;padding:5px 2px;background:#1a1a2a;
                                border:1px solid #2a2a3a;border-radius:8px;color:#777;
-                               font-size:11px;cursor:pointer;transition:background 0.15s;"
-                        onmouseover="this.style.background='#2a2a3a'"
-                        onmouseout="this.style.background='#1a1a2a'">${l}</button>`
+                               font-size:11px;cursor:pointer;">${l}</button>`
                 ).join('')}
             </div>
         </div>
@@ -167,6 +233,8 @@ function renderExchange() {
                     ${isBuy ? 'RURC' : 'TON'}
                 </span>
             </div>
+            <!-- Эквивалент в рублях -->
+            <div id="exchOutputRub" style="font-size:10px;color:#555;margin-top:5px;text-align:right;"></div>
             <!-- Детали расчёта -->
             <div id="exchDetails" style="margin-top:8px;font-size:10px;color:#555;line-height:1.8;
                                          background:rgba(0,0,0,0.2);border-radius:8px;padding:6px 10px;
@@ -188,15 +256,6 @@ function renderExchange() {
         ${isBuy ? '💰 Купить RURC' : '📤 Продать RURC за TON'}
     </button>
 
-    <!-- Инфо о комиссии владельца -->
-    <div style="background:rgba(255,140,0,0.06);border:1px solid rgba(255,140,0,0.15);
-                border-radius:10px;padding:10px 12px;margin-bottom:14px;
-                font-size:10px;color:#888;line-height:1.6;">
-        <span style="color:#FF8C00;font-weight:600;">👑 2% комиссии</span> от каждого обмена
-        автоматически переводится на кошелёк владельца платформы.
-        Это обеспечивает развитие и поддержку RURCoin.
-    </div>
-
     <!-- История -->
     <div>
         <div style="font-size:11px;color:#555;margin-bottom:8px;
@@ -211,6 +270,9 @@ function renderExchange() {
         <div id="exchHistory">${renderExchHistory()}</div>
     </div>
     `;
+
+    // Запускаем обновление курса
+    startRateUpdater();
 
     if (exchangeState.inputVal) onExchInput(exchangeState.inputVal);
 }
@@ -229,6 +291,7 @@ function renderExchHistory() {
             <div>
                 <div style="font-size:12px;font-weight:600;color:#fff;">${tx.label}</div>
                 <div style="font-size:10px;color:#555;margin-top:2px;">${tx.date}</div>
+                ${tx.rubEquiv ? `<div style="font-size:10px;color:#444;">≈ ${tx.rubEquiv}</div>` : ''}
             </div>
             <div style="text-align:right;">
                 <div style="font-size:11px;color:${tx.dir==='buy'?'#FF8C00':'#4ade80'};">
@@ -258,24 +321,39 @@ function onExchInput(val) {
     exchangeState.inputVal = val;
     const { out, feeTotal, ownerTon, gross } = calcOutput(val, exchangeState.direction);
     const isBuy = exchangeState.direction === 'buy';
+    const rate  = EXCHANGE_CONFIG.rateRurcPerTon;
 
-    const outEl  = document.getElementById('exchOutput');
-    const detEl  = document.getElementById('exchDetails');
+    const outEl    = document.getElementById('exchOutput');
+    const detEl    = document.getElementById('exchDetails');
+    const inRubEl  = document.getElementById('exchInputRub');
+    const outRubEl = document.getElementById('exchOutputRub');
     if (!outEl) return;
 
     if (!val || parseFloat(val) <= 0) {
         outEl.textContent = '—';
-        if (detEl) { detEl.style.display = 'none'; detEl.innerHTML = ''; }
+        if (detEl)    { detEl.style.display = 'none'; detEl.innerHTML = ''; }
+        if (inRubEl)  inRubEl.textContent = '';
+        if (outRubEl) outRubEl.textContent = '';
         return;
+    }
+
+    const n = parseFloat(val) || 0;
+
+    // Эквивалент в рублях
+    if (inRubEl) {
+        const rubIn = isBuy ? n * rate : n; // TON*rate или RURC=RUB
+        inRubEl.textContent = '≈ ' + fmtRub(rubIn);
+    }
+    if (outRubEl) {
+        const rubOut = isBuy ? out : out * rate; // RURC=RUB или TON*rate
+        outRubEl.textContent = '≈ ' + fmtRub(rubOut);
     }
 
     outEl.textContent = isBuy ? fmtRurc(out) : fmtTon(out);
 
     if (detEl) {
         detEl.style.display = 'block';
-        const ownerStr = isBuy
-            ? fmtTon(ownerTon) + ' → владелец'
-            : fmtTon(ownerTon) + ' → владелец';
+        const ownerStr = fmtTon(ownerTon) + ' → владелец';
         detEl.innerHTML = `
             <div style="display:flex;justify-content:space-between;">
                 <span>Без комиссий:</span>
@@ -293,6 +371,10 @@ function onExchInput(val) {
                         margin-top:4px;padding-top:4px;font-weight:600;">
                 <span style="color:#fff;">Итого получаешь:</span>
                 <span style="color:${isBuy?'#FF8C00':'#4ade80'};">${isBuy ? fmtRurc(out) : fmtTon(out)}</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-top:2px;">
+                <span>Курс обмена:</span>
+                <span style="color:#60a5fa;">1 TON = ${rate.toLocaleString()} RURC (≈ ${fmtRub(rate)})</span>
             </div>
         `;
     }
@@ -337,19 +419,16 @@ async function doExchange() {
 // ── Покупка RURC за TON ───────────────────────────────────────
 async function doBuyRurc(tonAmount, rurcOut, ownerTon, walletAddr) {
     if (window.tonConnectUI) {
-        // Два сообщения: основная сумма в пул + 2% владельцу
-        const poolTon  = tonAmount - ownerTon;
+        const poolTon = tonAmount - ownerTon;
         const tx = {
             validUntil: Math.floor(Date.now() / 1000) + 300,
             messages: [
                 {
-                    // В пул ликвидности
                     address: EXCHANGE_CONFIG.poolAddress,
                     amount : String(Math.round(poolTon * 1e9)),
                     payload: btoa(`buy:${rurcOut.toFixed(2)}:${walletAddr}`),
                 },
                 {
-                    // 2% владельцу
                     address: EXCHANGE_CONFIG.ownerWallet,
                     amount : String(Math.round(ownerTon * 1e9)),
                     payload: btoa(`fee:exchange:${walletAddr}`),
@@ -359,7 +438,6 @@ async function doBuyRurc(tonAmount, rurcOut, ownerTon, walletAddr) {
         await window.tonConnectUI.sendTransaction(tx);
     }
 
-    // Начисляем RURC
     const rurcBalance = parseFloat(localStorage.getItem('rurcBalance') || '0');
     const newBalance  = rurcBalance + rurcOut;
     localStorage.setItem('rurcBalance', newBalance.toFixed(2));
@@ -368,8 +446,10 @@ async function doBuyRurc(tonAmount, rurcOut, ownerTon, walletAddr) {
     if (balEl) balEl.textContent = newBalance.toFixed(2);
     if (window.rurcoinApp && window.rurcoinApp.updateBalance) window.rurcoinApp.updateBalance();
 
-    addExchHistory('buy', tonAmount + ' TON', rurcOut, 'RURC');
-    showExchSuccess(`✅ Куплено ${fmtRurc(rurcOut)} за ${tonAmount} TON\n👑 Комиссия владельца: ${fmtTon(ownerTon)}`);
+    const rate   = EXCHANGE_CONFIG.rateRurcPerTon;
+    const rubEq  = fmtRub(tonAmount * rate);
+    addExchHistory('buy', tonAmount + ' TON', rurcOut, 'RURC', rubEq);
+    showExchSuccess(`✅ Куплено ${fmtRurc(rurcOut)} за ${tonAmount} TON (≈ ${rubEq})\n👑 Комиссия: ${fmtTon(ownerTon)}`);
 }
 
 // ── Продажа RURC за TON ───────────────────────────────────────
@@ -379,27 +459,28 @@ async function doSellRurc(rurcAmount, tonOut, ownerTon, walletAddr) {
         throw new Error(`Недостаточно RURC. Баланс: ${rurcBalance.toFixed(2)}`);
     }
 
-    // Списываем RURC
     const newBalance = rurcBalance - rurcAmount;
     localStorage.setItem('rurcBalance', newBalance.toFixed(2));
 
     const balEl = document.getElementById('rurcBalance');
     if (balEl) balEl.textContent = newBalance.toFixed(2);
 
-    // В реальности бэкенд отправляет TON и 2% владельцу
     console.log(`[Exchange] Sell ${rurcAmount} RURC → ${tonOut} TON to ${walletAddr}, owner fee: ${ownerTon} TON`);
 
-    addExchHistory('sell', rurcAmount + ' RURC', tonOut, 'TON');
-    showExchSuccess(`✅ Продано ${fmtRurc(rurcAmount)} → ${fmtTon(tonOut)}\n👑 Комиссия владельца: ${fmtTon(ownerTon)}`);
+    const rate  = EXCHANGE_CONFIG.rateRurcPerTon;
+    const rubEq = fmtRub(rurcAmount); // 1 RURC = 1 RUB
+    addExchHistory('sell', rurcAmount + ' RURC', tonOut, 'TON', rubEq);
+    showExchSuccess(`✅ Продано ${fmtRurc(rurcAmount)} → ${fmtTon(tonOut)} (≈ ${rubEq})\n👑 Комиссия: ${fmtTon(ownerTon)}`);
 }
 
 // ── История ───────────────────────────────────────────────────
-function addExchHistory(dir, inStr, outVal, outCur) {
+function addExchHistory(dir, inStr, outVal, outCur, rubEquiv) {
     const outStr = outCur === 'RURC' ? fmtRurc(outVal) : fmtTon(outVal);
     exchangeState.history.unshift({
         dir, label: `${inStr} → ${outStr}`, outStr,
-        date  : new Date().toLocaleString('ru'),
-        status: '✅ Выполнен',
+        date    : new Date().toLocaleString('ru'),
+        status  : '✅ Выполнен',
+        rubEquiv: rubEquiv || null,
     });
     if (exchangeState.history.length > 50) exchangeState.history.pop();
     localStorage.setItem('exchHistory', JSON.stringify(exchangeState.history));
@@ -432,9 +513,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-window.renderExchange   = renderExchange;
-window.setExchDirection = setExchDirection;
-window.setExchInput     = setExchInput;
-window.onExchInput      = onExchInput;
-window.doExchange       = doExchange;
-window.clearExchHistory = clearExchHistory;
+window.renderExchange    = renderExchange;
+window.setExchDirection  = setExchDirection;
+window.setExchInput      = setExchInput;
+window.onExchInput       = onExchInput;
+window.doExchange        = doExchange;
+window.clearExchHistory  = clearExchHistory;
+window.fetchTonRubRate   = fetchTonRubRate;
+window.startRateUpdater  = startRateUpdater;
+window.stopRateUpdater   = stopRateUpdater;
+window.EXCHANGE_CONFIG   = EXCHANGE_CONFIG;
