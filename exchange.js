@@ -7,7 +7,7 @@ const EXCHANGE_CONFIG = {
     rateRurcPerTon : 1000,      // 1 TON = 1000 RURC
     userFeePct     : 1.5,       // % комиссии пула
     ownerFeePct    : 2.0,       // % владельцу при каждом обмене
-    ownerWallet    : 'UQBv5qIVT1x5BD1uOJFKqMMqQfZbdaqExRuIATNCn_HiCGoI',
+    ownerWallet    : 'UQBhXF45rwMn9KVj46pUmgCsUEUJWdJP6vmHLOeKoLafsAfh',
     minTon         : 0.1,
     minRurc        : 100,
     poolAddress    : 'EQDPnYSAV-H8ADoaYGAuNhJL4HwfSB9IBj9ABi465D9ABj9ABgBaY',
