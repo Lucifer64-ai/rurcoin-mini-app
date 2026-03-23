@@ -180,7 +180,7 @@ async function connectPhantom() {
 // ============================================================
 async function connectTONWallet(walletId) {
     const appCfg = MULTI_WALLET_CONFIG.walletApps.find(w => w.id === walletId);
-    const manifestUrl = 'https://lucifer64-ai.github.io/rurcoin-mini-app/manifest.json';
+    const manifestUrl = 'https://lucifer64-ai.github.io/rurcoin-mini-app/tonconnect-manifest.json';
 
     // --- Telegram Wallet (встроенный в Telegram) ---
     if (walletId === 'telegram') {
@@ -242,7 +242,7 @@ async function connectTONWallet(walletId) {
                 const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
                 if (isMobile && wallet.universalLink) {
                     // На мобильном — сразу открываем приложение
-                    showTONConnectQR(link, wallet.name, appCfg?.icon || '💎', false, wallet.universalLink);
+                    showTONConnectQR(link, wallet.name, appCfg?.icon || '💎', false, link);
                 } else {
                     // На десктопе — QR-код
                     showTONConnectQR(link, wallet.name, appCfg?.icon || '💎', false);
@@ -263,7 +263,7 @@ async function connectTONWallet(walletId) {
 
     // Fallback — deeplink напрямую
     if (appCfg?.deeplink) {
-        showTONConnectQR(appCfg.deeplink, appCfg.name, appCfg.icon || '💎', false, appCfg.universalLink);
+        showTONConnectQR(link || appCfg.deeplink, appCfg.name, appCfg.icon || '💎', false, link || appCfg.deeplink);
     } else {
         showWalletMsg('💡 Введи TON-адрес вручную ниже', 'info');
     }
