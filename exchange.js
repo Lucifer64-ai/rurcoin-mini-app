@@ -7,7 +7,7 @@ const EXCHANGE_CONFIG = {
     rateRurcPerTon : 1000,      // 1 TON = 1000 RURC
     userFeePct     : 1.5,       // % комиссии пула
     ownerFeePct    : 2.0,       // % владельцу при каждом обмене
-    ownerWallet    : 'UQBhXF45rwMn9KVj46pUmgCsUEUJWdJP6vmHLOeKoLafsAfh',
+    ownerWallet    : 'UQBv5qIVT1x5BD1uOJFKqMMqQfZbdaqExRuIATNCn_HiCGoI',
     minTon         : 0.1,
     minRurc        : 100,
     poolAddress    : 'EQDPnYSAV-H8ADoaYGAuNhJL4HwfSB9IBj9ABi465D9ABj9ABgBaY',
@@ -428,19 +428,53 @@ async function doSellRurc(rurcAmount, tonOut, ownerTon, walletAddr) {
         throw new Error(`Недостаточно RURC. Баланс: ${rurcBalance.toFixed(2)}`);
     }
 
-    // Списываем RURC
+    // Проверяем подключение кошелька
+    if (!walletAddr) {
+        throw new Error('Подключите TON-кошелёк во вкладке «Кошелёк»');
+    }
+
+    // Отправляем TON пользователю из пула + 2% владельцу
+    // Для продажи RURC → TON: владелец платформы отправляет TON пользователю
+    // Реализация: пользователь отправляет 2% комиссии владельцу,
+    // а платформа (владелец) вручную или через смарт-контракт отправляет tonOut пользователю.
+    // Пока нет смарт-контракта — отправляем только комиссию владельцу,
+    // а TON зачисляется после ручного подтверждения.
+
+    // Отправляем 2% комиссии владельцу (подтверждение сделки)
+    if (window.tonConnectUI && ownerTon > 0) {
+        const tx = {
+            validUntil: Math.floor(Date.now() / 1000) + 300,
+            messages: [
+                {
+                    address: EXCHANGE_CONFIG.ownerWallet,
+                    amount : String(Math.round(ownerTon * 1e9)),
+                    payload: btoa(`sell:${rurcAmount}:${walletAddr}:${tonOut.toFixed(6)}`),
+                }
+            ]
+        };
+        try {
+            await window.tonConnectUI.sendTransaction(tx);
+        } catch (txErr) {
+            throw new Error('Транзакция отклонена: ' + (txErr.message || txErr));
+        }
+    } else if (!window.tonConnectUI) {
+        throw new Error('TON Connect не инициализирован. Подключите кошелёк.');
+    }
+
+    // Списываем RURC только после успешной транзакции
     const newBalance = rurcBalance - rurcAmount;
     localStorage.setItem('rurcBalance', newBalance.toFixed(2));
 
     const balEl = document.getElementById('rurcBalance');
     if (balEl) balEl.textContent = newBalance.toFixed(2);
+    if (window.rurcoinApp && window.rurcoinApp.updateBalance) window.rurcoinApp.updateBalance();
 
-    // В реальности бэкенд отправляет TON и 2% владельцу
     console.log(`[Exchange] Sell ${rurcAmount} RURC → ${tonOut} TON to ${walletAddr}, owner fee: ${ownerTon} TON`);
 
     addExchHistory('sell', rurcAmount + ' RURC', tonOut, 'TON');
-    showExchSuccess(`✅ Продано ${fmtRurc(rurcAmount)} → ${fmtTon(tonOut)}\n👑 Комиссия владельца: ${fmtTon(ownerTon)}`);
+    showExchSuccess(`✅ Заявка принята!\n📤 Продано: ${fmtRurc(rurcAmount)} RURC\n💎 Получите: ${fmtTon(tonOut)} TON\n⏳ Выплата в течение 24 часов`);
 }
+
 
 // ── История ───────────────────────────────────────────────────
 function addExchHistory(dir, inStr, outVal, outCur) {
