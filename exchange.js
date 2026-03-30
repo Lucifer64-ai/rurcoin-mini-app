@@ -17,26 +17,44 @@ const EXCHANGE_CONFIG = {
 let _tonRubRate = null; // кэш
 
 async function fetchTonRubRate() {
-    try {
-        const res = await fetch(
-            'https://api.bybit.com/v5/market/tickers?category=spot&symbol=TONRUB',
-            { cache: 'no-store' }
-        );
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        const data = await res.json();
-        const rate = parseFloat(data?.result?.list?.[0]?.lastPrice);
-        if (rate && rate > 0) {
-            _tonRubRate = rate;
-            EXCHANGE_CONFIG.rateRurcPerTon = Math.round(rate); // 1 RURC = 1 RUB
-            console.log('[Exchange] TON/RUB rate (Bybit):', rate);
-            // Перерисовываем если вкладка открыта
-            if (document.getElementById('exchangeTab')?.closest('.tab-content.active')) {
-                renderExchange();
-            }
+    const APIS = [
+        {
+            url: 'https://api.coingecko.com/api/v3/simple/price?ids=the-open-network&vs_currencies=rub',
+            parse: (d) => d?.['the-open-network']?.rub
+        },
+        {
+            url: 'https://api.coinpaprika.com/v1/tickers/ton-toncoin?quotes=RUB',
+            parse: (d) => d?.quotes?.RUB?.price
         }
-    } catch (e) {
-        console.warn('[Exchange] Bybit rate fetch failed:', e.message);
+    ];
+    const fetchWithTimeout = async (url, ms = 6000) => {
+        const ctrl = new AbortController();
+        const timer = setTimeout(() => ctrl.abort(), ms);
+        try {
+            const res = await fetch(url, { cache: 'no-store', signal: ctrl.signal });
+            clearTimeout(timer);
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            return await res.json();
+        } catch(e) { clearTimeout(timer); throw e; }
+    };
+    for (const api of APIS) {
+        try {
+            const data = await fetchWithTimeout(api.url);
+            const rate = parseFloat(api.parse(data));
+            if (rate > 0 && Number.isFinite(rate)) {
+                _tonRubRate = rate;
+                EXCHANGE_CONFIG.rateRurcPerTon = Math.round(rate);
+                console.log('[Exchange] TON/RUB:', rate);
+                if (document.getElementById('exchangeTab')?.closest('.tab-content.active')) {
+                    renderExchange();
+                }
+                return;
+            }
+        } catch(e) {
+            console.warn('[Exchange] rate fetch failed:', e.message);
+        }
     }
+    console.warn('[Exchange] все источники недоступны, используем кэш:', _tonRubRate);
 }
 
 // Запускаем сразу и каждые 60 секунд
