@@ -424,6 +424,12 @@ async function applyActualAmount(actualRubles, statusElId, payKey) {
 }
 
 async function handlePaymentSuccess(rurcAmount, statusEl, payKey) {
+    rurcAmount = parseFloat(rurcAmount);
+    if (!Number.isFinite(rurcAmount) || rurcAmount <= 0 || rurcAmount > 1_000_000) {
+        console.error('[Payment] Недопустимая сумма:', rurcAmount);
+        if (statusEl) statusEl.innerHTML = '<div style="color:#f44;">❌ Ошибка: недопустимая сумма.</div>';
+        return;
+    }
     if (!window.mintWithUI) {
         console.error('mintWithUI не найдена!');
         if (statusEl) statusEl.innerHTML = '<div style="color:#f44;">❌ Ошибка начисления. Обновите страницу.</div>';
