@@ -1,3 +1,23 @@
+// ── Полифилл showToast ──────────────────────────────────────────
+if (typeof window.showToast !== 'function') {
+    window.showToast = function(msg, type) {
+        const el = document.createElement('div');
+        el.textContent = msg;
+        el.style.cssText = [
+            'position:fixed','bottom:80px','left:50%','transform:translateX(-50%)',
+            'background:' + (type==='error'?'#c0392b':type==='success'?'#27ae60':'#1565C0'),
+            'color:#fff','padding:10px 20px','border-radius:12px','font-size:14px',
+            'z-index:99999','pointer-events:none','max-width:80vw','text-align:center',
+            'box-shadow:0 4px 20px rgba(0,0,0,0.4)'
+        ].join(';');
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 3000);
+    };
+}
+if (typeof window.showNotification !== 'function') {
+    window.showNotification = function(msg, type) { window.showToast(msg, type); };
+}
+
 // RURCoin Oil & Gas â Main Script
 // fix: event delegation Ð´Ð»Ñ Ð²ÐºÐ»Ð°Ð´Ð¾Ðº (ÑÐ°Ð±Ð¾ÑÐ°ÐµÑ Ñ Ð´Ð¸Ð½Ð°Ð¼Ð¸ÑÐµÑÐºÐ¸Ð¼Ð¸ ÐºÐ½Ð¾Ð¿ÐºÐ°Ð¼Ð¸)
 
@@ -29,9 +49,21 @@ class RURCoinMiner {
     loadData() {
         try {
             const saved = JSON.parse(localStorage.getItem('rurcoin_data') || '{}');
+            const numFields = ['balance','tonBalance','stakedBalance','stakingRewards',
+                'totalMined','oilPumps','gasTowers','oilTanks','oilStored','gasStored',
+                'oilCapacity','gasCapacity'];
+            numFields.forEach(k => {
+                if (saved[k] !== undefined) {
+                    const v = parseFloat(saved[k]);
+                    saved[k] = Number.isFinite(v) ? v : 0;
+                }
+            });
             Object.assign(this, saved);
             this.lastUpdate = saved.lastUpdate || Date.now();
-        } catch(e) { console.warn('Load error:', e); }
+        } catch(e) {
+            console.warn('Load error:', e);
+            this.balance = 0; this.tonBalance = 0; this.stakedBalance = 0;
+        }
     }
 
     saveData() {
@@ -248,7 +280,7 @@ window.mintWithUI = function(rurcAmount) {
     const amount = parseFloat(rurcAmount);
     if (!amount || amount <= 0) return;
 
-    app.balance += amount;
+    app.balance = Math.max(0, (app.balance || 0) + amount);
     app.totalMined = (app.totalMined || 0) + amount;
 
     // Добавляем в историю транзакций
@@ -816,4 +848,14 @@ document.addEventListener('click', function(e) {
 // Инициализация
 document.addEventListener('DOMContentLoaded', function() {
     setTimeout(renderEquipment, 400);
+});
+
+// ── Очистка таймеров при закрытии ──────────────────────────────
+window.addEventListener('beforeunload', function() {
+    if (window.rurcoinApp) {
+        ['_miningInterval','_stakingInterval','_renderInterval'].forEach(k => {
+            if (window.rurcoinApp[k]) clearInterval(window.rurcoinApp[k]);
+        });
+        try { window.rurcoinApp.saveData(); } catch(e) {}
+    }
 });
