@@ -6,7 +6,7 @@
 const DEV_WALLET_ADDRESS = 'UQBv5qIVT1x5BD1uOJFKqMMqQfZbdaqExRuIATNCn_HiCGoI';
 const DEV_WALLET_COMMENT = 'RURCoin Equipment Purchase — Dev Fund';
 const TONAPI_BASE        = 'https://tonapi.io/v2';
-const TONAPI_KEY         = 'AHVHQCBZEV2TA6IAAAAJHMD6BQFJMEKBTA6WY3STOQMD5ZAPNOSYAM7ETRGBDN7S7JYYQZI';
+const TONAPI_KEY = ''; // ключ убран из клиентского кода
 
 // ============================================================
 //  Коды ошибок и человекочитаемые сообщения
@@ -27,6 +27,23 @@ const TON_ERRORS = {
 // ============================================================
 //  Определение типа ошибки по тексту
 // ============================================================
+
+// ── Fetch с таймаутом ──────────────────────────────────────────
+async function _tonFetchWithTimeout(url, options = {}, ms = 8000) {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), ms);
+    try {
+        const res = await fetch(url, { ...options, signal: ctrl.signal });
+        clearTimeout(timer);
+        return res;
+    } catch(e) {
+        clearTimeout(timer);
+        if (e.name === 'AbortError') throw new Error('Таймаут запроса (' + ms + 'мс)');
+        throw e;
+    }
+}
+
+
 function classifyError(err) {
     if (!err) return TON_ERRORS.UNKNOWN;
     const msg = (err.message || err.toString() || '').toLowerCase();
@@ -155,7 +172,7 @@ async function verifyTonTransaction({ expectedAmount, afterTs }) {
 
     try {
         const url  = `${TONAPI_BASE}/blockchain/accounts/${DEV_WALLET_ADDRESS}/transactions?limit=20`;
-        const resp = await fetch(url, { headers: { 'Authorization': `Bearer ${TONAPI_KEY}` } });
+        const resp = await _tonFetchWithTimeout(url, { headers: { 'Authorization': `Bearer ${TONAPI_KEY}` } });
 
         if (!resp.ok) {
             return { ok: false, reason: `TON API вернул ${resp.status}` };
@@ -315,7 +332,7 @@ function getDevErrorHistory() {
 async function getLastDevTransaction() {
     try {
         const url  = `${TONAPI_BASE}/blockchain/accounts/${DEV_WALLET_ADDRESS}/transactions?limit=5`;
-        const resp = await fetch(url, { headers: { 'Authorization': `Bearer ${TONAPI_KEY}` } });
+        const resp = await _tonFetchWithTimeout(url, { headers: { 'Authorization': `Bearer ${TONAPI_KEY}` } });
         if (!resp.ok) return null;
         const data = await resp.json();
         const tx   = (data.transactions || [])[0];
