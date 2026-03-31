@@ -516,6 +516,13 @@ async function loadMultiBalance(address, network) {
         const el = document.getElementById('mwBalance');
         if (el) el.textContent = balance;
 
+        // Обновляем RURC баланс из localStorage
+        const rurcEl = document.getElementById('mwRurcBalance');
+        if (rurcEl) {
+            const rurcBal = parseFloat(localStorage.getItem('rurcBalance') || '0');
+            rurcEl.textContent = rurcBal.toFixed(2) + ' RURC';
+        }
+
         // Обновляем баланс TON в хедере реальным значением с блокчейна
         if (network === 'TON') {
             const headerEl = document.getElementById('tonBalance');
@@ -645,8 +652,8 @@ function renderMultiWalletUI() {
                 </div>
                 <div style="display:flex;align-items:center;gap:10px;padding:8px 0;">
                     <span style="font-size:20px;">🛢️</span>
-                    <span style="font-size:14px;font-weight:600;color:#FF8C00;">
-                        ${window.rurcoinApp ? window.rurcoinApp.balance.toFixed(2) : '0.00'} RURC
+                    <span style="font-size:14px;font-weight:600;color:#FF8C00;" id="mwRurcBalance">
+                        ${parseFloat(localStorage.getItem('rurcBalance') || '0').toFixed(2)} RURC
                     </span>
                 </div>
             </div>
