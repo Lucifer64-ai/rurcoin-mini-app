@@ -394,8 +394,6 @@ window.switchResourceSlide = switchResourceSlide;
 //  UPGRADES — список улучшений с подробными описаниями
 // ============================================================
 const UPGRADES_LIST = [
-
-    // ===== НЕФТЬ =====
     {
         id: 'oilSpeed',
         name: '⚡ Скорость добычи нефти',
@@ -448,7 +446,7 @@ const UPGRADES_LIST = [
         category: 'oil',
         desc: 'Химическая закачка увеличивает выход нефти из скважины на 25% за уровень.',
         details: [
-            'Ур. 1 → +25% к общей добыче нефти',
+            'Ур. 1 → +25% к общей добыче',
             'Ур. 4 → +100% (×2 к базе)',
             'Ур. 6 → +150% к общей добыче',
             'Применяется после всех других бонусов'
@@ -476,7 +474,7 @@ const UPGRADES_LIST = [
         name: '🛡️ Защита оборудования',
         icon: '🛡️',
         category: 'oil',
-        desc: 'Снижает простои — добыча идёт без перерывов.',
+        desc: 'Снижает простои — добыча идёт без перерывов. Бонус к uptime.',
         details: [
             'Ур. 1 → +10% к времени работы насосов',
             'Ур. 5 → +50% uptime',
@@ -486,100 +484,6 @@ const UPGRADES_LIST = [
         baseCost: 150, costMult: 2.6, maxLevel: 8,
         stat: (a) => `+${(a.upgrades.equipProtect||0)*10}% uptime`
     },
-    {
-        id: 'deepDrill',
-        name: '⛏️ Глубокое бурение',
-        icon: '⛏️',
-        category: 'oil',
-        desc: 'Бурение на большую глубину открывает богатые пласты нефти.',
-        details: [
-            'Ур. 1 → +30% к добыче нефти',
-            'Ур. 3 → +90% к добыче нефти',
-            'Ур. 5 → +150% — глубокие пласты дают втрое больше',
-            'Требует много энергии — стоит дорого'
-        ],
-        baseCost: 500, costMult: 4.0, maxLevel: 5,
-        stat: (a) => `+${(a.upgrades.deepDrill||0)*30}% глубина`
-    },
-
-    // ===== ГАЗ =====
-    {
-        id: 'gasSpeed',
-        name: '⚡ Скорость добычи газа',
-        icon: '🔥',
-        category: 'gas',
-        desc: 'Увеличивает скорость добычи природного газа на 20% за уровень.',
-        details: [
-            'Ур. 1 → +20% добычи газа',
-            'Ур. 5 → +100% (×2 к базе)',
-            'Ур. 10 → +200% (×3 к базе)',
-            'Стекается с количеством газовых вышек'
-        ],
-        baseCost: 40, costMult: 2.0, maxLevel: 10,
-        stat: (a) => `${(a.getGasPerSec()*3600).toFixed(0)} м³/ч`
-    },
-    {
-        id: 'gasTurbine',
-        name: '🌀 Газовая турбина',
-        icon: '🌀',
-        category: 'gas',
-        desc: 'Турбина сжигает газ для ускорения добычи нефти — газ работает как топливо.',
-        details: [
-            'Ур. 1 → газ даёт +10% к добыче нефти',
-            'Ур. 3 → газ даёт +30% к добыче нефти',
-            'Ур. 5 → газ даёт +50% к добыче нефти',
-            'Чем больше газа в хранилище — тем сильнее бонус'
-        ],
-        baseCost: 300, costMult: 3.2, maxLevel: 5,
-        stat: (a) => `+${(a.upgrades.gasTurbine||0)*10}% к нефти`
-    },
-    {
-        id: 'gasCompressor',
-        name: '🔄 Компрессор газа',
-        icon: '🔄',
-        category: 'gas',
-        desc: 'Сжимает газ — в то же хранилище помещается в 2× больше.',
-        details: [
-            'Ур. 1 → ёмкость газохранилища ×1.3',
-            'Ур. 3 → ёмкость ×1.9',
-            'Ур. 5 → ёмкость ×2.5 — вдвое больше газа без новых танков',
-            'Дешевле чем покупать новые газовые танки'
-        ],
-        baseCost: 180, costMult: 2.8, maxLevel: 5,
-        stat: (a) => `×${(1 + (a.upgrades.gasCompressor||0)*0.3).toFixed(1)} к ёмкости`
-    },
-    {
-        id: 'gasConverter',
-        name: '⚗️ Конвертер газа',
-        icon: '⚗️',
-        category: 'gas',
-        desc: 'Конвертирует часть газа в RURC — газ становится источником дохода.',
-        details: [
-            'Ур. 1 → 1% газа в хранилище → RURC каждые 10 сек',
-            'Ур. 3 → 3% газа → RURC каждые 10 сек',
-            'Ур. 5 → 5% газа → RURC каждые 10 сек',
-            'Газ расходуется — следи за хранилищем'
-        ],
-        baseCost: 400, costMult: 3.8, maxLevel: 5,
-        stat: (a) => `${(a.upgrades.gasConverter||0)}% газа → RURC`
-    },
-    {
-        id: 'gasInsulation',
-        name: '🧱 Изоляция трубопровода',
-        icon: '🧱',
-        category: 'gas',
-        desc: 'Снижает утечки газа при транспортировке — меньше потерь.',
-        details: [
-            'Ур. 1 → утечки -20%',
-            'Ур. 3 → утечки -60%',
-            'Ур. 5 → утечки практически отсутствуют',
-            'Особенно важно при большом числе газовых вышек'
-        ],
-        baseCost: 130, costMult: 2.3, maxLevel: 5,
-        stat: (a) => `-${(a.upgrades.gasInsulation||0)*20}% утечек`
-    },
-
-    // ===== ХРАНИЛИЩЕ =====
     {
         id: 'oilCapacity',
         name: '🏗️ Ёмкость нефтехранилища',
@@ -615,7 +519,7 @@ const UPGRADES_LIST = [
         name: '🔧 Расширение трубопровода',
         icon: '🔧',
         category: 'storage',
-        desc: 'Увеличивает скорость перекачки — меньше потерь при переполнении.',
+        desc: 'Увеличивает скорость перекачки нефти в хранилище — меньше потерь при переполнении.',
         details: [
             'Ур. 1 → потери при переполнении -20%',
             'Ур. 3 → потери -60%',
@@ -624,34 +528,20 @@ const UPGRADES_LIST = [
         ],
         baseCost: 180, costMult: 2.2, maxLevel: 5,
         stat: (a) => `-${(a.upgrades.pipelineExt||0)*20}% потерь`
-    },
-    {
-        id: 'smartStorage',
-        name: '🤖 Умное хранилище',
-        icon: '🤖',
-        category: 'storage',
-        desc: 'Автоматически балансирует нефть и газ между резервуарами.',
-        details: [
-            'Одноразовое улучшение',
-            'Нефть и газ не переполняются — излишки перераспределяются',
-            'Добыча никогда не останавливается из-за полного хранилища',
-            'Обязательно для поздней игры'
-        ],
-        baseCost: 600, costMult: 1.0, maxLevel: 1,
-        stat: (a) => (a.upgrades.smartStorage >= 1 ? '✅ Активно' : '❌ Не куплено')
     }
 ];
 
 const UPGRADE_CATEGORIES = {
     oil:     { label: '🛢️ Нефть',    color: '#FF8C00' },
-    gas:     { label: '🔥 Газ',      color: '#4ade80' },
     storage: { label: '🏗️ Хранилище', color: '#a78bfa' }
 };
 
 function getUpgradeCost(upg) {
     const app = window.rurcoinApp;
     const level = app ? (app.upgrades[upg.id] || 0) : 0;
-    return Math.round(upg.baseCost * Math.pow(upg.costMult, level));
+    // Цена в TON: baseCost / 1000, минимум 0.01 TON
+    const raw = upg.baseCost / 1000 * Math.pow(upg.costMult, level);
+    return Math.round(raw * 100) / 100; // округляем до 2 знаков
 }
 
 // Состояние раскрытых карточек
@@ -693,7 +583,7 @@ function renderUpgrades() {
             const level     = app.upgrades[upg.id] || 0;
             const maxed     = level >= upg.maxLevel;
             const cost      = getUpgradeCost(upg);
-            const canAfford = app.balance >= cost;
+            const canAfford = app.tonBalance >= cost;
             const statText  = upg.stat(app);
             const pct       = Math.round(level / upg.maxLevel * 100);
             const expanded  = !!_upgExpanded[upg.id];
@@ -777,7 +667,7 @@ function renderUpgrades() {
                                                   : 'rgba(80,80,80,0.4)'};
                                               opacity:${canAfford ? '1' : '0.55'};"
                                        ${canAfford ? '' : 'disabled'}>
-                                   💰 ${cost.toLocaleString()}
+                                   💎 ${cost.toFixed(2)} TON
                                </button>`
                         }
                     </div>
@@ -816,17 +706,17 @@ function buyUpgrade(upgradeId) {
     const level = app.upgrades[upgradeId] || 0;
     if (level >= upg.maxLevel) return;
     const cost = getUpgradeCost(upg);
-    if (app.balance < cost) {
+    if (app.tonBalance < cost) {
         const btn = document.querySelector(`button[onclick="buyUpgrade('${upgradeId}')"]`);
         if (btn) {
             const orig = btn.innerHTML;
             btn.style.background = 'rgba(255,34,68,0.6)';
-            btn.textContent = '❌ Мало RURC';
+            btn.textContent = '❌ Мало TON';
             setTimeout(() => { btn.style.background = 'rgba(80,80,80,0.4)'; btn.innerHTML = orig; }, 1200);
         }
         return;
     }
-    app.balance -= cost;
+    app.tonBalance -= cost;
     app.upgrades[upgradeId] = level + 1;
     if (upgradeId === 'oilCapacity') app.oilCapacity += 50;
     if (upgradeId === 'gasCapacity') app.gasCapacity += 500;
@@ -919,7 +809,7 @@ function renderEquipment() {
     container.innerHTML = EQUIPMENT_LIST.map(eq => {
         const count = app[eq.countKey] || 0;
         const cost = eq.getCost(app);
-        const canAfford = app.balance >= cost;
+        const canAfford = app.tonBalance >= cost;
         const statText = eq.stat(app);
 
         return `
@@ -955,7 +845,7 @@ function renderEquipment() {
                                    : 'rgba(80,80,80,0.4)'};
                                opacity:${canAfford ? '1' : '0.55'};"
                         ${canAfford ? '' : 'disabled'}>
-                    💰 ${cost.toLocaleString()} RURC
+                    💎 ${cost.toFixed(2)} TON RURC
                 </button>
             </div>
         </div>`;
@@ -969,7 +859,7 @@ function buyEquipment(equipId) {
     if (!eq) return;
 
     const cost = eq.getCost(app);
-    if (app.balance < cost) {
+    if (app.tonBalance < cost) {
         const btn = document.querySelector(`button[onclick="buyEquipment('${equipId}')"]`);
         if (btn) {
             const orig = btn.innerHTML;
