@@ -409,38 +409,24 @@ const UPGRADES_LIST = [
         baseCost: 50, costMult: 2.2, maxLevel: 10,
         stat: (a) => `${(a.getOilPerSec()*3600).toFixed(1)} барр/ч`
     },
+
+
     {
-        id: 'gasSpeed',
-        name: '⚡ Скорость добычи газа',
-        icon: '🔥',
+        id: 'gasPrice',
+        name: '💰 Цена продажи газа',
+        icon: '📈',
         category: 'gas',
-        desc: 'Увеличивает скорость добычи природного газа на 20% за уровень.',
+        desc: 'Повышает цену продажи газа на 15% за каждый уровень.',
         details: [
-            'Ур. 1 → +20% добычи газа',
-            'Ур. 5 → +100% (×2 к базе)',
-            'Ур. 10 → +200% (×3 к базе)',
-            'Стекается с количеством газовых вышек'
+            'Ур. 1 → +15% к цене газа',
+            'Ур. 4 → +60% к цене газа',
+            'Ур. 8 → +120% к цене газа',
+            'Влияет на ручную и авто-продажу'
         ],
-        baseCost: 40, costMult: 2.0, maxLevel: 10,
-        stat: (a) => `${(a.getGasPerSec()*3600).toFixed(0)} м³/ч`
+        baseCost: 60, costMult: 2.3, maxLevel: 8,
+        stat: (a) => `$${a.getGasSellPrice().toFixed(3)}/м³`
     },
 
-
-    {
-        id: 'autoSell',
-        name: '🤖 Авто-продажа',
-        icon: '🤖',
-        category: 'auto',
-        desc: 'Автоматически продаёт нефть и газ при заполнении хранилища.',
-        details: [
-            'Продаёт нефть при заполнении резервуара на 100%',
-            'Продаёт газ при заполнении резервуара на 100%',
-            'Работает в фоне — не нужно нажимать кнопки',
-            'Одноразовое улучшение — 1 уровень'
-        ],
-        baseCost: 200, costMult: 3.0, maxLevel: 1,
-        stat: (a) => (a.upgrades.autoSell >= 1 ? '✅ Активно' : '❌ Не куплено')
-    },
     {
         id: 'oilCapacity',
         name: '🏗️ Ёмкость нефтехранилища',
@@ -477,8 +463,6 @@ const UPGRADES_LIST = [
 
 const UPGRADE_CATEGORIES = {
     oil:     { label: '🛢️ Нефть',    color: '#FF8C00' },
-    gas:     { label: '🔥 Газ',      color: '#4ade80' },
-    auto:    { label: '🤖 Авто',     color: '#60a5fa' },
     storage: { label: '🏗️ Хранилище', color: '#a78bfa' }
 };
 
