@@ -285,7 +285,8 @@ async function connectTONWallet(walletId) {
                 bridgeUrl: target.bridgeUrl || 'https://bridge.tonapi.io/bridge'
             });
 
-            _tonConnector.onStatusChange((w) => {
+                        if (window._tonStatusUnsub) { try { window._tonStatusUnsub(); } catch(e) {} }
+            window._tonStatusUnsub = _tonConnector.onStatusChange((w) => {
                 if (w) {
                     onMultiWalletConnected(w.account.address, 'TON', 'Telegram Wallet');
                     closeTONQRModal();
@@ -314,7 +315,8 @@ async function connectTONWallet(walletId) {
                 bridgeUrl: wallet.bridgeUrl
             });
 
-            _tonConnector.onStatusChange((w) => {
+                        if (window._tonStatusUnsub) { try { window._tonStatusUnsub(); } catch(e) {} }
+            window._tonStatusUnsub = _tonConnector.onStatusChange((w) => {
                 if (w) {
                     onMultiWalletConnected(w.account.address, 'TON', wallet.name);
                     closeTONQRModal();
@@ -546,13 +548,21 @@ async function loadMultiBalance(address, network) {
 //  Прогресс игрока по адресу
 // ============================================================
 function loadPlayerProgress(address) {
+    if (!address || typeof address !== 'string' || address.length < 10) return;
     const key = 'rurcoin_player_' + address;
     const saved = localStorage.getItem(key);
     if (saved && window.rurcoinApp) {
-        const data = JSON.parse(saved);
-        Object.assign(window.rurcoinApp, data);
-        window.rurcoinApp.render();
-        showWalletMsg('📂 Прогресс загружен!', 'success');
+        try {
+            const data = JSON.parse(saved);
+            if (data && typeof data === 'object') {
+                Object.assign(window.rurcoinApp, data);
+                window.rurcoinApp.render();
+                showWalletMsg('📂 Прогресс загружен!', 'success');
+            }
+        } catch (e) {
+            console.warn('[Wallet] Не удалось загрузить прогресс игрока:', e);
+            localStorage.removeItem(key);
+        }
     }
 }
 
@@ -584,6 +594,11 @@ setInterval(savePlayerProgress, 10000);
 //  Отключить кошелёк
 // ============================================================
 function disconnectMultiWallet() {
+    if (window._tonStatusUnsub) { try { window._tonStatusUnsub(); } catch(e) {} window._tonStatusUnsub = null; }
+    if (_tonConnector) {
+        try { _tonConnector.disconnect(); } catch(e) {}
+        _tonConnector = null;
+    }
     multiWalletState.connected = false;
     multiWalletState.address = null;
     multiWalletState.network = null;
@@ -1039,13 +1054,19 @@ function updateHeaderWallet() {
 //  Инициализация
 // ============================================================
 document.addEventListener('DOMContentLoaded', () => {
-    const restored = loadSavedMultiWallet();
-    renderMultiWalletUI();
-    updateHeaderWallet();
-
-    if (restored && multiWalletState.address) {
-        loadMultiBalance(multiWalletState.address, multiWalletState.network);
-        setTimeout(() => loadPlayerProgress(multiWalletState.address), 600);
+    if (window.Telegram?.WebApp?.ready) {
+        window.Telegram.WebApp.ready();
+    }
+    try {
+        const restored = loadSavedMultiWallet();
+        renderMultiWalletUI();
+        updateHeaderWallet();
+        if (restored && multiWalletState.address) {
+            loadMultiBalance(multiWalletState.address, multiWalletState.network);
+            setTimeout(() => loadPlayerProgress(multiWalletState.address), 600);
+        }
+    } catch (e) {
+        console.error('[Wallet] Ошибка инициализации:', e);
     }
 });
 
