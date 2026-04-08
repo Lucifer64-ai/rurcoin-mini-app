@@ -1018,152 +1018,161 @@ body::after{
 
 
 /* ═══════════════════════════════════════════════════════════════
-   TYPOGRAPHY UPGRADE — Golden Oil & Gas Edition
-   Заголовки: золотой градиент | Текст: мягкий янтарь | Акценты: свечение
+   GLOW ANIMATIONS — Oil & Gas Pulse Edition
+   Пульсирующее свечение, мерцание, живые кнопки
 ═══════════════════════════════════════════════════════════════ */
 
-/* ── Глобальный текст — убираем агрессивный белый ── */
-body, .app-container {
-  color: #c8b89a !important;
+/* ── Keyframes ── */
+
+/* Пульс золотого свечения — для заголовков и балансов */
+@keyframes goldPulse {
+  0%   { filter: drop-shadow(0 0 4px rgba(255,165,0,0.3)) drop-shadow(0 0 8px rgba(255,165,0,0.1)); }
+  50%  { filter: drop-shadow(0 0 12px rgba(255,215,0,0.7)) drop-shadow(0 0 24px rgba(255,140,0,0.4)); }
+  100% { filter: drop-shadow(0 0 4px rgba(255,165,0,0.3)) drop-shadow(0 0 8px rgba(255,165,0,0.1)); }
 }
 
-/* ── Заголовки секций — золотой градиент с glow ── */
+/* Мерцание текста — для числовых значений */
+@keyframes textFlicker {
+  0%, 95%, 100% { opacity: 1; }
+  96%            { opacity: 0.85; }
+  97%            { opacity: 1; }
+  98%            { opacity: 0.9; }
+}
+
+/* Бегущий градиент — для заголовков секций */
+@keyframes gradientShift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Пульс рамки карточки */
+@keyframes borderPulse {
+  0%   { box-shadow: 0 0 4px rgba(255,165,0,0.1), inset 0 0 4px rgba(255,165,0,0.05); }
+  50%  { box-shadow: 0 0 16px rgba(255,165,0,0.3), inset 0 0 8px rgba(255,165,0,0.1); }
+  100% { box-shadow: 0 0 4px rgba(255,165,0,0.1), inset 0 0 4px rgba(255,165,0,0.05); }
+}
+
+/* Свечение кнопки при наведении */
+@keyframes btnGlow {
+  0%   { box-shadow: 0 0 8px rgba(255,165,0,0.4); }
+  50%  { box-shadow: 0 0 20px rgba(255,215,0,0.7), 0 0 40px rgba(255,140,0,0.3); }
+  100% { box-shadow: 0 0 8px rgba(255,165,0,0.4); }
+}
+
+/* Сканлайн — HUD-эффект поверх фона */
+@keyframes scanline {
+  0%   { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+/* Пульс прогресс-бара */
+@keyframes progressGlow {
+  0%   { box-shadow: 0 0 4px rgba(255,165,0,0.4); }
+  50%  { box-shadow: 0 0 12px rgba(255,215,0,0.8), 0 0 24px rgba(255,140,0,0.4); }
+  100% { box-shadow: 0 0 4px rgba(255,165,0,0.4); }
+}
+
+/* Мигание точки — индикатор активности */
+@keyframes dotBlink {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.3; transform: scale(0.7); }
+}
+
+/* Плавное появление элементов */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Применяем анимации ── */
+
+/* Заголовки — бегущий золотой градиент */
 h1, h2, h3,
-.section-title,
-.panel-title,
-.tab-title,
-.staking-title,
-.storage-title,
-.upgrade-title,
-.shop-title,
-.deposit-title,
-.exchange-title {
-  background: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FF8C00 100%);
+.section-title, .panel-title, .tab-title,
+.staking-title, .storage-title, .upgrade-title,
+.shop-title, .deposit-title, .exchange-title {
+  background: linear-gradient(270deg, #FFD700, #FFA500, #FF6B00, #FFD700);
+  background-size: 300% 300%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  text-shadow: none;
-  filter: drop-shadow(0 0 8px rgba(255, 165, 0, 0.4));
-  font-family: 'Orbitron', monospace;
-  letter-spacing: 0.05em;
+  animation: gradientShift 4s ease infinite;
 }
 
-/* ── Основной текст — тёплый янтарно-серый ── */
-p, span, div, label, li,
-.info-text, .desc-text, .hint-text,
-.balance-label, .resource-label,
-.stat-label, .stat-value {
-  color: #c8b89a;
+/* Баланс в хедере — пульсирующее золотое свечение */
+.header-balance, .balance-block,
+.balance-rurc, .balance-rub,
+.balance-value, .amount-value {
+  animation: goldPulse 3s ease-in-out infinite;
 }
 
-/* ── Числа и значения — светлее, с золотым оттенком ── */
-.balance-value,
-.resource-value,
-.stat-number,
-.amount-value,
-.price-value,
-strong, b {
-  color: #FFD700;
-  text-shadow: 0 0 6px rgba(255, 215, 0, 0.3);
+/* Числа — лёгкое мерцание как на старом мониторе */
+.stat-number, .resource-value, .price-value {
+  animation: textFlicker 8s linear infinite;
 }
 
-/* ── Подписи и второстепенный текст ── */
-.sub-text, .hint, small, .caption,
-.deposit-hint, .exchange-hint,
-.staking-hint, .storage-hint {
-  color: #8a7a6a;
-  font-size: 0.85em;
-}
-
-/* ── Кнопки — градиент вместо белого текста ── */
-button, .btn, .action-btn, .tab-btn {
-  color: #1a1a1a !important;
-  font-weight: 700;
-  letter-spacing: 0.03em;
-  text-shadow: none !important;
-}
-
-/* ── Активная вкладка — золотое свечение ── */
-.tab-btn.active,
-.nav-btn.active,
-button.active {
-  color: #1a1a1a !important;
-  background: linear-gradient(135deg, #FFD700, #FFA500) !important;
-  box-shadow: 0 0 12px rgba(255, 165, 0, 0.5) !important;
-}
-
-/* ── Неактивные вкладки ── */
-.tab-btn:not(.active),
-.nav-btn:not(.active) {
-  color: #8a7a6a !important;
-}
-
-/* ── Инпуты — тёплый стиль ── */
-input, textarea, select {
-  color: #e8d8b8 !important;
-  background: rgba(255, 165, 0, 0.05) !important;
-  border-color: rgba(255, 165, 0, 0.2) !important;
-}
-input::placeholder {
-  color: #6a5a4a !important;
-}
-input:focus {
-  border-color: rgba(255, 165, 0, 0.5) !important;
-  box-shadow: 0 0 8px rgba(255, 165, 0, 0.15) !important;
-  outline: none;
-}
-
-/* ── Ссылки — золотые ── */
-a {
-  color: #FFA500 !important;
-  text-decoration: none;
-}
-a:hover {
-  color: #FFD700 !important;
-  text-shadow: 0 0 6px rgba(255, 215, 0, 0.4);
-}
-
-/* ── Карточки / панели — тёплая рамка ── */
+/* Карточки — пульс рамки */
 .card, .panel, .block, .section,
 .storage-card, .upgrade-card, .staking-card,
 .deposit-card, .exchange-card {
-  border-color: rgba(255, 165, 0, 0.15) !important;
-  background: rgba(255, 140, 0, 0.03) !important;
+  animation: borderPulse 4s ease-in-out infinite;
 }
 
-/* ── Прогресс-бары — золотой градиент ── */
+/* Прогресс-бары — живое свечение */
 .progress-bar, .progress-fill,
 [class*="progress"] {
-  background: linear-gradient(90deg, #FF8C00, #FFD700) !important;
-  box-shadow: 0 0 8px rgba(255, 165, 0, 0.4) !important;
+  animation: progressGlow 2s ease-in-out infinite;
 }
 
-/* ── Иконки-эмодзи — чуть крупнее ── */
-.emoji-icon, [class*="icon"] {
-  filter: drop-shadow(0 0 4px rgba(255, 165, 0, 0.3));
+/* Кнопки — свечение при наведении */
+button:hover, .btn:hover, .action-btn:hover {
+  animation: btnGlow 1s ease-in-out infinite;
+  transform: translateY(-1px);
+  transition: transform 0.15s ease;
 }
 
-/* ── Заголовок баланса в хедере ── */
-.header-balance, .balance-block,
-.balance-rurc, .balance-rub {
-  color: #FFD700 !important;
-  text-shadow: 0 0 8px rgba(255, 215, 0, 0.35);
+/* Активная вкладка — постоянный пульс */
+.tab-btn.active, .nav-btn.active, button.active {
+  animation: btnGlow 2.5s ease-in-out infinite;
 }
 
-/* ── LVL badge ── */
+/* LVL badge — пульс */
 .level-badge, .lvl-badge, [class*="level"] {
-  background: linear-gradient(135deg, #FF8C00, #FFD700) !important;
-  color: #1a1a1a !important;
-  font-weight: 800;
-  box-shadow: 0 0 10px rgba(255, 165, 0, 0.4);
+  animation: goldPulse 2s ease-in-out infinite;
 }
 
-/* ── Разделители ── */
-hr, .divider {
-  border-color: rgba(255, 165, 0, 0.1) !important;
+/* Карточки и секции — плавное появление */
+.card, .panel, .section,
+.storage-card, .upgrade-card, .staking-card {
+  animation: borderPulse 4s ease-in-out infinite, fadeInUp 0.4s ease both;
 }
 
-/* ── Скроллбар ── */
-::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #FF8C00, #FFD700) !important;
+/* Сканлайн-эффект поверх страницы (тонкая полоса) */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(255,165,0,0.15), transparent);
+  animation: scanline 6s linear infinite;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* Иконки — лёгкое золотое свечение */
+.emoji-icon, [class*="icon"] {
+  animation: goldPulse 3s ease-in-out infinite;
+  display: inline-block;
+}
+
+/* Ссылки — подсветка при наведении */
+a:hover {
+  animation: goldPulse 1s ease-in-out infinite;
+}
+
+/* Инпут в фокусе — пульс рамки */
+input:focus, textarea:focus, select:focus {
+  animation: borderPulse 1.5s ease-in-out infinite;
 }
