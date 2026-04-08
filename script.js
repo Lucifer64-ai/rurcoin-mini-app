@@ -424,21 +424,7 @@ const UPGRADES_LIST = [
         baseCost: 40, costMult: 2.0, maxLevel: 10,
         stat: (a) => `${(a.getGasPerSec()*3600).toFixed(0)} м³/ч`
     },
-    {
-        id: 'oilPrice',
-        name: '💰 Цена продажи нефти',
-        icon: '📈',
-        category: 'oil',
-        desc: 'Повышает цену продажи нефти на 15% за каждый уровень.',
-        details: [
-            'Ур. 1 → +15% к цене нефти',
-            'Ур. 4 → +60% к цене нефти',
-            'Ур. 8 → +120% к цене нефти',
-            'Влияет на ручную и авто-продажу'
-        ],
-        baseCost: 80, costMult: 2.5, maxLevel: 8,
-        stat: (a) => `$${a.getOilSellPrice().toFixed(2)}/барр`
-    },
+
     {
         id: 'gasPrice',
         name: '💰 Цена продажи газа',
