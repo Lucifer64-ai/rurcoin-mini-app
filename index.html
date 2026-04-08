@@ -136,22 +136,99 @@
 </div>
 
 <!-- TABS -->
-<div class="tabs-wrap">
-    <div class="tabs">
-        <button class="tab-btn active" data-tab="mining"><i class="fa-solid fa-gas-pump"></i> Добыча</button>
-        <button class="tab-btn" data-tab="equipment"><i class="fa-solid fa-wrench"></i> Оборудование</button>
-        <button class="tab-btn" data-tab="upgrades"><i class="fa-solid fa-arrow-up"></i> Улучшения</button>
-        <button class="tab-btn" data-tab="storage"><i class="fa-solid fa-industry"></i> Хранилище</button>
-        <button class="tab-btn" data-tab="wallet"><i class="fa-solid fa-wallet"></i> Кошелёк</button>
-        <button class="tab-btn" data-tab="staking"><i class="fa-solid fa-gem"></i> Стейкинг</button>
-        <button class="tab-btn" data-tab="transactions"><i class="fa-solid fa-list"></i> Транзакции</button>
-        <button class="tab-btn" data-tab="halving"><i class="fa-solid fa-hourglass-half"></i> Халвинг</button>
-        <button class="tab-btn" data-tab="refinery"><i class="fa-solid fa-flask"></i><span>Завод</span></button>
-        <button class="tab-btn" data-tab="exchange"><i class="fa-solid fa-rotate"></i> Обменник</button>
-        <button class="tab-btn" data-tab="topup"><i class="fa-solid fa-credit-card"></i> Пополнить</button>
-        <button class="tab-btn" data-tab="community"><i class="fa-solid fa-earth-europe"></i> Сообщество</button>
-        <button class="tab-btn" data-tab="gps"><i class="fa-solid fa-satellite"></i> GPS</button>
-    </div>
+<!-- BOTTOM NAV -->
+<div class="bnav-wrap">
+  <nav class="bnav">
+
+    <button class="bnav-item active" data-cat="production" onclick="switchCat('production')">
+      <div class="bnav-icon-wrap">
+        <i class="fa-solid fa-oil-can"></i>
+        <span class="bnav-dot"></span>
+      </div>
+      <span class="bnav-label">Добыча</span>
+    </button>
+
+    <button class="bnav-item" data-cat="finance" onclick="switchCat('finance')">
+      <div class="bnav-icon-wrap">
+        <i class="fa-solid fa-wallet"></i>
+        <span class="bnav-dot"></span>
+      </div>
+      <span class="bnav-label">Финансы</span>
+    </button>
+
+    <button class="bnav-item" data-cat="info" onclick="switchCat('info')">
+      <div class="bnav-icon-wrap">
+        <i class="fa-solid fa-chart-line"></i>
+        <span class="bnav-dot"></span>
+      </div>
+      <span class="bnav-label">Инфо</span>
+    </button>
+
+    <button class="bnav-item" data-cat="community" onclick="switchCat('community')">
+      <div class="bnav-icon-wrap">
+        <i class="fa-solid fa-earth-europe"></i>
+        <span class="bnav-dot"></span>
+      </div>
+      <span class="bnav-label">Мир</span>
+    </button>
+
+  </nav>
+</div>
+
+<!-- SUBTABS -->
+<div class="stabs-wrap">
+
+  <div class="stabs active" id="cat-production">
+    <button class="stab active" data-tab="mining" onclick="switchTab('mining')" title="Добыча">
+      <i class="fa-solid fa-gas-pump"></i>
+    </button>
+    <button class="stab" data-tab="equipment" onclick="switchTab('equipment')" title="Оборудование">
+      <i class="fa-solid fa-wrench"></i>
+    </button>
+    <button class="stab" data-tab="upgrades" onclick="switchTab('upgrades')" title="Улучшения">
+      <i class="fa-solid fa-arrow-trend-up"></i>
+    </button>
+    <button class="stab" data-tab="storage" onclick="switchTab('storage')" title="Хранилище">
+      <i class="fa-solid fa-database"></i>
+    </button>
+    <button class="stab" data-tab="refinery" onclick="switchTab('refinery')" title="Завод">
+      <i class="fa-solid fa-flask"></i>
+    </button>
+  </div>
+
+  <div class="stabs" id="cat-finance">
+    <button class="stab" data-tab="wallet" onclick="switchTab('wallet')" title="Кошелёк">
+      <i class="fa-solid fa-wallet"></i>
+    </button>
+    <button class="stab" data-tab="staking" onclick="switchTab('staking')" title="Стейкинг">
+      <i class="fa-solid fa-gem"></i>
+    </button>
+    <button class="stab" data-tab="exchange" onclick="switchTab('exchange')" title="Обменник">
+      <i class="fa-solid fa-rotate"></i>
+    </button>
+    <button class="stab" data-tab="topup" onclick="switchTab('topup')" title="Пополнить">
+      <i class="fa-solid fa-credit-card"></i>
+    </button>
+    <button class="stab" data-tab="transactions" onclick="switchTab('transactions')" title="Транзакции">
+      <i class="fa-solid fa-list"></i>
+    </button>
+  </div>
+
+  <div class="stabs" id="cat-info">
+    <button class="stab" data-tab="halving" onclick="switchTab('halving')" title="Халвинг">
+      <i class="fa-solid fa-hourglass-half"></i>
+    </button>
+    <button class="stab" data-tab="gps" onclick="switchTab('gps')" title="GPS">
+      <i class="fa-solid fa-satellite"></i>
+    </button>
+  </div>
+
+  <div class="stabs" id="cat-community">
+    <button class="stab" data-tab="community" onclick="switchTab('community')" title="Сообщество">
+      <i class="fa-solid fa-earth-europe"></i>
+    </button>
+  </div>
+
 </div>
 
 <!-- CONTENT -->
@@ -961,5 +1038,346 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 
 <div id="floatCoins"></div>
+
+<style id="bnav-styles">
+/* ═══════════════════════════════════════════════════════════
+   BOTTOM NAVIGATION
+═══════════════════════════════════════════════════════════ */
+
+/* Скрываем старые табы */
+.tabs-wrap { display: none !important; }
+
+/* Отступ контента снизу */
+.content {
+  padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px) + 8px) !important;
+}
+
+/* ── Обёртка нижней навигации ─────────────────────────────── */
+.bnav-wrap {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 300;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  /* Стеклянный фон */
+  background: rgba(6, 6, 10, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(255, 215, 0, 0.12);
+  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.6);
+}
+
+/* ── Сама навигация ───────────────────────────────────────── */
+.bnav {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  height: 60px;
+  padding: 0 8px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+/* ── Кнопка категории ─────────────────────────────────────── */
+.bnav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px 4px;
+  border-radius: 14px;
+  transition: background 0.2s;
+  position: relative;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.bnav-item:active {
+  background: rgba(255, 215, 0, 0.06);
+}
+
+/* Иконка + точка активности */
+.bnav-icon-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px; height: 36px;
+  border-radius: 12px;
+  background: transparent;
+  transition: background 0.25s, transform 0.2s;
+}
+
+.bnav-item .fa-solid {
+  font-size: 20px;
+  color: #3a3a4a;
+  text-shadow: none;
+  margin: 0;
+  transition: color 0.25s, text-shadow 0.25s;
+}
+
+/* Точка под иконкой активной категории */
+.bnav-dot {
+  position: absolute;
+  bottom: -6px; left: 50%;
+  transform: translateX(-50%) scale(0);
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: #FFD700;
+  box-shadow: 0 0 6px #FFD700;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Подпись */
+.bnav-label {
+  font-family: var(--fh, 'Rajdhani'), sans-serif;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: #3a3a4a;
+  transition: color 0.25s;
+}
+
+/* ── АКТИВНОЕ состояние ───────────────────────────────────── */
+.bnav-item.active .bnav-icon-wrap {
+  background: rgba(255, 215, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.bnav-item.active .fa-solid {
+  color: #FFD700;
+  text-shadow: 0 0 12px rgba(255, 215, 0, 0.7);
+}
+
+.bnav-item.active .bnav-dot {
+  transform: translateX(-50%) scale(1);
+}
+
+.bnav-item.active .bnav-label {
+  color: #FFD700;
+}
+
+/* Цвета по категориям */
+.bnav-item[data-cat="production"].active .fa-solid { color: #FF8C00; text-shadow: 0 0 12px rgba(255,140,0,0.7); }
+.bnav-item[data-cat="production"].active .bnav-dot { background: #FF8C00; box-shadow: 0 0 6px #FF8C00; }
+.bnav-item[data-cat="production"].active .bnav-label { color: #FF8C00; }
+.bnav-item[data-cat="production"].active .bnav-icon-wrap { background: rgba(255,140,0,0.1); }
+
+.bnav-item[data-cat="finance"].active .fa-solid { color: #4ade80; text-shadow: 0 0 12px rgba(74,222,128,0.7); }
+.bnav-item[data-cat="finance"].active .bnav-dot { background: #4ade80; box-shadow: 0 0 6px #4ade80; }
+.bnav-item[data-cat="finance"].active .bnav-label { color: #4ade80; }
+.bnav-item[data-cat="finance"].active .bnav-icon-wrap { background: rgba(74,222,128,0.1); }
+
+.bnav-item[data-cat="info"].active .fa-solid { color: #60a5fa; text-shadow: 0 0 12px rgba(96,165,250,0.7); }
+.bnav-item[data-cat="info"].active .bnav-dot { background: #60a5fa; box-shadow: 0 0 6px #60a5fa; }
+.bnav-item[data-cat="info"].active .bnav-label { color: #60a5fa; }
+.bnav-item[data-cat="info"].active .bnav-icon-wrap { background: rgba(96,165,250,0.1); }
+
+.bnav-item[data-cat="community"].active .fa-solid { color: #a78bfa; text-shadow: 0 0 12px rgba(167,139,250,0.7); }
+.bnav-item[data-cat="community"].active .bnav-dot { background: #a78bfa; box-shadow: 0 0 6px #a78bfa; }
+.bnav-item[data-cat="community"].active .bnav-label { color: #a78bfa; }
+.bnav-item[data-cat="community"].active .bnav-icon-wrap { background: rgba(167,139,250,0.1); }
+
+/* ═══════════════════════════════════════════════════════════
+   SUBTABS
+═══════════════════════════════════════════════════════════ */
+
+.stabs-wrap {
+  position: sticky;
+  top: 56px;
+  z-index: 200;
+  background: rgba(8, 8, 14, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.stabs {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 12px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.stabs.active {
+  display: flex;
+}
+
+/* Кнопка подтаба */
+.stab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px; height: 38px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  color: #444;
+  cursor: pointer;
+  transition: all 0.2s;
+  -webkit-tap-highlight-color: transparent;
+  position: relative;
+}
+
+.stab .fa-solid {
+  font-size: 15px;
+  color: inherit;
+  text-shadow: none;
+  margin: 0;
+  transition: color 0.2s, text-shadow 0.2s;
+}
+
+.stab:hover:not(.active) {
+  background: rgba(255,255,255,0.08);
+  color: #888;
+  transform: translateY(-1px);
+}
+
+/* Активный подтаб — цвет берём от категории через JS-класс на .stabs-wrap */
+.stab.active {
+  background: rgba(255,140,0,0.15);
+  border-color: rgba(255,140,0,0.4);
+  color: #FF8C00;
+  box-shadow: 0 2px 12px rgba(255,140,0,0.2), inset 0 1px 0 rgba(255,255,255,0.08);
+}
+.stab.active .fa-solid {
+  text-shadow: 0 0 8px rgba(255,140,0,0.6);
+}
+
+/* Цвета активного подтаба по категории */
+.stabs-wrap[data-active-cat="finance"] .stab.active {
+  background: rgba(74,222,128,0.12);
+  border-color: rgba(74,222,128,0.35);
+  color: #4ade80;
+  box-shadow: 0 2px 12px rgba(74,222,128,0.15);
+}
+.stabs-wrap[data-active-cat="finance"] .stab.active .fa-solid {
+  text-shadow: 0 0 8px rgba(74,222,128,0.5);
+}
+
+.stabs-wrap[data-active-cat="info"] .stab.active {
+  background: rgba(96,165,250,0.12);
+  border-color: rgba(96,165,250,0.35);
+  color: #60a5fa;
+  box-shadow: 0 2px 12px rgba(96,165,250,0.15);
+}
+.stabs-wrap[data-active-cat="info"] .stab.active .fa-solid {
+  text-shadow: 0 0 8px rgba(96,165,250,0.5);
+}
+
+.stabs-wrap[data-active-cat="community"] .stab.active {
+  background: rgba(167,139,250,0.12);
+  border-color: rgba(167,139,250,0.35);
+  color: #a78bfa;
+  box-shadow: 0 2px 12px rgba(167,139,250,0.15);
+}
+.stabs-wrap[data-active-cat="community"] .stab.active .fa-solid {
+  text-shadow: 0 0 8px rgba(167,139,250,0.5);
+}
+
+/* Tooltip при hover */
+.stab::after {
+  content: attr(title);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%; transform: translateX(-50%);
+  background: rgba(20,20,30,0.95);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: #ccc;
+  font-size: 10px;
+  font-family: var(--fh,'Rajdhani'),sans-serif;
+  letter-spacing: 0.5px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s;
+  z-index: 999;
+}
+.stab:hover::after { opacity: 1; }
+</style>
+
+<script id="bnav-logic">
+(function(){
+  var TAB_CAT = {
+    mining:'production', equipment:'production', upgrades:'production',
+    storage:'production', refinery:'production',
+    wallet:'finance', staking:'finance', exchange:'finance',
+    topup:'finance', transactions:'finance',
+    halving:'info', gps:'info',
+    community:'community'
+  };
+  var CAT_DEFAULT = {
+    production:'mining', finance:'wallet', info:'halving', community:'community'
+  };
+  var _cat = 'production', _tab = 'mining';
+
+  window.switchCat = function(cat) {
+    if (_cat === cat) return;
+    _cat = cat;
+    // Нижняя навигация
+    document.querySelectorAll('.bnav-item').forEach(function(b){
+      b.classList.toggle('active', b.dataset.cat === cat);
+    });
+    // Подтабы — показываем нужную группу
+    document.querySelectorAll('.stabs').forEach(function(s){
+      s.classList.toggle('active', s.id === 'cat-' + cat);
+    });
+    // Цвет подтабов
+    var sw = document.querySelector('.stabs-wrap');
+    if (sw) sw.setAttribute('data-active-cat', cat);
+    // Переключаем на первый таб категории
+    window.switchTab(CAT_DEFAULT[cat]);
+  };
+
+  window.switchTab = function(tab) {
+    _tab = tab;
+    // Контент
+    document.querySelectorAll('.tab-content').forEach(function(c){
+      c.classList.toggle('active', c.id === tab);
+    });
+    // Подтаб кнопки
+    document.querySelectorAll('.stab').forEach(function(b){
+      b.classList.toggle('active', b.dataset.tab === tab);
+    });
+    // Синхронизируем категорию если нужно
+    var cat = TAB_CAT[tab];
+    if (cat && cat !== _cat) {
+      _cat = cat;
+      document.querySelectorAll('.bnav-item').forEach(function(b){
+        b.classList.toggle('active', b.dataset.cat === cat);
+      });
+      document.querySelectorAll('.stabs').forEach(function(s){
+        s.classList.toggle('active', s.id === 'cat-' + cat);
+      });
+      var sw = document.querySelector('.stabs-wrap');
+      if (sw) sw.setAttribute('data-active-cat', cat);
+    }
+  };
+
+  // Патч switchToWalletTab
+  window.switchToWalletTab = function(){
+    window.switchCat('finance');
+    window.switchTab('wallet');
+  };
+
+  // Инициализация после загрузки
+  document.addEventListener('DOMContentLoaded', function(){
+    var sw = document.querySelector('.stabs-wrap');
+    if (sw) sw.setAttribute('data-active-cat', 'production');
+    window.switchCat('production');
+    window.switchTab('mining');
+  });
+})();
+</script>
+
 </body>
 </html>
