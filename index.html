@@ -926,44 +926,71 @@
         <!-- КАРТА НА ВЕСЬ ЭКРАН -->
         <div id="gpsMapContainer" style="position:absolute;inset:0;width:100%;height:100%;z-index:0;"></div>
 
-        <!-- HUD ВЕРХНИЙ — статус GPS + баф -->
+        <!-- HUD ВЕРХНИЙ — полупрозрачный -->
         <div style="position:absolute;top:0;left:0;right:0;z-index:10;pointer-events:none;">
-            <div style="display:flex;align-items:center;justify-content:space-between;
-                        padding:10px 14px;
-                        background:linear-gradient(180deg,rgba(13,17,23,0.92) 0%,rgba(13,17,23,0) 100%);">
-                <div style="pointer-events:auto;">
-                    <div id="gpsStatus" style="font-size:12px;color:#00D4FF;font-weight:600;letter-spacing:.5px;">
+            <div style="display:flex;align-items:center;gap:10px;
+                        padding:10px 12px;
+                        background:rgba(13,17,23,0.45);
+                        backdrop-filter:blur(10px);
+                        -webkit-backdrop-filter:blur(10px);
+                        border-bottom:1px solid rgba(255,255,255,0.06);">
+
+                <!-- Кнопка возврата -->
+                <button onclick="switchCat('production')"
+                    style="pointer-events:auto;
+                           width:34px;height:34px;flex-shrink:0;
+                           background:rgba(255,255,255,0.08);
+                           border:1px solid rgba(255,255,255,0.15);
+                           border-radius:10px;color:#fff;font-size:16px;
+                           cursor:pointer;display:flex;align-items:center;justify-content:center;
+                           transition:background 0.2s;">
+                    ‹
+                </button>
+
+                <!-- Статус GPS -->
+                <div style="flex:1;pointer-events:none;min-width:0;">
+                    <div id="gpsStatus" style="font-size:12px;color:#00D4FF;font-weight:600;
+                                               letter-spacing:.4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
                         <i class="fa-solid fa-satellite"></i> GPS отключён
                     </div>
-                    <div id="gpsBonusDisplay" style="font-size:11px;color:#888;margin-top:2px;">Бонус не активен</div>
+                    <div id="gpsBonusDisplay" style="font-size:10px;color:rgba(255,255,255,0.45);margin-top:1px;">
+                        Бонус не активен
+                    </div>
                 </div>
+
+                <!-- Кнопка GPS -->
                 <button id="gpsToggleBtn"
-                    style="pointer-events:auto;padding:7px 14px;
-                           background:rgba(255,107,0,0.18);border:1px solid #FF6B00;
+                    style="pointer-events:auto;padding:7px 13px;
+                           background:rgba(255,107,0,0.15);
+                           border:1px solid rgba(255,107,0,0.5);
                            border-radius:20px;color:#FF6B00;font-size:12px;font-weight:700;
-                           cursor:pointer;font-family:inherit;backdrop-filter:blur(6px);">
+                           cursor:pointer;font-family:inherit;white-space:nowrap;">
                     ▶ GPS
                 </button>
             </div>
         </div>
 
-        <!-- АКТИВНЫЕ БАФЫ — плашка под HUD -->
+        <!-- АКТИВНЫЕ БАФЫ — под HUD, полупрозрачно -->
         <div id="gpsActiveBuffsBar"
-             style="position:absolute;top:56px;left:12px;right:12px;z-index:10;
+             style="position:absolute;top:55px;left:10px;right:10px;z-index:10;
                     display:none;pointer-events:none;">
-            <div style="background:rgba(13,17,23,0.85);border:1px solid #FFD700;
-                        border-radius:10px;padding:6px 12px;backdrop-filter:blur(6px);
+            <div style="background:rgba(13,17,23,0.50);
+                        border:1px solid rgba(255,215,0,0.35);
+                        border-radius:10px;padding:5px 12px;
+                        backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
                         font-size:11px;color:#FFD700;display:flex;align-items:center;gap:8px;">
                 <i class="fa-solid fa-bolt"></i>
                 <span id="gpsActiveBuffs">Нет активных бафов</span>
             </div>
         </div>
 
-        <!-- ЛЕГЕНДА — левый нижний угол -->
-        <div style="position:absolute;bottom:130px;left:12px;z-index:10;pointer-events:none;">
-            <div style="background:rgba(13,17,23,0.80);border-radius:10px;
-                        padding:8px 10px;backdrop-filter:blur(6px);
-                        display:flex;flex-direction:column;gap:5px;font-size:10px;">
+        <!-- ЛЕГЕНДА — левый нижний угол, полупрозрачно -->
+        <div style="position:absolute;bottom:130px;left:10px;z-index:10;pointer-events:none;">
+            <div style="background:rgba(13,17,23,0.45);
+                        border:1px solid rgba(255,255,255,0.07);
+                        border-radius:10px;padding:7px 10px;
+                        backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+                        display:flex;flex-direction:column;gap:4px;font-size:10px;color:rgba(255,255,255,0.7);">
                 <span><span style="color:#FF6B00;">●</span> Нефть</span>
                 <span><span style="color:#00D4FF;">●</span> Газ</span>
                 <span><span style="color:#FFD700;">⚑</span> Захвачено</span>
@@ -971,74 +998,85 @@
             </div>
         </div>
 
-        <!-- КООРДИНАТЫ — правый нижний угол -->
-        <div style="position:absolute;bottom:130px;right:12px;z-index:10;pointer-events:none;">
+        <!-- КООРДИНАТЫ — правый нижний угол, полупрозрачно -->
+        <div style="position:absolute;bottom:130px;right:10px;z-index:10;pointer-events:none;">
             <div id="gpsCoords"
-                 style="background:rgba(13,17,23,0.80);border-radius:10px;
-                        padding:6px 10px;backdrop-filter:blur(6px);
-                        font-size:10px;color:#888;text-align:right;font-family:monospace;">
+                 style="background:rgba(13,17,23,0.45);
+                        border:1px solid rgba(255,255,255,0.07);
+                        border-radius:10px;padding:5px 10px;
+                        backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+                        font-size:10px;color:rgba(255,255,255,0.5);
+                        text-align:right;font-family:monospace;letter-spacing:.3px;">
                 —
             </div>
         </div>
 
-        <!-- НИЖНЯЯ ПАНЕЛЬ — сканер + результаты -->
+        <!-- НИЖНЯЯ ПАНЕЛЬ -->
         <div style="position:absolute;bottom:60px;left:0;right:0;z-index:10;">
 
             <!-- Статус сканирования -->
-            <div id="gpsScanStatusBar" style="display:none;margin:0 12px 8px;
-                 background:rgba(255,107,0,0.15);border:1px solid #FF6B00;
+            <div id="gpsScanStatusBar" style="display:none;margin:0 10px 8px;
+                 background:rgba(255,107,0,0.18);
+                 border:1px solid rgba(255,107,0,0.4);
                  border-radius:10px;padding:8px 14px;font-size:12px;color:#FF6B00;
-                 backdrop-filter:blur(6px);text-align:center;">
+                 backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+                 text-align:center;">
             </div>
 
-            <!-- Результаты сканирования — скролл -->
-            <div id="gpsScanResults" style="display:none;margin:0 12px 8px;
+            <!-- Результаты сканирования -->
+            <div id="gpsScanResults" style="display:none;margin:0 10px 8px;
                  max-height:180px;overflow-y:auto;
-                 background:rgba(13,17,23,0.92);border:1px solid #00D4FF;
-                 border-radius:12px;padding:10px;backdrop-filter:blur(8px);">
+                 background:rgba(13,17,23,0.75);
+                 border:1px solid rgba(0,212,255,0.3);
+                 border-radius:12px;padding:10px;
+                 backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);">
             </div>
 
             <!-- Строительство -->
-            <div id="gpsBuildQueueWrap" style="display:none;margin:0 12px 8px;
-                 background:rgba(13,17,23,0.92);border:1px solid #9B59B6;
-                 border-radius:12px;padding:10px;backdrop-filter:blur(8px);">
+            <div id="gpsBuildQueueWrap" style="display:none;margin:0 10px 8px;
+                 background:rgba(13,17,23,0.75);
+                 border:1px solid rgba(155,89,182,0.35);
+                 border-radius:12px;padding:10px;
+                 backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);">
                 <div style="font-size:11px;color:#9B59B6;font-weight:700;margin-bottom:6px;">
                     <i class="fa-solid fa-tower-observation"></i> Строительство
                 </div>
                 <div id="gpsBuildQueue"></div>
             </div>
 
-            <!-- Кнопки действий -->
-            <div style="display:flex;gap:8px;padding:0 12px;">
+            <!-- Кнопки действий — полупрозрачные -->
+            <div style="display:flex;gap:8px;padding:0 10px;">
                 <button id="gpsScanBtn"
-                    style="flex:1;padding:13px;
-                           background:linear-gradient(135deg,rgba(0,212,255,0.2),rgba(0,212,255,0.08));
-                           border:1px solid #00D4FF;border-radius:14px;
-                           color:#00D4FF;font-size:13px;font-weight:700;
-                           cursor:pointer;font-family:inherit;backdrop-filter:blur(8px);
-                           box-shadow:0 4px 20px rgba(0,212,255,0.15);">
+                    style="flex:1;padding:12px;
+                           background:rgba(0,212,255,0.12);
+                           border:1px solid rgba(0,212,255,0.4);
+                           border-radius:14px;color:#00D4FF;font-size:13px;font-weight:700;
+                           cursor:pointer;font-family:inherit;
+                           backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);">
                     <i class="fa-solid fa-satellite-dish"></i> Сканировать
                 </button>
                 <button onclick="GPS && GPS.showPlatforms && GPS.showPlatforms()"
-                    style="padding:13px 16px;
-                           background:rgba(155,89,182,0.15);
-                           border:1px solid #9B59B6;border-radius:14px;
-                           color:#9B59B6;font-size:13px;font-weight:700;
-                           cursor:pointer;font-family:inherit;backdrop-filter:blur(8px);">
+                    style="padding:12px 15px;
+                           background:rgba(155,89,182,0.12);
+                           border:1px solid rgba(155,89,182,0.4);
+                           border-radius:14px;color:#9B59B6;font-size:14px;
+                           cursor:pointer;font-family:inherit;
+                           backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);">
                     <i class="fa-solid fa-tower-observation"></i>
                 </button>
                 <button onclick="GPS && GPS.showRadarUpgrade && GPS.showRadarUpgrade()"
-                    style="padding:13px 16px;
-                           background:rgba(255,215,0,0.12);
-                           border:1px solid #FFD700;border-radius:14px;
-                           color:#FFD700;font-size:13px;font-weight:700;
-                           cursor:pointer;font-family:inherit;backdrop-filter:blur(8px);">
-                    <i class="fa-solid fa-radar"></i>
+                    style="padding:12px 15px;
+                           background:rgba(255,215,0,0.10);
+                           border:1px solid rgba(255,215,0,0.35);
+                           border-radius:14px;color:#FFD700;font-size:14px;
+                           cursor:pointer;font-family:inherit;
+                           backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);">
+                    <i class="fa-solid fa-satellite-dish"></i>
                 </button>
             </div>
         </div>
 
-        <!-- МОИ ПЛАТФОРМЫ — модальная панель (скрыта по умолчанию) -->
+        <!-- МОИ ПЛАТФОРМЫ — модальная панель -->
         <div id="gpsPlatformsPanel" style="display:none;position:absolute;inset:0;z-index:20;
              background:rgba(13,17,23,0.96);overflow-y:auto;padding:16px;">
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
@@ -1047,8 +1085,10 @@
                     <span style="font-size:11px;color:#888;margin-left:6px;">(+20% за уровень)</span>
                 </div>
                 <button onclick="document.getElementById('gpsPlatformsPanel').style.display='none'"
-                    style="background:none;border:1px solid #444;border-radius:8px;
-                           color:#888;padding:6px 12px;cursor:pointer;font-family:inherit;">✕</button>
+                    style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);
+                           border-radius:8px;color:#888;padding:6px 14px;cursor:pointer;font-family:inherit;">
+                    ✕ Закрыть
+                </button>
             </div>
             <div id="gpsPlatformsList">
                 <div style="color:#888;font-size:12px;text-align:center;padding:32px;">
