@@ -48,13 +48,43 @@
     
     <link rel="stylesheet" href="refinery.css">
     <link rel="stylesheet" href="hearthstone.css?v=202603302137">
+
+    <style>
+    /* Font Awesome иконки — тема нефть/крипто */
+    .fa-solid, .fa-regular, .fa-brands {
+        color: #FFD700;
+        font-size: 1em;
+        vertical-align: middle;
+        text-shadow: 0 0 8px rgba(255,165,0,0.6);
+        transition: color 0.2s, text-shadow 0.2s;
+    }
+    .nav-tab .fa-solid,
+    button .fa-solid {
+        font-size: 1.1em;
+        margin-right: 2px;
+    }
+    /* Специфичные цвета */
+    .fa-gas-pump, .fa-oil-can { color: #FF8C00; }
+    .fa-gem { color: #00BFFF; text-shadow: 0 0 8px rgba(0,191,255,0.7); }
+    .fa-fire { color: #FF4500; text-shadow: 0 0 8px rgba(255,69,0,0.7); }
+    .fa-wallet { color: #FFD700; }
+    .fa-rotate { color: #4ade80; text-shadow: 0 0 8px rgba(74,222,128,0.6); }
+    .fa-credit-card { color: #a78bfa; }
+    .fa-satellite, .fa-satellite-dish { color: #60a5fa; }
+    .fa-rocket { color: #f472b6; }
+    .fa-chart-line, .fa-chart-bar { color: #4ade80; }
+    .fa-bolt { color: #FACC15; }
+    .fa-circle-check { color: #4ade80; }
+    .fa-crown { color: #FFD700; text-shadow: 0 0 12px rgba(255,215,0,0.9); }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous">
 </head>
 <body>
 
 <!-- HEADER -->
 <div class="app-header">
     <div class="app-logo">
-        <span class="app-logo-icon">🛢️</span>
+        <span class="app-logo-icon"><i class="fa-solid fa-oil-can"></i></span>
         <div class="app-logo-text">
             <h1>RURCoin</h1>
             <p>Нефть &amp; Газ</p>
@@ -70,7 +100,7 @@
                 <span id="balance">0.00</span>
             </div>
             <div class="hud-chip ton-chip">
-                <span class="coin-icon">💎</span>
+                <span class="coin-icon"><i class="fa-solid fa-gem"></i></span>
                 <span id="tonBalance">5.00</span>
             </div>
         </div>
@@ -84,22 +114,22 @@
 <!-- STATS BAR -->
 <div class="stats-bar">
     <div class="stat-item">
-        <div class="stat-icon">🛢️</div>
+        <div class="stat-icon"><i class="fa-solid fa-oil-can"></i></div>
         <div class="stat-val"><span id="oilPumpsCount">0</span></div>
         <div class="stat-lbl">Насосы</div>
     </div>
     <div class="stat-item">
-        <div class="stat-icon">🏗️</div>
+        <div class="stat-icon"><i class="fa-solid fa-tower-observation"></i></div>
         <div class="stat-val"><span id="gasTowersCount">0</span></div>
         <div class="stat-lbl">Вышки</div>
     </div>
     <div class="stat-item">
-        <div class="stat-icon">🏭</div>
+        <div class="stat-icon"><i class="fa-solid fa-industry"></i></div>
         <div class="stat-val"><span id="oilTanksCount">0</span></div>
         <div class="stat-lbl">Цистерны</div>
     </div>
     <div class="stat-item">
-        <div class="stat-icon">⚡</div>
+        <div class="stat-icon"><i class="fa-solid fa-bolt"></i></div>
         <div class="stat-val"><span id="hashrate">0</span></div>
         <div class="stat-lbl">ед/ч</div>
     </div>
@@ -108,19 +138,19 @@
 <!-- TABS -->
 <div class="tabs-wrap">
     <div class="tabs">
-        <button class="tab-btn active" data-tab="mining">⛽ Добыча</button>
-        <button class="tab-btn" data-tab="equipment">🔧 Оборудование</button>
-        <button class="tab-btn" data-tab="upgrades">⬆️ Улучшения</button>
-        <button class="tab-btn" data-tab="storage">🏭 Хранилище</button>
-        <button class="tab-btn" data-tab="wallet">🔑 Кошелёк</button>
-        <button class="tab-btn" data-tab="staking">💎 Стейкинг</button>
-        <button class="tab-btn" data-tab="transactions">📋 Транзакции</button>
-        <button class="tab-btn" data-tab="halving">⏳ Халвинг</button>
-        <button class="tab-btn" data-tab="refinery">⚗️<span>Завод</span></button>
-        <button class="tab-btn" data-tab="exchange">🔄 Обменник</button>
-        <button class="tab-btn" data-tab="topup">💳 Пополнить</button>
-        <button class="tab-btn" data-tab="community">🌍 Сообщество</button>
-        <button class="tab-btn" data-tab="gps">🛰️ GPS</button>
+        <button class="tab-btn active" data-tab="mining"><i class="fa-solid fa-gas-pump"></i> Добыча</button>
+        <button class="tab-btn" data-tab="equipment"><i class="fa-solid fa-wrench"></i> Оборудование</button>
+        <button class="tab-btn" data-tab="upgrades"><i class="fa-solid fa-arrow-up"></i> Улучшения</button>
+        <button class="tab-btn" data-tab="storage"><i class="fa-solid fa-industry"></i> Хранилище</button>
+        <button class="tab-btn" data-tab="wallet"><i class="fa-solid fa-wallet"></i> Кошелёк</button>
+        <button class="tab-btn" data-tab="staking"><i class="fa-solid fa-gem"></i> Стейкинг</button>
+        <button class="tab-btn" data-tab="transactions"><i class="fa-solid fa-list"></i> Транзакции</button>
+        <button class="tab-btn" data-tab="halving"><i class="fa-solid fa-hourglass-half"></i> Халвинг</button>
+        <button class="tab-btn" data-tab="refinery"><i class="fa-solid fa-flask"></i><span>Завод</span></button>
+        <button class="tab-btn" data-tab="exchange"><i class="fa-solid fa-rotate"></i> Обменник</button>
+        <button class="tab-btn" data-tab="topup"><i class="fa-solid fa-credit-card"></i> Пополнить</button>
+        <button class="tab-btn" data-tab="community"><i class="fa-solid fa-earth-europe"></i> Сообщество</button>
+        <button class="tab-btn" data-tab="gps"><i class="fa-solid fa-satellite"></i> GPS</button>
     </div>
 </div>
 
@@ -133,20 +163,20 @@
         <!-- Биржевые цены (оставляем) -->
         <div class="price-card">
             <div style="display:flex;align-items:center;gap:8px;">
-                <span style="font-size:18px;display:inline-block;animation:spin-slow 4s linear infinite;">📈</span>
+                <span style="font-size:18px;display:inline-block;animation:spin-slow 4s linear infinite;"><i class="fa-solid fa-chart-line"></i></span>
                 <span style="font-size:13px;font-weight:700;color:#60a5fa;">Биржевые цены</span>
                 <span style="margin-left:auto;font-size:10px;color:#444;" id="priceLastUpdated">Загрузка...</span>
             </div>
             <div class="price-grid">
                 <div class="price-item">
-                    <div class="p-icon">🛢️</div>
+                    <div class="p-icon"><i class="fa-solid fa-oil-can"></i></div>
                     <div style="font-size:10px;color:#666;margin-top:4px;">Нефть Brent</div>
                     <div class="price-val" id="liveOilPrice">$75.00</div>
                     <div class="price-change" id="liveOilChange">+0.00%</div>
                     <div class="price-unit">USD / барр.</div>
                 </div>
                 <div class="price-item">
-                    <div class="p-icon">🔥</div>
+                    <div class="p-icon"><i class="fa-solid fa-fire"></i></div>
                     <div style="font-size:10px;color:#666;margin-top:4px;">Природный газ</div>
                     <div class="price-val" style="color:#4ade80;" id="liveGasPrice">$0.1300</div>
                     <div class="price-change" id="liveGasChange">+0.00%</div>
@@ -158,7 +188,7 @@
                 <button onclick="if(window.fetchRealPrices)fetchRealPrices()"
                         style="background:#1a1a3a;border:1px solid #2d2d5a;border-radius:8px;
                                color:#60a5fa;font-size:10px;padding:4px 10px;cursor:pointer;transition:all 0.2s;">
-                    🔄 Обновить
+                    <i class="fa-solid fa-rotate"></i> Обновить
                 </button>
             </div>
         </div>
@@ -168,12 +198,12 @@
                     border-radius:16px;padding:14px;margin-bottom:12px;">
             <div style="font-family:var(--fh,'Rajdhani'),sans-serif;font-size:9px;
                         color:var(--dim,#555);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;">
-                ⚡ Текущая добыча
+                <i class="fa-solid fa-bolt"></i> Текущая добыча
             </div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
                 <div style="background:rgba(255,140,0,.06);border:1px solid rgba(255,140,0,.15);
                             border-radius:12px;padding:12px;text-align:center;">
-                    <div style="font-size:22px;margin-bottom:4px;">🛢️</div>
+                    <div style="font-size:22px;margin-bottom:4px;"><i class="fa-solid fa-oil-can"></i></div>
                     <div style="font-family:var(--fh,'Rajdhani'),sans-serif;font-size:16px;
                                 font-weight:700;color:#FF8C00;" id="oilRate">0.00</div>
                     <div style="font-size:9px;color:var(--dim,#555);margin-top:2px;">барр/ч</div>
@@ -187,7 +217,7 @@
                 </div>
                 <div style="background:rgba(74,222,128,.06);border:1px solid rgba(74,222,128,.15);
                             border-radius:12px;padding:12px;text-align:center;">
-                    <div style="font-size:22px;margin-bottom:4px;">🔥</div>
+                    <div style="font-size:22px;margin-bottom:4px;"><i class="fa-solid fa-fire"></i></div>
                     <div style="font-family:var(--fh,'Rajdhani'),sans-serif;font-size:16px;
                                 font-weight:700;color:#4ade80;" id="gasRate">0</div>
                     <div style="font-size:9px;color:var(--dim,#555);margin-top:2px;">м³/ч</div>
@@ -206,13 +236,13 @@
                     style="padding:10px;background:linear-gradient(135deg,#FF8C00,#cc4400);
                     border:none;border-radius:10px;color:#fff;font-size:11px;font-weight:700;
                     cursor:pointer;box-shadow:0 4px 16px rgba(255,140,0,.3);">
-                    🛢️ Продать нефть
+                    <i class="fa-solid fa-oil-can"></i> Продать нефть
                 </button>
                 <button onclick="if(window.rurcoinApp)window.rurcoinApp.sellGas()"
                     style="padding:10px;background:linear-gradient(135deg,#4ade80,#00aa55);
                     border:none;border-radius:10px;color:#000;font-size:11px;font-weight:700;
                     cursor:pointer;box-shadow:0 4px 16px rgba(74,222,128,.3);">
-                    🔥 Продать газ
+                    <i class="fa-solid fa-fire"></i> Продать газ
                 </button>
             </div>
         </div>
@@ -222,7 +252,7 @@
                     border-radius:16px;padding:14px;margin-bottom:12px;">
             <div style="font-family:var(--fh,'Rajdhani'),sans-serif;font-size:9px;
                         color:var(--dim,#555);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;">
-                🛰️ Мои платформы
+                <i class="fa-solid fa-satellite"></i> Мои платформы
             </div>
             <div id="platformDashboard">
                 <!-- Заполняется через JS -->
@@ -245,9 +275,9 @@
     <!-- УЛУЧШЕНИЯ -->
     <div class="tab-content" id="upgrades">
         <div style="font-size:13px;color:#666;margin-bottom:12px;">
-            💡 Улучшай оборудование за
+            <i class="fa-solid fa-lightbulb"></i> Улучшай оборудование за
             <span style="display:inline-flex;align-items:center;gap:3px;vertical-align:middle;">
-                <span class="token-icon ton">💎</span> TON
+                <span class="token-icon ton"><i class="fa-solid fa-gem"></i></span> TON
             </span>
             — увеличивай добычу и цену продажи
         </div>
@@ -263,7 +293,7 @@
         <div class="storage-big-tank">
             <div class="tank-label-big">
                 <div class="tank-name">
-                    <span class="t-icon">🛢️</span>
+                    <span class="t-icon"><i class="fa-solid fa-oil-can"></i></span>
                     <span>Нефтехранилище</span>
                 </div>
                 <span class="tank-pct-big" id="oilPctBig">0%</span>
@@ -283,7 +313,7 @@
         <div class="storage-big-tank">
             <div class="tank-label-big">
                 <div class="tank-name">
-                    <span class="t-icon" style="animation-delay:0.5s;">⛽</span>
+                    <span class="t-icon" style="animation-delay:0.5s;"><i class="fa-solid fa-gas-pump"></i></span>
                     <span>Газохранилище</span>
                 </div>
                 <span class="tank-pct-big" style="color:#4ade80;" id="gasPctBig">0%</span>
@@ -349,7 +379,7 @@
     <!-- ХАЛВИНГ -->
     <div class="tab-content" id="halving">
         <div class="halving-card">
-            <div style="font-size:40px;animation:float 3s ease-in-out infinite;display:inline-block;">⏳</div>
+            <div style="font-size:40px;animation:float 3s ease-in-out infinite;display:inline-block;"><i class="fa-solid fa-hourglass-half"></i></div>
             <div style="color:#666;margin-top:10px;font-size:13px;">До следующего халвинга</div>
             <div class="halving-timer" id="halvingTimer">--д --ч --м</div>
             <div style="color:#444;font-size:12px;">
@@ -363,7 +393,7 @@
     </div>
 
 
-    <!-- ⚗️ ЗАВОД ПЕРЕРАБОТКИ -->
+    <!-- <i class="fa-solid fa-flask"></i> ЗАВОД ПЕРЕРАБОТКИ -->
     <div class="tab-content" id="refinery">
         <div id="refinery-content">
             <div style="text-align:center;padding:40px;color:#666;">Загрузка завода...</div>
@@ -385,7 +415,7 @@
 
             <!-- Заголовок -->
             <div class="topup-hero">
-                <div class="topup-hero-icon">🇷🇺</div>
+                <div class="topup-hero-icon"><i class="fa-solid fa-flag"></i></div>
                 <div class="topup-hero-title">Пополнение для россиян</div>
                 <div class="topup-hero-sub">Карты РФ · СБП · Telegram Wallet · P2P</div>
             </div>
@@ -393,7 +423,7 @@
             <!-- Способ 1: Telegram @wallet -->
             <div class="topup-method">
                 <div class="topup-method-header">
-                    <span class="topup-method-icon">✈️</span>
+                    <span class="topup-method-icon"><i class="fa-solid fa-plane"></i></span>
                     <div>
                         <div class="topup-method-title">Telegram @wallet</div>
                         <div class="topup-method-sub">Официальный кошелёк Telegram — карты РФ, СБП</div>
@@ -406,14 +436,14 @@
                     <div class="topup-step"><span class="topup-step-n">3</span>Переведи TON на свой адрес в приложении</div>
                 </div>
                 <a class="topup-btn topup-btn-primary" href="https://t.me/wallet" target="_blank">
-                    ✈️ Открыть @wallet
+                    <i class="fa-solid fa-plane"></i> Открыть @wallet
                 </a>
             </div>
 
             <!-- Способ 2: CryptoBot -->
             <div class="topup-method">
                 <div class="topup-method-header">
-                    <span class="topup-method-icon">🤖</span>
+                    <span class="topup-method-icon"><i class="fa-solid fa-robot"></i></span>
                     <div>
                         <div class="topup-method-title">@CryptoBot</div>
                         <div class="topup-method-sub">P2P внутри Telegram, без KYC</div>
@@ -426,14 +456,14 @@
                     <div class="topup-step"><span class="topup-step-n">3</span>Выведи TON на свой адрес кошелька</div>
                 </div>
                 <a class="topup-btn topup-btn-secondary" href="https://t.me/CryptoBot" target="_blank">
-                    🤖 Открыть @CryptoBot
+                    <i class="fa-solid fa-robot"></i> Открыть @CryptoBot
                 </a>
             </div>
 
             <!-- Способ 3: P2P биржи -->
             <div class="topup-method">
                 <div class="topup-method-header">
-                    <span class="topup-method-icon">📊</span>
+                    <span class="topup-method-icon"><i class="fa-solid fa-chart-bar"></i></span>
                     <div>
                         <div class="topup-method-title">P2P биржи</div>
                         <div class="topup-method-sub">Bybit, OKX — Сбер, Т-Банк, СБП</div>
@@ -455,7 +485,7 @@
             <!-- Способ 4: Bestchange -->
             <div class="topup-method">
                 <div class="topup-method-header">
-                    <span class="topup-method-icon">🔄</span>
+                    <span class="topup-method-icon"><i class="fa-solid fa-rotate"></i></span>
                     <div>
                         <div class="topup-method-title">Обменники (bestchange.ru)</div>
                         <div class="topup-method-sub">Лучший курс — карты РФ → TON напрямую</div>
@@ -468,7 +498,7 @@
                     <div class="topup-step"><span class="topup-step-n">3</span>Выбери обменник с лучшим курсом и переведи</div>
                 </div>
                 <a class="topup-btn topup-btn-secondary" href="https://www.bestchange.ru/?from=136&to=833" target="_blank">
-                    🔄 Найти лучший курс
+                    <i class="fa-solid fa-rotate"></i> Найти лучший курс
                 </a>
             </div>
 
@@ -504,19 +534,19 @@
                     </div>
                 </div>
                 <button class="topup-btn topup-btn-rurc" onclick="topupBuyRURC()">
-                    💳 Оплатить (скоро)
+                    <i class="fa-solid fa-credit-card"></i> Оплатить (скоро)
                 </button>
-                <div class="topup-rurc-note">⚙️ Оплата через СБП и карты РФ — подключается</div>
+                <div class="topup-rurc-note"><i class="fa-solid fa-gear"></i> Оплата через СБП и карты РФ — подключается</div>
             </div>
 
             <!-- Адрес кошелька -->
             <div class="topup-address-block">
-                <div class="topup-address-title">📋 Мой TON-адрес</div>
+                <div class="topup-address-title"><i class="fa-solid fa-list"></i> Мой TON-адрес</div>
                 <div class="topup-address-sub">Скопируй и вставь при переводе</div>
                 <div class="topup-address-box" id="myTonAddress" onclick="copyTonAddress()">
                     Загрузка...
                 </div>
-                <button class="topup-btn topup-btn-copy" onclick="copyTonAddress()">📋 Скопировать адрес</button>
+                <button class="topup-btn topup-btn-copy" onclick="copyTonAddress()"><i class="fa-solid fa-list"></i> Скопировать адрес</button>
             </div>
 
         </div>
@@ -537,11 +567,11 @@
                 <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,140,0,0.5),transparent);"></div>
                 <div style="position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(74,222,128,0.3),transparent);"></div>
 
-                <div style="font-size:48px;margin-bottom:10px;filter:drop-shadow(0 0 16px rgba(255,140,0,0.5));">🛢️</div>
+                <div style="font-size:48px;margin-bottom:10px;filter:drop-shadow(0 0 16px rgba(255,140,0,0.5));"><i class="fa-solid fa-oil-can"></i></div>
                 <div style="font-size:22px;font-weight:800;color:#FF8C00;margin-bottom:6px;letter-spacing:0.5px;">RURCoin</div>
-                <div style="font-size:15px;font-weight:700;color:#e8eaf0;margin-bottom:8px;">будущее 🚀</div>
+                <div style="font-size:15px;font-weight:700;color:#e8eaf0;margin-bottom:8px;">будущее <i class="fa-solid fa-rocket"></i></div>
                 <div style="font-size:13px;color:#9ca3af;line-height:1.6;margin-bottom:16px;">
-                    Мы покажем всему <span style="color:#4ade80;font-weight:700;">МИРУ 🌍</span><br>
+                    Мы покажем всему <span style="color:#4ade80;font-weight:700;">МИРУ <i class="fa-solid fa-earth-europe"></i></span><br>
                     На что способен <span style="color:#FF8C00;font-weight:700;">$RUR</span> и его владельцы<span style="color:#f87171;">‼️</span>
                 </div>
 
@@ -572,7 +602,7 @@
                         width:44px;height:44px;border-radius:12px;flex-shrink:0;
                         background:rgba(0,136,204,0.2);border:1px solid rgba(0,136,204,0.3);
                         display:flex;align-items:center;justify-content:center;font-size:22px;
-                    ">📢</div>
+                    "><i class="fa-solid fa-bullhorn"></i></div>
                     <div style="flex:1;">
                         <div style="font-size:14px;font-weight:700;color:#38bdf8;margin-bottom:2px;">Официальный канал</div>
                         <div style="font-size:12px;color:#6b7280;">@rurcoins · Новости и обновления</div>
@@ -593,7 +623,7 @@
                         width:44px;height:44px;border-radius:12px;flex-shrink:0;
                         background:rgba(74,222,128,0.15);border:1px solid rgba(74,222,128,0.25);
                         display:flex;align-items:center;justify-content:center;font-size:22px;
-                    ">💬</div>
+                    "><i class="fa-solid fa-comments"></i></div>
                     <div style="flex:1;">
                         <div style="font-size:14px;font-weight:700;color:#4ade80;margin-bottom:2px;">Чат сообщества</div>
                         <div style="font-size:12px;color:#6b7280;">Обсуждения · Поддержка · Идеи</div>
@@ -614,7 +644,7 @@
                         width:44px;height:44px;border-radius:12px;flex-shrink:0;
                         background:rgba(251,191,36,0.15);border:1px solid rgba(251,191,36,0.25);
                         display:flex;align-items:center;justify-content:center;font-size:22px;
-                    ">👑</div>
+                    "><i class="fa-solid fa-crown"></i></div>
                     <div style="flex:1;">
                         <div style="font-size:14px;font-weight:700;color:#fbbf24;margin-bottom:2px;">Администрация</div>
                         <div style="font-size:12px;color:#6b7280;">@RuR_Invest · Связь с командой</div>
@@ -630,17 +660,17 @@
                 display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;text-align:center;
             ">
                 <div>
-                    <div style="font-size:20px;margin-bottom:4px;">🚀</div>
+                    <div style="font-size:20px;margin-bottom:4px;"><i class="fa-solid fa-rocket"></i></div>
                     <div style="font-size:13px;font-weight:700;color:#FF8C00;">$RURC</div>
                     <div style="font-size:10px;color:#6b7280;">Токен</div>
                 </div>
                 <div>
-                    <div style="font-size:20px;margin-bottom:4px;">🌍</div>
+                    <div style="font-size:20px;margin-bottom:4px;"><i class="fa-solid fa-earth-europe"></i></div>
                     <div style="font-size:13px;font-weight:700;color:#4ade80;">TON</div>
                     <div style="font-size:10px;color:#6b7280;">Сеть</div>
                 </div>
                 <div>
-                    <div style="font-size:20px;margin-bottom:4px;">💎</div>
+                    <div style="font-size:20px;margin-bottom:4px;"><i class="fa-solid fa-gem"></i></div>
                     <div style="font-size:13px;font-weight:700;color:#38bdf8;">Web3</div>
                     <div style="font-size:10px;color:#6b7280;">Экосистема</div>
                 </div>
@@ -653,7 +683,7 @@
                 <div style="font-size:12px;color:#6b7280;font-style:italic;">
                     «Вместе мы изменим правила игры»
                 </div>
-                <div style="font-size:16px;margin-top:4px;">🛢️ 🌍 🚀</div>
+                <div style="font-size:16px;margin-top:4px;"><i class="fa-solid fa-oil-can"></i> <i class="fa-solid fa-earth-europe"></i> <i class="fa-solid fa-rocket"></i></div>
             </div>
 
         </div>
@@ -669,21 +699,21 @@
             <!-- Заголовок + GPS статус -->
             <div style="background:linear-gradient(135deg,#0d1117,#1a1a2e);border:1px solid #FF6B00;border-radius:14px;padding:16px;margin-bottom:14px;">
                 <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
-                    <span style="font-size:24px;">🛰️</span>
+                    <span style="font-size:24px;"><i class="fa-solid fa-satellite"></i></span>
                     <div>
                         <div style="font-weight:bold;color:#FF6B00;font-size:16px;">GPS-Разведка</div>
                         <div style="font-size:12px;color:#888;">Глобальная карта месторождений</div>
                     </div>
                     <button id="gpsToggleBtn" style="margin-left:auto;padding:8px 14px;background:#FF6B0022;border:1px solid #FF6B00;border-radius:8px;color:#FF6B00;font-size:13px;cursor:pointer;font-family:inherit;">▶ Включить GPS</button>
                 </div>
-                <div id="gpsStatus" style="font-size:12px;color:#888;margin-bottom:8px;">📍 GPS отключён</div>
-                <div id="gpsBonusDisplay" style="font-size:13px;color:#888;">📍 GPS-бонус не активен</div>
+                <div id="gpsStatus" style="font-size:12px;color:#888;margin-bottom:8px;"><i class="fa-solid fa-location-dot"></i> GPS отключён</div>
+                <div id="gpsBonusDisplay" style="font-size:13px;color:#888;"><i class="fa-solid fa-location-dot"></i> GPS-бонус не активен</div>
             </div>
 
             <!-- Активные бафы -->
             <div style="background:#0d1117;border:1px solid #FFD700;border-radius:12px;padding:14px;margin-bottom:14px;">
                 <div style="font-weight:bold;color:#FFD700;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
-                    <span>⚡</span> Активные бафы к добыче
+                    <span><i class="fa-solid fa-bolt"></i></span> Активные бафы к добыче
                 </div>
                 <div id="gpsActiveBuffs">
                     <div style="color:#555;font-size:12px;">Нет активных бафов</div>
@@ -694,23 +724,23 @@
             <div style="background:#0d1117;border:1px solid #1a1a2e;border-radius:12px;padding:14px;margin-bottom:14px;">
                 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
                     <div style="font-weight:bold;color:#00D4FF;display:flex;align-items:center;gap:6px;">
-                        <span>🗺️</span> Карта месторождений
+                        <span><i class="fa-solid fa-map"></i></span> Карта месторождений
                     </div>
-                    <button id="gpsScanBtn" style="padding:7px 14px;background:#00D4FF22;border:1px solid #00D4FF;border-radius:8px;color:#00D4FF;font-size:12px;cursor:pointer;font-family:inherit;">📡 Сканировать</button>
+                    <button id="gpsScanBtn" style="padding:7px 14px;background:#00D4FF22;border:1px solid #00D4FF;border-radius:8px;color:#00D4FF;font-size:12px;cursor:pointer;font-family:inherit;"><i class="fa-solid fa-satellite-dish"></i> Сканировать</button>
                 </div>
                 <div id="gpsMapContainer"></div>
                 <div style="display:flex;gap:12px;margin-top:8px;font-size:11px;color:#888;">
-                    <span>🛢️ <span style="color:#FF6B00;">Нефть</span></span>
-                    <span>⛽ <span style="color:#00D4FF;">Газ</span></span>
-                    <span>🚩 <span style="color:#FFD700;">Захвачено</span></span>
-                    <span>🏗️ <span style="color:#9B59B6;">Платформа</span></span>
+                    <span><i class="fa-solid fa-oil-can"></i> <span style="color:#FF6B00;">Нефть</span></span>
+                    <span><i class="fa-solid fa-gas-pump"></i> <span style="color:#00D4FF;">Газ</span></span>
+                    <span><i class="fa-solid fa-flag"></i> <span style="color:#FFD700;">Захвачено</span></span>
+                    <span><i class="fa-solid fa-tower-observation"></i> <span style="color:#9B59B6;">Платформа</span></span>
                 </div>
             </div>
 
             <!-- Результаты сканера -->
             <div style="background:#0d1117;border:1px solid #00D4FF;border-radius:12px;padding:14px;margin-bottom:14px;">
                 <div style="font-weight:bold;color:#00D4FF;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
-                    <span>📡</span> Результаты сканирования
+                    <span><i class="fa-solid fa-satellite-dish"></i></span> Результаты сканирования
                 </div>
                 <div id="gpsScanResults">
                     <div style="color:#555;font-size:12px;text-align:center;padding:16px;">Нажми «Сканировать» для поиска месторождений рядом</div>
@@ -720,7 +750,7 @@
             <!-- Очередь строительства -->
             <div id="gpsBuildQueueWrap" style="background:#0d1117;border:1px solid #9B59B6;border-radius:12px;padding:14px;margin-bottom:14px;display:none;">
                 <div style="font-weight:bold;color:#9B59B6;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
-                    <span>🏗️</span> Строительство
+                    <span><i class="fa-solid fa-tower-observation"></i></span> Строительство
                 </div>
                 <div id="gpsBuildQueue"></div>
             </div>
@@ -728,7 +758,7 @@
             <!-- Мои платформы -->
             <div style="background:#0d1117;border:1px solid #9B59B6;border-radius:12px;padding:14px;margin-bottom:14px;">
                 <div style="font-weight:bold;color:#9B59B6;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
-                    <span>🏗️</span> Мои платформы
+                    <span><i class="fa-solid fa-tower-observation"></i></span> Мои платформы
                     <span style="font-size:11px;color:#888;margin-left:4px;">(+20% за уровень)</span>
                 </div>
                 <div id="gpsPlatformsList">
@@ -739,7 +769,7 @@
             <!-- Захваченные месторождения -->
             <div style="background:#0d1117;border:1px solid #FFD700;border-radius:12px;padding:14px;margin-bottom:14px;">
                 <div style="font-weight:bold;color:#FFD700;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
-                    <span>🚩</span> Захваченные месторождения
+                    <span><i class="fa-solid fa-flag"></i></span> Захваченные месторождения
                     <span style="font-size:11px;color:#888;margin-left:4px;">(+15% каждое)</span>
                 </div>
                 <div id="gpsCapturesList">
@@ -750,7 +780,7 @@
             <!-- Квесты -->
             <div style="background:#0d1117;border:1px solid #FF6B00;border-radius:12px;padding:14px;margin-bottom:14px;">
                 <div style="font-weight:bold;color:#FF6B00;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
-                    <span>🎯</span> GPS-квесты
+                    <span><i class="fa-solid fa-bullseye"></i></span> GPS-квесты
                     <span style="font-size:11px;color:#888;margin-left:4px;">(награда — бафы к добыче)</span>
                 </div>
                 <div id="gpsQuestsList"></div>
@@ -760,7 +790,7 @@
     </div>
 
 <!-- FAB -->
-<button class="topup-fab" onclick="window.showTopUpModal && showTopUpModal()">💰 Пополнить</button>
+<button class="topup-fab" onclick="window.showTopUpModal && showTopUpModal()"><i class="fa-solid fa-sack-dollar"></i> Пополнить</button>
 
 <script>
 function switchToWalletTab() {
@@ -861,7 +891,7 @@ function topupBuyRURC() {
     // Заглушка — ЮKassa не подключена
     const msg = document.createElement('div');
     msg.className = 'topup-coming-soon-msg';
-    msg.innerHTML = '⚙️ Оплата через СБП подключается. Следи за обновлениями!';
+    msg.innerHTML = '<i class="fa-solid fa-gear"></i> Оплата через СБП подключается. Следи за обновлениями!';
     const btn = document.querySelector('.topup-btn-rurc');
     if (btn && !document.querySelector('.topup-coming-soon-msg')) {
         btn.parentNode.insertBefore(msg, btn.nextSibling);
@@ -875,13 +905,13 @@ function copyTonAddress() {
     if (!el || el.textContent === 'Загрузка...') return;
     const addr = el.textContent.trim();
     if (navigator.clipboard) {
-        navigator.clipboard.writeText(addr).then(() => showTopupToast('✅ Адрес скопирован'));
+        navigator.clipboard.writeText(addr).then(() => showTopupToast('<i class="fa-solid fa-circle-check"></i> Адрес скопирован'));
     } else {
         const ta = document.createElement('textarea');
         ta.value = addr; document.body.appendChild(ta);
         ta.select(); document.execCommand('copy');
         document.body.removeChild(ta);
-        showTopupToast('✅ Адрес скопирован');
+        showTopupToast('<i class="fa-solid fa-circle-check"></i> Адрес скопирован');
     }
 }
 
