@@ -518,7 +518,7 @@
             <span style="display:inline-flex;align-items:center;gap:3px;vertical-align:middle;">
                 <span class="token-icon ton"><i class="fa-solid fa-gem"></i></span> TON
             </span>
-            — увеличивай добычу и цену продажи
+            — увеличивай добычу и ёмкость хранилища
         </div>
         <div id="upgradesList">
             <div style="text-align:center;color:#444;padding:20px;">Загрузка...</div>
@@ -1203,160 +1203,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
 <style id="bnav-styles">
 /* ═══════════════════════════════════════════════════════════
-   BOTTOM NAVIGATION — ADAPTIVE
+   BOTTOM NAVIGATION
 ═══════════════════════════════════════════════════════════ */
 
 /* Скрываем старые табы */
 .tabs-wrap { display: none !important; }
 
-/* Отступ контента снизу (мобайл) */
+/* Отступ контента снизу */
 .content {
-  padding-bottom: calc(var(--bnav-h, 60px) + env(safe-area-inset-bottom, 0px) + 8px) !important;
-}
-
-/* ── CSS-переменные размеров (переопределяются в медиа) ─── */
-:root {
-  --bnav-h: 60px;
-  --bnav-icon: 20px;
-  --bnav-icon-wrap: 36px;
-  --bnav-label-size: 9px;
-  --stab-w: 44px;
-  --stab-h: 38px;
-  --stab-icon: 15px;
-  --stab-gap: 6px;
-  --stab-pad: 8px 12px;
-}
-
-/* ── Маленький телефон (<360px) ───────────────────────────── */
-@media (max-width: 359px) {
-  :root {
-    --bnav-h: 52px;
-    --bnav-icon: 17px;
-    --bnav-icon-wrap: 30px;
-    --bnav-label-size: 8px;
-    --stab-w: 36px;
-    --stab-h: 32px;
-    --stab-icon: 13px;
-    --stab-gap: 4px;
-    --stab-pad: 6px 8px;
-  }
-}
-
-/* ── Большой телефон (>480px) ─────────────────────────────── */
-@media (min-width: 481px) and (max-width: 767px) {
-  :root {
-    --bnav-h: 64px;
-    --bnav-icon: 22px;
-    --bnav-icon-wrap: 40px;
-    --bnav-label-size: 10px;
-    --stab-w: 50px;
-    --stab-h: 42px;
-    --stab-icon: 17px;
-    --stab-gap: 8px;
-    --stab-pad: 10px 16px;
-  }
-}
-
-/* ── Планшет / десктоп (≥768px) ──────────────────────────── */
-@media (min-width: 768px) {
-  :root {
-    --bnav-h: 0px; /* нижняя навигация скрыта */
-  }
-
-  /* Контент без нижнего отступа */
-  .content {
-    padding-bottom: 16px !important;
-    margin-left: 220px; /* место под сайдбар */
-  }
-
-  /* Подтабы — горизонтально под хедером */
-  .stabs-wrap {
-    top: 0;
-    left: 220px;
-    right: 0;
-    position: sticky;
-  }
-
-  /* Нижняя навигация → левый сайдбар */
-  .bnav-wrap {
-    position: fixed;
-    top: 0; left: 0; bottom: 0; right: auto;
-    width: 220px;
-    border-top: none;
-    border-right: 1px solid rgba(255,140,0,0.12);
-    padding-bottom: 0;
-    padding-top: env(safe-area-inset-top, 0px);
-    box-shadow: 4px 0 24px rgba(0,0,0,0.5);
-  }
-
-  .bnav {
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: stretch;
-    height: 100%;
-    padding: 80px 12px 24px;
-    gap: 4px;
-  }
-
-  .bnav-item {
-    flex-direction: row;
-    justify-content: flex-start;
-    gap: 12px;
-    padding: 10px 14px;
-    border-radius: 12px;
-    height: auto;
-  }
-
-  .bnav-icon-wrap {
-    width: 38px; height: 38px;
-    flex-shrink: 0;
-  }
-
-  .bnav-item .fa-solid {
-    font-size: 18px;
-  }
-
-  .bnav-label {
-    font-size: 12px;
-    letter-spacing: 0.5px;
-  }
-
-  /* Точка — слева от иконки */
-  .bnav-dot {
-    bottom: auto; left: -8px; top: 50%;
-    transform: translateY(-50%) scale(0);
-    width: 3px; height: 14px;
-    border-radius: 2px;
-  }
-  .bnav-item.active .bnav-dot {
-    transform: translateY(-50%) scale(1);
-  }
-
-  /* Активный пункт — подъём убираем, делаем фон */
-  .bnav-item.active .bnav-icon-wrap {
-    transform: none;
-  }
-
-  /* Подтабы на планшете — горизонтальная полоска */
-  .stabs {
-    justify-content: flex-start;
-    padding: 8px 16px;
-    gap: 8px;
-  }
-
-  .stab {
-    width: auto;
-    padding: 0 16px;
-    height: 36px;
-    gap: 6px;
-    display: flex;
-    align-items: center;
-  }
-
-  /* На планшете показываем подписи в подтабах */
-  .stab::before {
-    display: none; /* убираем shimmer чтобы не мешал */
-  }
+  padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px) + 8px) !important;
 }
 
 /* ── Обёртка нижней навигации ─────────────────────────────── */
@@ -1365,6 +1220,7 @@ document.addEventListener('DOMContentLoaded', () => {
   bottom: 0; left: 0; right: 0;
   z-index: 300;
   padding-bottom: env(safe-area-inset-bottom, 0px);
+  /* Стеклянный фон */
   background: rgba(6, 6, 10, 0.92);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -1377,9 +1233,9 @@ document.addEventListener('DOMContentLoaded', () => {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  height: var(--bnav-h, 60px);
+  height: 60px;
   padding: 0 8px;
-  max-width: 600px;
+  max-width: 480px;
   margin: 0 auto;
 }
 
@@ -1405,26 +1261,27 @@ document.addEventListener('DOMContentLoaded', () => {
   background: rgba(255, 215, 0, 0.06);
 }
 
+/* Иконка + точка активности */
 .bnav-icon-wrap {
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: var(--bnav-icon-wrap, 36px);
-  height: var(--bnav-icon-wrap, 36px);
+  width: 36px; height: 36px;
   border-radius: 12px;
   background: transparent;
   transition: background 0.25s, transform 0.2s;
 }
 
 .bnav-item .fa-solid {
-  font-size: var(--bnav-icon, 20px);
+  font-size: 20px;
   color: #3a3a4a;
   text-shadow: none;
   margin: 0;
   transition: color 0.25s, text-shadow 0.25s;
 }
 
+/* Точка под иконкой активной категории */
 .bnav-dot {
   position: absolute;
   bottom: -6px; left: 50%;
@@ -1436,9 +1293,10 @@ document.addEventListener('DOMContentLoaded', () => {
   transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
+/* Подпись */
 .bnav-label {
   font-family: var(--fh, 'Rajdhani'), sans-serif;
-  font-size: var(--bnav-label-size, 9px);
+  font-size: 9px;
   font-weight: 600;
   letter-spacing: 0.8px;
   text-transform: uppercase;
@@ -1451,9 +1309,19 @@ document.addEventListener('DOMContentLoaded', () => {
   background: rgba(255, 215, 0, 0.1);
   transform: translateY(-2px);
 }
-.bnav-item.active .fa-solid { color: #FFD700; text-shadow: 0 0 12px rgba(255,215,0,0.7); }
-.bnav-item.active .bnav-dot { transform: translateX(-50%) scale(1); }
-.bnav-item.active .bnav-label { color: #FFD700; }
+
+.bnav-item.active .fa-solid {
+  color: #FFD700;
+  text-shadow: 0 0 12px rgba(255, 215, 0, 0.7);
+}
+
+.bnav-item.active .bnav-dot {
+  transform: translateX(-50%) scale(1);
+}
+
+.bnav-item.active .bnav-label {
+  color: #FFD700;
+}
 
 /* Цвета по категориям */
 .bnav-item[data-cat="production"].active .fa-solid { color: #FF8C00; text-shadow: 0 0 12px rgba(255,140,0,0.7); }
@@ -1494,20 +1362,22 @@ document.addEventListener('DOMContentLoaded', () => {
   display: none;
   align-items: center;
   justify-content: center;
-  gap: var(--stab-gap, 6px);
-  padding: var(--stab-pad, 8px 12px);
-  max-width: 600px;
+  gap: 6px;
+  padding: 8px 12px;
+  max-width: 480px;
   margin: 0 auto;
 }
 
-.stabs.active { display: flex; }
+.stabs.active {
+  display: flex;
+}
 
+/* Кнопка подтаба */
 .stab {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: var(--stab-w, 44px);
-  height: var(--stab-h, 38px);
+  width: 44px; height: 38px;
   border-radius: 12px;
   background: rgba(255,255,255,0.04);
   border: 1px solid rgba(255,255,255,0.06);
@@ -1516,11 +1386,10 @@ document.addEventListener('DOMContentLoaded', () => {
   transition: all 0.2s;
   -webkit-tap-highlight-color: transparent;
   position: relative;
-  overflow: hidden;
 }
 
 .stab .fa-solid {
-  font-size: var(--stab-icon, 15px);
+  font-size: 15px;
   color: inherit;
   text-shadow: none;
   margin: 0;
@@ -1533,38 +1402,54 @@ document.addEventListener('DOMContentLoaded', () => {
   transform: translateY(-1px);
 }
 
+/* Активный подтаб — цвет берём от категории через JS-класс на .stabs-wrap */
 .stab.active {
   background: rgba(255,140,0,0.15);
   border-color: rgba(255,140,0,0.4);
   color: #FF8C00;
   box-shadow: 0 2px 12px rgba(255,140,0,0.2), inset 0 1px 0 rgba(255,255,255,0.08);
 }
-.stab.active .fa-solid { text-shadow: 0 0 8px rgba(255,140,0,0.6); }
-
-.stabs-wrap[data-active-cat="finance"] .stab.active {
-  background: rgba(74,222,128,0.12); border-color: rgba(74,222,128,0.35);
-  color: #4ade80; box-shadow: 0 2px 12px rgba(74,222,128,0.15);
+.stab.active .fa-solid {
+  text-shadow: 0 0 8px rgba(255,140,0,0.6);
 }
-.stabs-wrap[data-active-cat="finance"] .stab.active .fa-solid { text-shadow: 0 0 8px rgba(74,222,128,0.5); }
+
+/* Цвета активного подтаба по категории */
+.stabs-wrap[data-active-cat="finance"] .stab.active {
+  background: rgba(74,222,128,0.12);
+  border-color: rgba(74,222,128,0.35);
+  color: #4ade80;
+  box-shadow: 0 2px 12px rgba(74,222,128,0.15);
+}
+.stabs-wrap[data-active-cat="finance"] .stab.active .fa-solid {
+  text-shadow: 0 0 8px rgba(74,222,128,0.5);
+}
 
 .stabs-wrap[data-active-cat="info"] .stab.active {
-  background: rgba(96,165,250,0.12); border-color: rgba(96,165,250,0.35);
-  color: #60a5fa; box-shadow: 0 2px 12px rgba(96,165,250,0.15);
+  background: rgba(96,165,250,0.12);
+  border-color: rgba(96,165,250,0.35);
+  color: #60a5fa;
+  box-shadow: 0 2px 12px rgba(96,165,250,0.15);
 }
-.stabs-wrap[data-active-cat="info"] .stab.active .fa-solid { text-shadow: 0 0 8px rgba(96,165,250,0.5); }
+.stabs-wrap[data-active-cat="info"] .stab.active .fa-solid {
+  text-shadow: 0 0 8px rgba(96,165,250,0.5);
+}
 
 .stabs-wrap[data-active-cat="community"] .stab.active {
-  background: rgba(167,139,250,0.12); border-color: rgba(167,139,250,0.35);
-  color: #a78bfa; box-shadow: 0 2px 12px rgba(167,139,250,0.15);
+  background: rgba(167,139,250,0.12);
+  border-color: rgba(167,139,250,0.35);
+  color: #a78bfa;
+  box-shadow: 0 2px 12px rgba(167,139,250,0.15);
 }
-.stabs-wrap[data-active-cat="community"] .stab.active .fa-solid { text-shadow: 0 0 8px rgba(167,139,250,0.5); }
+.stabs-wrap[data-active-cat="community"] .stab.active .fa-solid {
+  text-shadow: 0 0 8px rgba(167,139,250,0.5);
+}
 
-/* Tooltip */
+/* Tooltip при hover */
 .stab::after {
   content: attr(title);
   position: absolute;
-  bottom: calc(100% + 8px); left: 50%;
-  transform: translateX(-50%);
+  bottom: calc(100% + 8px);
+  left: 50%; transform: translateX(-50%);
   background: rgba(20,20,30,0.95);
   border: 1px solid rgba(255,255,255,0.1);
   color: #ccc;
@@ -1580,96 +1465,6 @@ document.addEventListener('DOMContentLoaded', () => {
   z-index: 999;
 }
 .stab:hover::after { opacity: 1; }
-
-/* Ripple */
-.stab .ripple {
-  position: absolute;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.18);
-  transform: scale(0);
-  animation: rippleAnim 0.4s linear;
-  pointer-events: none;
-}
-
-/* Shimmer на активном */
-.stab.active::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.08) 50%, transparent 100%);
-  background-size: 200% 100%;
-  animation: stabShimmer 2.5s ease-in-out infinite;
-}
-
-/* Индикатор смены категории */
-@keyframes catSwitchBar {
-  from { width: 0%; opacity: 1; }
-  to   { width: 100%; opacity: 0; }
-}
-.stabs-wrap::after {
-  content: '';
-  position: absolute;
-  bottom: 0; left: 0;
-  height: 2px; width: 0%;
-  background: linear-gradient(90deg, transparent, var(--cat-color, #FFD700), transparent);
-  opacity: 0;
-  pointer-events: none;
-}
-.stabs-wrap.switching::after { animation: catSwitchBar 0.3s ease forwards; }
-
-.stabs-wrap[data-active-cat="production"] { --cat-color: #FF8C00; }
-.stabs-wrap[data-active-cat="finance"]    { --cat-color: #4ade80; }
-.stabs-wrap[data-active-cat="info"]       { --cat-color: #60a5fa; }
-.stabs-wrap[data-active-cat="community"]  { --cat-color: #a78bfa; }
-
-/* ── Планшет: подписи в подтабах ─────────────────────────── */
-@media (min-width: 768px) {
-  .stab[title]::before { display: none; }
-  .stab {
-    width: auto !important;
-    padding: 0 14px;
-    gap: 7px;
-    font-size: 11px;
-    font-family: var(--fh,'Rajdhani'),sans-serif;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    color: #555;
-  }
-  /* Показываем title как текст рядом с иконкой через псевдоэлемент */
-  .stab[data-tab="mining"]::after       { content: "Добыча"; }
-  .stab[data-tab="equipment"]::after    { content: "Оборуд."; }
-  .stab[data-tab="upgrades"]::after     { content: "Улучш."; }
-  .stab[data-tab="storage"]::after      { content: "Хранил."; }
-  .stab[data-tab="refinery"]::after     { content: "Завод"; }
-  .stab[data-tab="wallet"]::after       { content: "Кошелёк"; }
-  .stab[data-tab="staking"]::after      { content: "Стейкинг"; }
-  .stab[data-tab="exchange"]::after     { content: "Обменник"; }
-  .stab[data-tab="topup"]::after        { content: "Пополнить"; }
-  .stab[data-tab="transactions"]::after { content: "Транзакции"; }
-  .stab[data-tab="halving"]::after      { content: "Халвинг"; }
-  .stab[data-tab="gps"]::after          { content: "GPS"; }
-  .stab[data-tab="community"]::after    { content: "Сообщество"; }
-
-  /* Переопределяем tooltip-стиль для десктопа */
-  .stab::after {
-    position: static;
-    transform: none;
-    background: transparent;
-    border: none;
-    color: inherit;
-    font-size: 11px;
-    padding: 0;
-    border-radius: 0;
-    opacity: 1;
-    pointer-events: auto;
-    transition: none;
-    white-space: nowrap;
-    bottom: auto; left: auto;
-    z-index: auto;
-  }
-  .stab:hover::after { opacity: 1; }
-}
 </style>
 
 <script id="bnav-logic">
