@@ -425,21 +425,7 @@ const UPGRADES_LIST = [
         stat: (a) => `${(a.getGasPerSec()*3600).toFixed(0)} м³/ч`
     },
 
-    {
-        id: 'gasPrice',
-        name: '💰 Цена продажи газа',
-        icon: '📈',
-        category: 'gas',
-        desc: 'Повышает цену продажи газа на 15% за каждый уровень.',
-        details: [
-            'Ур. 1 → +15% к цене газа',
-            'Ур. 4 → +60% к цене газа',
-            'Ур. 8 → +120% к цене газа',
-            'Влияет на ручную и авто-продажу'
-        ],
-        baseCost: 60, costMult: 2.3, maxLevel: 8,
-        stat: (a) => `$${a.getGasSellPrice().toFixed(3)}/м³`
-    },
+
     {
         id: 'autoSell',
         name: '🤖 Авто-продажа',
