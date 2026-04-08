@@ -921,274 +921,144 @@
 
 
     <!-- GPS ВКЛАДКА -->
-    <div class="tab-content" id="gps">
-        <div style="padding:16px;max-width:520px;margin:0 auto;">
+    <div class="tab-content" id="gps" style="padding:0;position:relative;overflow:hidden;">
 
-            <!-- Заголовок + GPS статус -->
-            <div style="background:linear-gradient(135deg,#0d1117,#1a1a2e);border:1px solid #FF6B00;border-radius:14px;padding:16px;margin-bottom:14px;">
-                <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
-                    <span style="font-size:24px;"><i class="fa-solid fa-satellite"></i></span>
-                    <div>
-                        <div style="font-weight:bold;color:#FF6B00;font-size:16px;">GPS-Разведка</div>
-                        <div style="font-size:12px;color:#888;">Глобальная карта месторождений</div>
+        <!-- КАРТА НА ВЕСЬ ЭКРАН -->
+        <div id="gpsMapContainer" style="position:absolute;inset:0;width:100%;height:100%;z-index:0;"></div>
+
+        <!-- HUD ВЕРХНИЙ — статус GPS + баф -->
+        <div style="position:absolute;top:0;left:0;right:0;z-index:10;pointer-events:none;">
+            <div style="display:flex;align-items:center;justify-content:space-between;
+                        padding:10px 14px;
+                        background:linear-gradient(180deg,rgba(13,17,23,0.92) 0%,rgba(13,17,23,0) 100%);">
+                <div style="pointer-events:auto;">
+                    <div id="gpsStatus" style="font-size:12px;color:#00D4FF;font-weight:600;letter-spacing:.5px;">
+                        <i class="fa-solid fa-satellite"></i> GPS отключён
                     </div>
-                    <button id="gpsToggleBtn" style="margin-left:auto;padding:8px 14px;background:#FF6B0022;border:1px solid #FF6B00;border-radius:8px;color:#FF6B00;font-size:13px;cursor:pointer;font-family:inherit;">▶ Включить GPS</button>
+                    <div id="gpsBonusDisplay" style="font-size:11px;color:#888;margin-top:2px;">Бонус не активен</div>
                 </div>
-                <div id="gpsStatus" style="font-size:12px;color:#888;margin-bottom:8px;"><i class="fa-solid fa-location-dot"></i> GPS отключён</div>
-                <div id="gpsBonusDisplay" style="font-size:13px;color:#888;"><i class="fa-solid fa-location-dot"></i> GPS-бонус не активен</div>
+                <button id="gpsToggleBtn"
+                    style="pointer-events:auto;padding:7px 14px;
+                           background:rgba(255,107,0,0.18);border:1px solid #FF6B00;
+                           border-radius:20px;color:#FF6B00;font-size:12px;font-weight:700;
+                           cursor:pointer;font-family:inherit;backdrop-filter:blur(6px);">
+                    ▶ GPS
+                </button>
+            </div>
+        </div>
+
+        <!-- АКТИВНЫЕ БАФЫ — плашка под HUD -->
+        <div id="gpsActiveBuffsBar"
+             style="position:absolute;top:56px;left:12px;right:12px;z-index:10;
+                    display:none;pointer-events:none;">
+            <div style="background:rgba(13,17,23,0.85);border:1px solid #FFD700;
+                        border-radius:10px;padding:6px 12px;backdrop-filter:blur(6px);
+                        font-size:11px;color:#FFD700;display:flex;align-items:center;gap:8px;">
+                <i class="fa-solid fa-bolt"></i>
+                <span id="gpsActiveBuffs">Нет активных бафов</span>
+            </div>
+        </div>
+
+        <!-- ЛЕГЕНДА — левый нижний угол -->
+        <div style="position:absolute;bottom:130px;left:12px;z-index:10;pointer-events:none;">
+            <div style="background:rgba(13,17,23,0.80);border-radius:10px;
+                        padding:8px 10px;backdrop-filter:blur(6px);
+                        display:flex;flex-direction:column;gap:5px;font-size:10px;">
+                <span><span style="color:#FF6B00;">●</span> Нефть</span>
+                <span><span style="color:#00D4FF;">●</span> Газ</span>
+                <span><span style="color:#FFD700;">⚑</span> Захвачено</span>
+                <span><span style="color:#9B59B6;">▲</span> Платформа</span>
+            </div>
+        </div>
+
+        <!-- КООРДИНАТЫ — правый нижний угол -->
+        <div style="position:absolute;bottom:130px;right:12px;z-index:10;pointer-events:none;">
+            <div id="gpsCoords"
+                 style="background:rgba(13,17,23,0.80);border-radius:10px;
+                        padding:6px 10px;backdrop-filter:blur(6px);
+                        font-size:10px;color:#888;text-align:right;font-family:monospace;">
+                —
+            </div>
+        </div>
+
+        <!-- НИЖНЯЯ ПАНЕЛЬ — сканер + результаты -->
+        <div style="position:absolute;bottom:60px;left:0;right:0;z-index:10;">
+
+            <!-- Статус сканирования -->
+            <div id="gpsScanStatusBar" style="display:none;margin:0 12px 8px;
+                 background:rgba(255,107,0,0.15);border:1px solid #FF6B00;
+                 border-radius:10px;padding:8px 14px;font-size:12px;color:#FF6B00;
+                 backdrop-filter:blur(6px);text-align:center;">
             </div>
 
-            <!-- Активные бафы -->
-            <div style="background:#0d1117;border:1px solid #FFD700;border-radius:12px;padding:14px;margin-bottom:14px;">
-                <div style="font-weight:bold;color:#FFD700;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
-                    <span><i class="fa-solid fa-bolt"></i></span> Активные бафы к добыче
-                </div>
-                <div id="gpsActiveBuffs">
-                    <div style="color:#555;font-size:12px;">Нет активных бафов</div>
-                </div>
+            <!-- Результаты сканирования — скролл -->
+            <div id="gpsScanResults" style="display:none;margin:0 12px 8px;
+                 max-height:180px;overflow-y:auto;
+                 background:rgba(13,17,23,0.92);border:1px solid #00D4FF;
+                 border-radius:12px;padding:10px;backdrop-filter:blur(8px);">
             </div>
 
-            <!-- Карта -->
-            <div style="background:#0d1117;border:1px solid #1a1a2e;border-radius:12px;padding:14px;margin-bottom:14px;">
-                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-                    <div style="font-weight:bold;color:#00D4FF;display:flex;align-items:center;gap:6px;">
-                        <span><i class="fa-solid fa-map"></i></span> Карта месторождений
-                    </div>
-                    <button id="gpsScanBtn" style="padding:7px 14px;background:#00D4FF22;border:1px solid #00D4FF;border-radius:8px;color:#00D4FF;font-size:12px;cursor:pointer;font-family:inherit;"><i class="fa-solid fa-satellite-dish"></i> Сканировать</button>
-                </div>
-                <div id="gpsMapContainer"></div>
-                <div style="display:flex;gap:12px;margin-top:8px;font-size:11px;color:#888;">
-                    <span><i class="fa-solid fa-oil-can"></i> <span style="color:#FF6B00;">Нефть</span></span>
-                    <span><i class="fa-solid fa-gas-pump"></i> <span style="color:#00D4FF;">Газ</span></span>
-                    <span><i class="fa-solid fa-flag"></i> <span style="color:#FFD700;">Захвачено</span></span>
-                    <span><i class="fa-solid fa-tower-observation"></i> <span style="color:#9B59B6;">Платформа</span></span>
-                </div>
-            </div>
-
-            <!-- Результаты сканера -->
-            <div style="background:#0d1117;border:1px solid #00D4FF;border-radius:12px;padding:14px;margin-bottom:14px;">
-                <div style="font-weight:bold;color:#00D4FF;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
-                    <span><i class="fa-solid fa-satellite-dish"></i></span> Результаты сканирования
-                </div>
-                <div id="gpsScanResults">
-                    <div style="color:#555;font-size:12px;text-align:center;padding:16px;">Нажми «Сканировать» для поиска месторождений рядом</div>
-                </div>
-            </div>
-
-            <!-- Очередь строительства -->
-            <div id="gpsBuildQueueWrap" style="background:#0d1117;border:1px solid #9B59B6;border-radius:12px;padding:14px;margin-bottom:14px;display:none;">
-                <div style="font-weight:bold;color:#9B59B6;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
-                    <span><i class="fa-solid fa-tower-observation"></i></span> Строительство
+            <!-- Строительство -->
+            <div id="gpsBuildQueueWrap" style="display:none;margin:0 12px 8px;
+                 background:rgba(13,17,23,0.92);border:1px solid #9B59B6;
+                 border-radius:12px;padding:10px;backdrop-filter:blur(8px);">
+                <div style="font-size:11px;color:#9B59B6;font-weight:700;margin-bottom:6px;">
+                    <i class="fa-solid fa-tower-observation"></i> Строительство
                 </div>
                 <div id="gpsBuildQueue"></div>
             </div>
 
-            <!-- Мои платформы -->
-            <div style="background:#0d1117;border:1px solid #9B59B6;border-radius:12px;padding:14px;margin-bottom:14px;">
-                <div style="font-weight:bold;color:#9B59B6;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
-                    <span><i class="fa-solid fa-tower-observation"></i></span> Мои платформы
-                    <span style="font-size:11px;color:#888;margin-left:4px;">(+20% за уровень)</span>
-                </div>
-                <div id="gpsPlatformsList">
-                    <div style="color:#888;text-align:center;padding:16px;">Нет построенных платформ</div>
-                </div>
+            <!-- Кнопки действий -->
+            <div style="display:flex;gap:8px;padding:0 12px;">
+                <button id="gpsScanBtn"
+                    style="flex:1;padding:13px;
+                           background:linear-gradient(135deg,rgba(0,212,255,0.2),rgba(0,212,255,0.08));
+                           border:1px solid #00D4FF;border-radius:14px;
+                           color:#00D4FF;font-size:13px;font-weight:700;
+                           cursor:pointer;font-family:inherit;backdrop-filter:blur(8px);
+                           box-shadow:0 4px 20px rgba(0,212,255,0.15);">
+                    <i class="fa-solid fa-satellite-dish"></i> Сканировать
+                </button>
+                <button onclick="GPS && GPS.showPlatforms && GPS.showPlatforms()"
+                    style="padding:13px 16px;
+                           background:rgba(155,89,182,0.15);
+                           border:1px solid #9B59B6;border-radius:14px;
+                           color:#9B59B6;font-size:13px;font-weight:700;
+                           cursor:pointer;font-family:inherit;backdrop-filter:blur(8px);">
+                    <i class="fa-solid fa-tower-observation"></i>
+                </button>
+                <button onclick="GPS && GPS.showRadarUpgrade && GPS.showRadarUpgrade()"
+                    style="padding:13px 16px;
+                           background:rgba(255,215,0,0.12);
+                           border:1px solid #FFD700;border-radius:14px;
+                           color:#FFD700;font-size:13px;font-weight:700;
+                           cursor:pointer;font-family:inherit;backdrop-filter:blur(8px);">
+                    <i class="fa-solid fa-radar"></i>
+                </button>
             </div>
-
-            <!-- Захваченные месторождения -->
-            <div style="background:#0d1117;border:1px solid #FFD700;border-radius:12px;padding:14px;margin-bottom:14px;">
-                <div style="font-weight:bold;color:#FFD700;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
-                    <span><i class="fa-solid fa-flag"></i></span> Захваченные месторождения
-                    <span style="font-size:11px;color:#888;margin-left:4px;">(+15% каждое)</span>
-                </div>
-                <div id="gpsCapturesList">
-                    <div style="color:#888;text-align:center;padding:16px;">Нет захваченных месторождений</div>
-                </div>
-            </div>
-
-            <!-- Квесты -->
-            <div style="background:#0d1117;border:1px solid #FF6B00;border-radius:12px;padding:14px;margin-bottom:14px;">
-                <div style="font-weight:bold;color:#FF6B00;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
-                    <span><i class="fa-solid fa-bullseye"></i></span> GPS-квесты
-                    <span style="font-size:11px;color:#888;margin-left:4px;">(награда — бафы к добыче)</span>
-                </div>
-                <div id="gpsQuestsList"></div>
-            </div>
-
         </div>
+
+        <!-- МОИ ПЛАТФОРМЫ — модальная панель (скрыта по умолчанию) -->
+        <div id="gpsPlatformsPanel" style="display:none;position:absolute;inset:0;z-index:20;
+             background:rgba(13,17,23,0.96);overflow-y:auto;padding:16px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+                <div style="font-weight:700;color:#9B59B6;font-size:15px;">
+                    <i class="fa-solid fa-tower-observation"></i> Мои платформы
+                    <span style="font-size:11px;color:#888;margin-left:6px;">(+20% за уровень)</span>
+                </div>
+                <button onclick="document.getElementById('gpsPlatformsPanel').style.display='none'"
+                    style="background:none;border:1px solid #444;border-radius:8px;
+                           color:#888;padding:6px 12px;cursor:pointer;font-family:inherit;">✕</button>
+            </div>
+            <div id="gpsPlatformsList">
+                <div style="color:#888;font-size:12px;text-align:center;padding:32px;">
+                    Нет активных платформ
+                </div>
+            </div>
+        </div>
+
     </div>
 
-<!-- FAB -->
-<button class="topup-fab" onclick="window.showTopUpModal && showTopUpModal()"><i class="fa-solid fa-sack-dollar"></i> Пополнить</button>
-
-<script>
-function switchToWalletTab() {
-    if (window.rurcoinApp) window.rurcoinApp.switchTab('wallet');
-}
-// Обновление больших цистерн и процентов
-(function() {
-    function patchStorageTanks() {
-        var app = window.rurcoinApp;
-        if (!app) return;
-        var oilPct = Math.min(100, (app.oilStored / app.oilCapacity) * 100) || 0;
-        var gasPct = Math.min(100, (app.gasStored / app.gasCapacity) * 100) || 0;
-        var el = function(id){ return document.getElementById(id); };
-        if(el('oilBar')) el('oilBar').style.width = oilPct + '%';
-        if(el('gasBar')) el('gasBar').style.width = gasPct + '%';
-        if(el('oilBarPct')) el('oilBarPct').textContent = oilPct.toFixed(1) + '%';
-        if(el('gasBarPct')) el('gasBarPct').textContent = gasPct.toFixed(1) + '%';
-        if(el('oilFillBig')) el('oilFillBig').style.height = oilPct + '%';
-        if(el('gasFillBig')) el('gasFillBig').style.height = gasPct + '%';
-        if(el('oilPctBig')) el('oilPctBig').textContent = oilPct.toFixed(1) + '%';
-        if(el('gasPctBig')) el('gasPctBig').textContent = gasPct.toFixed(1) + '%';
-        if(el('oilStoredBig')) el('oilStoredBig').textContent = (app.oilStored||0).toFixed(1) + ' барр.';
-        if(el('gasStoredBig')) el('gasStoredBig').textContent = Math.floor(app.gasStored||0) + ' м³';
-        if(el('oilCapacityBig')) el('oilCapacityBig').textContent = 'макс. ' + (app.oilCapacity||200);
-        if(el('gasCapacityBig')) el('gasCapacityBig').textContent = 'макс. ' + (app.gasCapacity||2000);
-    }
-    setInterval(patchStorageTanks, 1000);
-})();
-</script>
-
-<script src="notifications.js?v=202603302137"></script>
-<script src="contracts.js?v=202603302137"></script>
-<script src="game-ui.js?v=202603302137"></script>
-    <script src="exchange.js?v=202603302137"></script>
-<script src="payment.js?v=202603302137"></script>
-<script src="https://unpkg.com/@tonconnect/sdk@2.2.0/dist/tonconnect-sdk.min.js"></script>
-<script src="wallet.js?v=202603302137"></script>
-<script src="price_feed.js?v=202603302137"></script>
-<script src="global_stats.js?v=202603302137"></script>
-<script src="ton-payment.js?v=202603302137"></script>
-<script src="liquidity.js?v=202603302137"></script>
-<script src="sound.js?v=202603302137"></script>
-<script src="animations.js?v=202603302137"></script>
-<script src="admin.js?v=202603302137"></script>
-<script src="gps.js?v=202603302137"></script>
-<script src="script.js?v=202603302137"></script>
-
-
-<script>
-// GPS build queue visibility patch
-(function() {
-  var origAppendChild = Element.prototype.appendChild;
-  document.addEventListener('DOMContentLoaded', function() {
-    var queue = document.getElementById('gpsBuildQueue');
-    var wrap  = document.getElementById('gpsBuildQueueWrap');
-    if (!queue || !wrap) return;
-    var obs = new MutationObserver(function() {
-      wrap.style.display = queue.children.length > 0 ? 'block' : 'none';
-    });
-    obs.observe(queue, { childList: true });
-  });
-})();
-</script>
-
-    <script src="refinery.js?v=202603302137"></script>
-
-<script>
-// Инициализация вкладки завода при переключении
-document.addEventListener('DOMContentLoaded', function() {
-    // Перехватываем клики по вкладкам
-    document.querySelectorAll('[data-tab]').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const tab = this.getAttribute('data-tab');
-            if (tab === 'refinery') {
-                setTimeout(() => {
-                    const el = document.getElementById('refinery-content');
-                    if (el && typeof renderRefineryTab === 'function') {
-                        el.innerHTML = renderRefineryTab();
-                    }
-                }, 50);
-            }
-        });
-    });
-});
-</script>
-
-
-<script>
-// ── Пополнение: выбор пакета RURC ──────────────────────────
-let _selectedPkg = null;
-function topupSelectPkg(el, price, rurc) {
-    document.querySelectorAll('.topup-pkg').forEach(p => p.classList.remove('topup-pkg-selected'));
-    el.classList.add('topup-pkg-selected');
-    _selectedPkg = { price, rurc };
-}
-function topupBuyRURC() {
-    if (!_selectedPkg) return alert('Выбери пакет');
-    // Заглушка — ЮKassa не подключена
-    const msg = document.createElement('div');
-    msg.className = 'topup-coming-soon-msg';
-    msg.innerHTML = '<i class="fa-solid fa-gear"></i> Оплата через СБП подключается. Следи за обновлениями!';
-    const btn = document.querySelector('.topup-btn-rurc');
-    if (btn && !document.querySelector('.topup-coming-soon-msg')) {
-        btn.parentNode.insertBefore(msg, btn.nextSibling);
-        setTimeout(() => msg.remove(), 4000);
-    }
-}
-
-// ── Копирование TON-адреса ─────────────────────────────────
-function copyTonAddress() {
-    const el = document.getElementById('myTonAddress');
-    if (!el || el.textContent === 'Загрузка...') return;
-    const addr = el.textContent.trim();
-    if (navigator.clipboard) {
-        navigator.clipboard.writeText(addr).then(() => showTopupToast('<i class="fa-solid fa-circle-check"></i> Адрес скопирован'));
-    } else {
-        const ta = document.createElement('textarea');
-        ta.value = addr; document.body.appendChild(ta);
-        ta.select(); document.execCommand('copy');
-        document.body.removeChild(ta);
-        showTopupToast('<i class="fa-solid fa-circle-check"></i> Адрес скопирован');
-    }
-}
-
-// ── Загрузка адреса кошелька ───────────────────────────────
-function loadTonAddressForTopup() {
-    const el = document.getElementById('myTonAddress');
-    if (!el) return;
-    // Берём адрес из уже загруженного walletSection если есть
-    const walletAddr = document.querySelector('[data-ton-address]');
-    if (walletAddr) {
-        el.textContent = walletAddr.dataset.tonAddress;
-        return;
-    }
-    // Иначе из localStorage
-    try {
-        const saved = localStorage.getItem('ton_wallet_address');
-        if (saved) { el.textContent = saved; return; }
-    } catch(e) {}
-    el.textContent = 'Адрес появится после открытия вкладки Кошелёк';
-}
-
-// ── Toast ──────────────────────────────────────────────────
-function showTopupToast(msg) {
-    let t = document.getElementById('topup-toast');
-    if (!t) {
-        t = document.createElement('div');
-        t.id = 'topup-toast';
-        t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(20,20,20,0.95);border:1px solid rgba(255,255,255,0.12);color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:600;opacity:0;pointer-events:none;transition:all 0.25s;z-index:9999;white-space:nowrap;';
-        document.body.appendChild(t);
-    }
-    t.textContent = msg;
-    t.style.opacity = '1'; t.style.transform = 'translateX(-50%) translateY(0)';
-    clearTimeout(t._t);
-    t._t = setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateX(-50%) translateY(20px)'; }, 3000);
-}
-
-// ── Инициализация при переключении на вкладку ──────────────
-document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            if (btn.dataset.tab === 'topup') {
-                setTimeout(loadTonAddressForTopup, 100);
-            }
-        });
-    });
-});
-</script>
-
-<div id="floatCoins"></div>
 
 <style id="bnav-styles">
 /* ═══════════════════════════════════════════════════════════
