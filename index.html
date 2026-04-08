@@ -78,6 +78,168 @@
     .fa-crown { color: #FFD700; text-shadow: 0 0 12px rgba(255,215,0,0.9); }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous">
+
+<style id="tab-anim-styles">
+/* ═══════════════════════════════════════════════════════════
+   TAB SWITCH ANIMATIONS
+═══════════════════════════════════════════════════════════ */
+
+/* Базовое состояние контента */
+.tab-content {
+  display: none;
+  animation: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+/* ── Анимация входа (новая вкладка появляется) ────────────── */
+@keyframes tabSlideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes tabSlideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes tabFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Классы анимации — навешиваются через JS */
+.tab-content.anim-in-right {
+  animation: tabSlideInRight 0.28s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.tab-content.anim-in-left {
+  animation: tabSlideInLeft 0.28s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.tab-content.anim-in-up {
+  animation: tabFadeUp 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+/* ── Анимация подтаб-кнопки при активации ────────────────── */
+@keyframes stabPop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(0.88); }
+  70%  { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+.stab.pop {
+  animation: stabPop 0.22s ease forwards;
+}
+
+/* ── Анимация нижней кнопки категории ────────────────────── */
+@keyframes bnavBounce {
+  0%   { transform: translateY(0); }
+  35%  { transform: translateY(-5px); }
+  65%  { transform: translateY(-2px); }
+  100% { transform: translateY(-2px); }
+}
+
+@keyframes bnavReset {
+  from { transform: translateY(-2px); }
+  to   { transform: translateY(0); }
+}
+
+.bnav-item.active .bnav-icon-wrap {
+  animation: bnavBounce 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* ── Ripple эффект на подтаб-кнопках ─────────────────────── */
+.stab {
+  overflow: hidden;
+}
+
+.stab .ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+  transform: scale(0);
+  animation: rippleAnim 0.4s linear;
+  pointer-events: none;
+}
+
+@keyframes rippleAnim {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* ── Shimmer на активном подтабе ─────────────────────────── */
+@keyframes stabShimmer {
+  0%   { background-position: -100% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.stab.active::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255,255,255,0.08) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: stabShimmer 2.5s ease-in-out infinite;
+}
+
+/* ── Индикатор загрузки при смене категории ──────────────── */
+@keyframes catSwitchBar {
+  from { width: 0%; opacity: 1; }
+  to   { width: 100%; opacity: 0; }
+}
+
+.stabs-wrap::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0;
+  height: 2px;
+  width: 0%;
+  background: linear-gradient(90deg, transparent, var(--cat-color, #FFD700), transparent);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.stabs-wrap.switching::after {
+  animation: catSwitchBar 0.3s ease forwards;
+}
+
+/* Цвет индикатора по категории */
+.stabs-wrap[data-active-cat="production"] { --cat-color: #FF8C00; }
+.stabs-wrap[data-active-cat="finance"]    { --cat-color: #4ade80; }
+.stabs-wrap[data-active-cat="info"]       { --cat-color: #60a5fa; }
+.stabs-wrap[data-active-cat="community"]  { --cat-color: #a78bfa; }
+</style>
+
 </head>
 <body>
 
@@ -1339,15 +1501,49 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   window.switchTab = function(tab) {
+    var prevTab = _tab;
     _tab = tab;
-    // Контент
+
+    // Определяем направление анимации
+    var TAB_ORDER = ['mining','equipment','upgrades','storage','refinery',
+                     'wallet','staking','exchange','topup','transactions',
+                     'halving','gps','community'];
+    var prevIdx = TAB_ORDER.indexOf(prevTab);
+    var nextIdx = TAB_ORDER.indexOf(tab);
+    var animClass = nextIdx >= prevIdx ? 'anim-in-right' : 'anim-in-left';
+    // При смене категории — анимация снизу вверх
+    if (TAB_CAT[prevTab] !== TAB_CAT[tab]) animClass = 'anim-in-up';
+
+    // Скрываем текущий контент
     document.querySelectorAll('.tab-content').forEach(function(c){
-      c.classList.toggle('active', c.id === tab);
+      if (c.classList.contains('active')) {
+        c.classList.remove('active');
+      }
     });
-    // Подтаб кнопки
+
+    // Показываем новый с анимацией
+    var newContent = document.getElementById(tab);
+    if (newContent) {
+      newContent.classList.remove('anim-in-right','anim-in-left','anim-in-up');
+      // Форсируем reflow чтобы анимация сработала заново
+      void newContent.offsetWidth;
+      newContent.classList.add('active', animClass);
+      // Убираем класс анимации после завершения
+      setTimeout(function(){ newContent.classList.remove('anim-in-right','anim-in-left','anim-in-up'); }, 350);
+    }
+
+    // Подтаб кнопки — с pop-анимацией
     document.querySelectorAll('.stab').forEach(function(b){
-      b.classList.toggle('active', b.dataset.tab === tab);
+      var isActive = b.dataset.tab === tab;
+      b.classList.toggle('active', isActive);
+      if (isActive) {
+        b.classList.remove('pop');
+        void b.offsetWidth;
+        b.classList.add('pop');
+        setTimeout(function(){ b.classList.remove('pop'); }, 250);
+      }
     });
+
     // Синхронизируем категорию если нужно
     var cat = TAB_CAT[tab];
     if (cat && cat !== _cat) {
@@ -1359,7 +1555,11 @@ document.addEventListener('DOMContentLoaded', () => {
         s.classList.toggle('active', s.id === 'cat-' + cat);
       });
       var sw = document.querySelector('.stabs-wrap');
-      if (sw) sw.setAttribute('data-active-cat', cat);
+      if (sw) {
+        sw.setAttribute('data-active-cat', cat);
+        sw.classList.add('switching');
+        setTimeout(function(){ sw.classList.remove('switching'); }, 350);
+      }
     }
   };
 
@@ -1376,6 +1576,86 @@ document.addEventListener('DOMContentLoaded', () => {
     window.switchCat('production');
     window.switchTab('mining');
   });
+})();
+</script>
+
+
+<script id="tab-interactions">
+(function(){
+
+  // ── Ripple на подтаб-кнопках ──────────────────────────────
+  document.addEventListener('pointerdown', function(e){
+    var btn = e.target.closest('.stab');
+    if (!btn) return;
+    var rect = btn.getBoundingClientRect();
+    var size = Math.max(rect.width, rect.height) * 1.5;
+    var x = e.clientX - rect.left - size/2;
+    var y = e.clientY - rect.top  - size/2;
+    var ripple = document.createElement('span');
+    ripple.className = 'ripple';
+    ripple.style.cssText = 'width:'+size+'px;height:'+size+'px;left:'+x+'px;top:'+y+'px;';
+    btn.appendChild(ripple);
+    setTimeout(function(){ ripple.remove(); }, 450);
+  });
+
+  // ── Свайп для смены подтабов ──────────────────────────────
+  var TAB_ORDER = ['mining','equipment','upgrades','storage','refinery',
+                   'wallet','staking','exchange','topup','transactions',
+                   'halving','gps','community'];
+  var CAT_TABS = {
+    production: ['mining','equipment','upgrades','storage','refinery'],
+    finance:    ['wallet','staking','exchange','topup','transactions'],
+    info:       ['halving','gps'],
+    community:  ['community']
+  };
+  var TAB_CAT = {
+    mining:'production', equipment:'production', upgrades:'production',
+    storage:'production', refinery:'production',
+    wallet:'finance', staking:'finance', exchange:'finance',
+    topup:'finance', transactions:'finance',
+    halving:'info', gps:'info', community:'community'
+  };
+
+  var touchStartX = 0, touchStartY = 0, touchStartTime = 0;
+  var SWIPE_THRESHOLD = 50;   // px
+  var SWIPE_MAX_Y = 80;       // px — не срабатывает при вертикальном скролле
+  var SWIPE_MAX_TIME = 400;   // ms
+
+  var content = document.querySelector('.content');
+  if (!content) return;
+
+  content.addEventListener('touchstart', function(e){
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+    touchStartTime = Date.now();
+  }, { passive: true });
+
+  content.addEventListener('touchend', function(e){
+    var dx = e.changedTouches[0].clientX - touchStartX;
+    var dy = e.changedTouches[0].clientY - touchStartY;
+    var dt = Date.now() - touchStartTime;
+
+    if (Math.abs(dx) < SWIPE_THRESHOLD) return;
+    if (Math.abs(dy) > SWIPE_MAX_Y) return;
+    if (dt > SWIPE_MAX_TIME) return;
+
+    // Определяем текущий таб
+    var activeContent = document.querySelector('.tab-content.active');
+    if (!activeContent) return;
+    var currentTab = activeContent.id;
+    var cat = TAB_CAT[currentTab];
+    var catTabs = CAT_TABS[cat] || [];
+    var idx = catTabs.indexOf(currentTab);
+
+    if (dx < 0 && idx < catTabs.length - 1) {
+      // Свайп влево → следующий таб
+      window.switchTab(catTabs[idx + 1]);
+    } else if (dx > 0 && idx > 0) {
+      // Свайп вправо → предыдущий таб
+      window.switchTab(catTabs[idx - 1]);
+    }
+  }, { passive: true });
+
 })();
 </script>
 
