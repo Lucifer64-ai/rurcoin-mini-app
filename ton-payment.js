@@ -6,7 +6,7 @@
 const DEV_WALLET_ADDRESS = 'UQBv5qIVT1x5BD1uOJFKqMMqQfZbdaqExRuIATNCn_HiCGoI';
 const DEV_WALLET_COMMENT = 'RURCoin Equipment Purchase — Dev Fund';
 const TONAPI_BASE        = 'https://tonapi.io/v2';
-const TONAPI_KEY = ''; // ключ убран из клиентского кода
+const TONAPI_KEY = '' // ⚠️ Получи бесплатный ключ на https://tonconsole.com и вставь сюда; // ключ убран из клиентского кода
 
 // ============================================================
 //  Коды ошибок и человекочитаемые сообщения
@@ -30,6 +30,9 @@ const TON_ERRORS = {
 
 // ── Fetch с таймаутом ──────────────────────────────────────────
 async function _tonFetchWithTimeout(url, options = {}, ms = 8000) {
+    if (typeof AbortController === 'undefined') {
+        return fetch(url, options);
+    }
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), ms);
     try {
@@ -48,8 +51,8 @@ function classifyError(err) {
     if (!err) return TON_ERRORS.UNKNOWN;
     const msg = (err.message || err.toString() || '').toLowerCase();
 
-    if (msg.includes('cancel'))                          return TON_ERRORS.USER_CANCEL;
-    if (msg.includes('reject') || msg.includes('deny')) return TON_ERRORS.USER_REJECT;
+    if (msg.includes('cancel') || msg.includes('отменено') || msg.includes('отмена'))                          return TON_ERRORS.USER_CANCEL;
+    if (msg.includes('reject') || msg.includes('deny') || msg.includes('отклонено') || msg.includes('отказано')) return TON_ERRORS.USER_REJECT;
     if (msg.includes('insufficient') || msg.includes('balance') || msg.includes('not enough'))
                                                          return TON_ERRORS.INSUFFICIENT_TON;
     if (msg.includes('expired') || msg.includes('timeout') || msg.includes('valid until'))
@@ -116,7 +119,7 @@ async function sendTonToDevWallet(costTON, label, onSuccess) {
                 `✅ Оплата подтверждена!`,
                 'success',
                 `${costTON} TON • Hash: ${verified.hash}`,
-                [{ text: '🔗 Открыть в TON Explorer', action: () => window.open(`https://tonscan.org/tx/${verified.hash}`, '_blank') }]
+                [{ text: '🔗 Открыть в TON Explorer', action: () => (window.Telegram?.WebApp?.openLink ? window.Telegram.WebApp.openLink(`https://tonscan.org/tx/${verified.hash}`) : window.open(`https://tonscan.org/tx/${verified.hash}`, '_blank')) }]
             );
             logDevPayment(costTON, label, 'tonconnect', verified.hash);
             if (onSuccess) onSuccess();
@@ -131,7 +134,7 @@ async function sendTonToDevWallet(costTON, label, onSuccess) {
                     `✅ Оплата подтверждена!`,
                     'success',
                     `${costTON} TON • Hash: ${retry.hash}`,
-                    [{ text: '🔗 Открыть в TON Explorer', action: () => window.open(`https://tonscan.org/tx/${retry.hash}`, '_blank') }]
+                    [{ text: '🔗 Открыть в TON Explorer', action: () => (window.Telegram?.WebApp?.openLink ? window.Telegram.WebApp.openLink(`https://tonscan.org/tx/${retry.hash}`) : window.open(`https://tonscan.org/tx/${retry.hash}`, '_blank')) }]
                 );
                 logDevPayment(costTON, label, 'tonconnect', retry.hash);
                 if (onSuccess) onSuccess();
@@ -146,7 +149,7 @@ async function sendTonToDevWallet(costTON, label, onSuccess) {
                             if (check.ok) { logDevPayment(costTON, label, 'manual', check.hash); if (onSuccess) onSuccess(); }
                             else showTonNotification('❌ Транзакция всё ещё не найдена', 'error', check.reason);
                         }},
-                        { text: '📩 Поддержка', action: () => window.open('https://t.me/rurcoin_support', '_blank') }
+                        { text: '📩 Поддержка', action: () => (window.Telegram?.WebApp?.openLink ? window.Telegram.WebApp.openLink('https://t.me/rurcoin_support') : window.open('https://t.me/rurcoin_support', '_blank')) }
                     ]
                 );
                 logDevError(costTON, label, TON_ERRORS.TX_NOT_FOUND.code, retry.reason);
